@@ -22,7 +22,7 @@ run a local Conductor configured to work with Chaperone's call specifications.
 npx sdk-conductor --config conductor.json
 ```
 
-Example `happ.json`
+Example `conductor.json`
 ```javascript
 {
     "key_store_file": "./happ-dev-keystore.key", // generated keystore file is saved here
@@ -31,7 +31,7 @@ Example `happ.json`
     "log_level": null,
     "sim2h_server": "http://localhost:9000",
     "bundle": {
-        "hash": "QmUgZ8e6xE1h9fH89CNqAXFQkkKyRh2Ag6jgTNC8wcoNYS",
+        "id": "QmUgZ8e6xE1h9fH89CNqAXFQkkKyRh2Ag6jgTNC8wcoNYS",
         "dnas": [{
             "id": "holofuel",
             "hash": "QmWvWtw1P2nduQqk8uKpfhAeUd72bSU2gFH7TLrQm1Bbfw",
@@ -50,12 +50,11 @@ There is also a script to run a local development version of Chaperone that impl
 functionality, but shuttles the requests to a local Conductor instead of a Host.  When given the
 Conductor configuration, it will assume that Conductor was started using `sdk-conductor`.
 
-Example usage
+Example usage with `sdk-conductor`
 ```bash
-npx sdk-chaperone --config conductor.json
+npx sdk-chaperone --conductor-config conductor.json
 ```
-
-Chaperone uses `agent_id_file` and `bundle.hash`
+Chaperone needs to get the Agent ID and hApp ID
 
 ## Javascript API
 
@@ -79,17 +78,17 @@ Returns the context indicator which will match `HoloHost.AUTONOMOUS` or `HoloHos
 ### `.zomeCall( dna_id, zome_name, function_name, args ) -> Promise<any>`
 Call a zome function on the respective DNA instance.
 
-### `.signIn() -> `
+### `.signIn() -> Promise<boolean>`
 Trigger Chaperone's sign-in prompt.
 
 > **WARNING:** This will throw an error if the context is `HoloHost.AUTONOMOUS`.
 
-### `.signOut()`
+### `.signOut() -> Promise<boolean>`
 Trigger Chaperone's sign-up prompt.
 
 > **WARNING:** This will throw an error if the context is `HoloHost.AUTONOMOUS`.
 
-### `on( event )`
+### `on( event, callback )`
 
 **Events**
 
