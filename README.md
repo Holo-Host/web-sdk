@@ -54,14 +54,46 @@ Example usage with `sdk-conductor`
 ```bash
 npx sdk-chaperone --conductor-config conductor.json
 ```
-Chaperone needs to get the Agent ID and hApp ID
+Chaperone needs the hApp ID to determine instance IDs.
+
+#### Manual Configuration
+
+**Required**
+- `instance_prefix` *string*		- **Chaperone prepends this to the DNA handle to make unique instance IDs**
+
+**Optional**
+- `log_level` *number | null*		- **Set the level of logging output** (default: `null`)
+- `connection.secure` *boolean*		- **Use secure socket** (default: `false`)
+- `connection.address` *string*		- **Condcutor address** (default: `localhost`)
+- `connection.port` *number*		- **Conductor port** (default: `42211`)
+- `connection.path` *string*		- **Condcutor URL path** (default: `/`)
+
+Example usage for existing Holochain Conductor
+```bash
+npx sdk-chaperone --config chaperone.json
+```
+
+Example `chaperone.json`
+```javascript
+{
+    "instance_prefix": "QmUgZ8e6xE1h9fH89CNqAXFQkkKyRh2Ag6jgTNC8wcoNYS",
+    "log_level": null,
+    "connection": {
+        "ssl": false,
+        "host": "localhost",
+        "port": 12345,
+	"path": "/"
+    }
+}
+```
+
 
 ## Javascript API
 
 ```javascript
-const { HoloHost } = require('@holo-host/web-sdk');
+const { Connection } = require('@holo-host/web-sdk');
 
-const host = new HoloHost();
+const envoy = new Connection();
 ```
 
 ### `.ready( timeout ) -> Promise<null>`
@@ -73,20 +105,25 @@ Asynchronous short-hand for connection event with support for timeout.
 ```
 
 ### `.context() -> Promise<number>`
-Returns the context indicator which will match `HoloHost.AUTONOMOUS` or `HoloHost.HOSTED`.
+Returns the context indicator which will match `Connection.AUTONOMOUS` or `Connection.HOSTED`.
 
-### `.zomeCall( dna_id, zome_name, function_name, args ) -> Promise<any>`
+### `.zomeCall( dna_handle, zome_name, function_name, args ) -> Promise<any>`
 Call a zome function on the respective DNA instance.
 
 ### `.signIn() -> Promise<boolean>`
 Trigger Chaperone's sign-in prompt.
 
-> **WARNING:** This will throw an error if the context is `HoloHost.AUTONOMOUS`.
+> **WARNING:** This will throw an error if the context is `Connection.AUTONOMOUS`.
 
-### `.signOut() -> Promise<boolean>`
+### `.signUp() -> Promise<boolean>`
 Trigger Chaperone's sign-up prompt.
 
-> **WARNING:** This will throw an error if the context is `HoloHost.AUTONOMOUS`.
+> **WARNING:** This will throw an error if the context is `Connection.AUTONOMOUS`.
+
+### `.signOut() -> Promise<boolean>`
+Trigger Chaperone's sign-out process.
+
+> **WARNING:** This will throw an error if the context is `Connection.AUTONOMOUS`.
 
 ### `on( event, callback )`
 
@@ -100,4 +137,4 @@ Trigger Chaperone's sign-up prompt.
 - `disconnected` - emitted when the connection is closed
 
 > **NOTE:** `signin`, `signup`, and `signout` will never be emitted when the context is
-> `HoloHost.AUTONOMOUS`.
+> `Connection.AUTONOMOUS`.
