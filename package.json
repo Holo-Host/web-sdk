@@ -12,7 +12,7 @@
     "test": "npm run test-unit",
     "test-unit": "mocha ./tests/unit/"
   },
-  "author": "Holo Inc.",
+  "author": "Holo Ltd.",
   "contributors": [
     "Matthew Brisebois <matthew.brisebois@holo.host>"
   ],
