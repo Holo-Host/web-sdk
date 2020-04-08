@@ -1,5 +1,11 @@
 node_modules
 dist
+dnas
 build
 docs
+chaperone.json
+keystore.json
+AGENTID
+conductor.toml
+conductor-storage
 .cache
