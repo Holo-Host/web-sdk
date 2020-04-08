@@ -66,23 +66,21 @@ Chaperone needs the hApp ID to determine instance IDs.
 - `connection.secure` *boolean*		- **Use secure socket** (default: `false`)
 - `connection.address` *string*		- **Condcutor address** (default: `localhost`)
 - `connection.port` *number*		- **Conductor port** (default: `42211`)
-- `connection.path` *string*		- **Condcutor URL path** (default: `/`)
 
 Example usage for existing Holochain Conductor
 ```bash
-npx sdk-chaperone --config chaperone.json
+npx chaperone-server --config chaperone.json
 ```
 
 Example `chaperone.json`
 ```javascript
 {
-    "instance_prefix": "QmUgZ8e6xE1h9fH89CNqAXFQkkKyRh2Ag6jgTNC8wcoNYS",
+    "instance_prefix": "happ-name",
     "log_level": null,
     "connection": {
-        "ssl": false,
-        "host": "localhost",
-        "port": 12345,
-	"path": "/"
+        "secure": false,
+        "address": "localhost",
+        "port": 12345
     }
 }
 ```
@@ -105,7 +103,8 @@ Asynchronous short-hand for connection event with support for timeout.
 ```
 
 ### `.context() -> Promise<number>`
-Returns the context indicator which will match `Connection.AUTONOMOUS` or `Connection.HOSTED`.
+Returns the context indicator which will match `Connection.AUTONOMOUS`,
+`Connection.HOSTED_ANONYMOUS` or `Connection.HOSTED_AGENT`.
 
 ### `.zomeCall( dna_handle, zome_name, function_name, args ) -> Promise<any>`
 Call a zome function on the respective DNA instance.
