@@ -66,7 +66,6 @@ Chaperone needs the hApp ID to determine instance IDs.
 - `connection.secure` *boolean*		- **Use secure socket** (default: `false`)
 - `connection.address` *string*		- **Condcutor address** (default: `localhost`)
 - `connection.port` *number*		- **Conductor port** (default: `42211`)
-- `connection.path` *string*		- **Condcutor URL path** (default: `/`)
 
 Example usage for existing Holochain Conductor
 ```bash
