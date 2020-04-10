@@ -5,6 +5,7 @@ const log				= require('@whi/stdlog')(path.basename( __filename ), {
 
 const expect				= require('chai').expect;
 
+const mock_browser			= require("../mock_browser.js");
 const mock_comb				= require("../mock_comb.js");
 const { Connection }			= require("../../src/index.js");
 

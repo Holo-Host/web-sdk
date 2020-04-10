@@ -28,12 +28,16 @@
     "bin/*"
   ],
   "dependencies": {
-    "@holo-host/chaperone": "^0.1.12",
-    "@holo-host/comb": "^0.1.3"
+    "@holo-host/comb": "^0.1.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "@holo-host/chaperone": "^0.1.13",
     "@types/node": "^12.11.1",
     "@whi/stdlog": "^0.3.0",
+    "babel-loader": "^8.1.0",
+    "babel-polyfill": "^6.26.0",
     "chai": "^4.2.0",
     "mocha": "^6.2.1",
     "puppeteer": "^2.1.1",
