@@ -17,6 +17,6 @@ keystore.key:
 
 
 use-local-chaperone:
-	npm uninstall --save @holo-host/chaperone; npm install --save-dev ../chaperone
+	npm uninstall --save @holo-host/chaperone; npm install --save ../chaperone
 use-npm-chaperone:
-	npm uninstall --save @holo-host/chaperone; npm install --save-dev @holo-host/chaperone
+	npm uninstall --save @holo-host/chaperone; npm install --save @holo-host/chaperone

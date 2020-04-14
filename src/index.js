@@ -8,8 +8,12 @@ const { EventEmitter }			= require('events');
 
 class Connection extends EventEmitter {
 
-    constructor () {
+    constructor ( url ) {
 	super();
+
+	const hostname			= window.location.hostname;
+	this.chaperone_url		= url || `http://${hostname}:24273`;
+	console.log("Chaperone URL:", this.chaperone_url );
 
 	this.waiting			= [];
 	this.child			= null;
@@ -25,9 +29,13 @@ class Connection extends EventEmitter {
     }
 
     async connect () {
-	const hostname			= window.location.hostname;
-	const chaperone_url		= `http://${hostname}:24273`;
-	this.child			= await COMB.connect( chaperone_url, 5000 );
+	try {
+	    this.child			= await COMB.connect( this.chaperone_url, 5000 );
+	} catch (err) {
+	    if ( err.name === "TimeoutError" )
+		console.log("Chaperone did not load properly.  Is it running?");
+	    throw err;
+	}
 
 	let f;
 	while (f = this.waiting.shift()) {
@@ -67,11 +75,24 @@ class Connection extends EventEmitter {
     }
 
     async signUp () {
-	return await this.child.run("signUp");
+	return await this.child.call("signUp");
     }
 
     async signIn () {
-	return await this.child.run("signIn");
+	const iframe			= document.getElementsByClassName("comb-frame-0")[0];
+	const css			= iframe.style;
+	css.zIndex			= "99999999";
+	css.display			= "block";
+	css.width			= "100%";
+	css.height			= "100%";
+	css.position			= "absolute";
+	css.top				= "0";
+	css.left			= "0";
+
+	await this.child.call("signIn");
+
+	css.display			= "none";
+	return true;
     }
 
     async signOut () {

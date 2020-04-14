@@ -2,9 +2,8 @@
   "name": "@holo-host/web-sdk",
   "version": "0.1.0",
   "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
-  "main": "build/index.js",
-  "module": "build/index.js",
-  "browser": "dist/holo_hosting_web_sdk.js",
+  "main": "src/index.js",
+  "module": "src/index.js",
   "scripts": {
     "build": "npm run compile && npm run bundle",
     "compile": "tsc --esModuleInterop --lib es2015,dom --outDir ./build -p ./src",
@@ -28,12 +27,12 @@
     "bin/*"
   ],
   "dependencies": {
-    "@holo-host/comb": "^0.1.5"
+    "@holo-host/chaperone": "^0.1.14",
+    "@holo-host/comb": "^0.1.6"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
-    "@holo-host/chaperone": "^0.1.13",
     "@types/node": "^12.11.1",
     "@whi/stdlog": "^0.3.0",
     "babel-loader": "^8.1.0",

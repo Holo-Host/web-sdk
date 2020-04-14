@@ -10,7 +10,7 @@ module.exports			= {
 
     entry: [ "babel-polyfill", "./src/index.js" ],
 
-    // Assign 'module.exports' to the window variable
+    // Assign 'module.exports' to the variable defined by `output.library`
     output: {
 	library: "HoloWebSDK",
 	libraryTarget: "umd",
