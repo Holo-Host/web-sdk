@@ -13,7 +13,6 @@ class Connection extends EventEmitter {
 
 	const hostname			= window.location.hostname;
 	this.chaperone_url		= url || `http://${hostname}:24273`;
-	console.log("Chaperone URL:", this.chaperone_url );
 
 	this.waiting			= [];
 	this.child			= null;
@@ -55,6 +54,17 @@ class Connection extends EventEmitter {
 	this.child.msg_bus.on("alert",	( event, ...args ) => {
 	    this.emit( event );
 	});
+
+	this.iframe			= document.getElementsByClassName("comb-frame-0")[0];
+	this.iframe.setAttribute('allowtransparency', 'true');
+
+	const style			= this.iframe.style;
+	style.zIndex			= "99999999";
+	style.width			= "100%";
+	style.height			= "100%";
+	style.position			= "absolute";
+	style.top			= "0";
+	style.left			= "0";
     }
 
     async context () {
@@ -75,24 +85,17 @@ class Connection extends EventEmitter {
     }
 
     async signUp () {
-	return await this.child.call("signUp");
+	this.iframe.style.display	= "block";
+	const result			= await this.child.call("signUp");
+	this.iframe.style.display	= "none";
+	return result;
     }
 
     async signIn () {
-	const iframe			= document.getElementsByClassName("comb-frame-0")[0];
-	const css			= iframe.style;
-	css.zIndex			= "99999999";
-	css.display			= "block";
-	css.width			= "100%";
-	css.height			= "100%";
-	css.position			= "absolute";
-	css.top				= "0";
-	css.left			= "0";
-
-	await this.child.call("signIn");
-
-	css.display			= "none";
-	return true;
+	this.iframe.style.display	= "block";
+	const result			= await this.child.call("signIn");
+	this.iframe.style.display	= "none";
+	return result;
     }
 
     async signOut () {
