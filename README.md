@@ -14,6 +14,37 @@ npm install @holo-host/web-sdk
 
 ## Setup
 
+### Starting your Holochain App Bundle
+A quick and simple script for running a hApp bundle is included in the web SDK.  This will setup and
+run a local Conductor configured to work with Chaperone's call specifications.
+
+```bash
+npx sdk-conductor --config conductor.json
+```
+
+Example `conductor.json`
+```javascript
+{
+    "key_store_file": "./happ-dev-keystore.key", // generated keystore file is saved here
+    "agent_id_file": "./happ-dev-agent-id.hcid", // generated keystore agent ID is saved here
+    "storage_dir": "./holochain-conductor/",     // instance memory is stored here
+    "log_level": null,
+    "sim2h_server": "http://localhost:9000",
+    "bundle": {
+        "id": "QmUgZ8e6xE1h9fH89CNqAXFQkkKyRh2Ag6jgTNC8wcoNYS",
+        "dnas": [{
+            "id": "holofuel",
+            "hash": "QmWvWtw1P2nduQqk8uKpfhAeUd72bSU2gFH7TLrQm1Bbfw",
+            "file": "../holofuel/dist/holofuel.dna.json"
+        }]
+    }
+}
+```
+
+For more complex hApp or multi-hApp configurations, Chaperone can be configured to use an existing
+Holochain Conductor instead of using this method.  Follow the instance ID guidelines to ensure
+compatibility with Chaperone's call specification.
+
 ### Run the Chaperone development server
 There is also a script to run a local development version of Chaperone that implements all the same
 flows, but shuttles the requests to a local Conductor instead of a Host. [(documentation)](https://github.com/Holo-Host/chaperone/#npx-chaperone-server---config-configruation)
