@@ -1,0 +1,21 @@
+<html>
+    <head>
+    </head>
+    <body>
+	<h1>Web SDK!</h1>
+
+	<script type="text/javascript" src="/dist/holo_hosting_web_sdk.js"></script>
+	<script type="text/javascript">
+	  (async () => {
+	      const envoy		= new HoloWebSDK.Connection();
+
+	      envoy.on("connected", console.log.bind(console));
+
+	      await envoy.ready();
+	      window.envoy		= envoy;
+
+	      console.log( await envoy.zomeCall("holofuel", "transactions", "ledger_state") );
+	  })();
+	</script>
+    </body>
+</html>
