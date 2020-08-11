@@ -73,7 +73,7 @@ class Connection extends EventEmitter {
 
     async zomeCall ( ...args ) {
 	let result;
-	const response			= await this.child.run("zomeCall", ...args );
+	const response			= await this.child.call("zomeCall", ...args );
 
 	try {
 	    result			= JSON.parse( response );
