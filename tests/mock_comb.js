@@ -4,7 +4,7 @@ let next_response;
 global.COMB = {
     async connect () {
 	return Promise.resolve({
-	    run() {
+	    call() {
 		if ( next_response === undefined )
 		    return `{"Err":"Next response is undefined"}`
 		else {
