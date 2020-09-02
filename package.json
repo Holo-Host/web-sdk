@@ -1,6 +1,6 @@
 {
   "name": "@holo-host/web-sdk",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
   "main": "src/index.js",
   "module": "src/index.js",
@@ -25,7 +25,7 @@
     "src/*"
   ],
   "dependencies": {
-    "@holo-host/chaperone": "^0.1.15",
+    "@holo-host/chaperone": "^0.2.0",
     "@holo-host/comb": "^0.1.6"
   },
   "devDependencies": {
@@ -40,6 +40,6 @@
     "puppeteer": "^2.1.1",
     "typescript": "^3.6.4",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.9"
+    "webpack-cli": "^3.3.12"
   }
 }
