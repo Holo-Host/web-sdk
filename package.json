@@ -1,0 +1,45 @@
+{
+  "name": "@holo-host/web-sdk",
+  "version": "0.1.2",
+  "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "scripts": {
+    "build": "npm run bundle",
+    "bundle": "npx webpack --mode production --output-filename holo_hosting_web_sdk.js",
+    "test": "npm run test-unit",
+    "test-unit": "mocha ./tests/unit/"
+  },
+  "author": "Holo Ltd.",
+  "contributors": [
+    "Matthew Brisebois <matthew.brisebois@holo.host>"
+  ],
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Holo-Host/web-sdk/"
+  },
+  "files": [
+    "README.md",
+    "dist/*",
+    "src/*"
+  ],
+  "dependencies": {
+    "@holo-host/chaperone": "^0.2.0",
+    "@holo-host/comb": "^0.1.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "@types/node": "^12.11.1",
+    "@whi/stdlog": "^0.3.0",
+    "babel-loader": "^8.1.0",
+    "babel-polyfill": "^6.26.0",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.1",
+    "puppeteer": "^2.1.1",
+    "typescript": "^3.6.4",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.12"
+  }
+}
