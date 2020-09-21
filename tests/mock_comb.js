@@ -19,9 +19,6 @@ global.COMB = {
 
 module.exports = {
     nextResponse ( value ) {
-	if ( typeof value !== "string" )
-	    value				= JSON.stringify( value );
-
-	next_response				= value;
+	     next_response				= value;
     }
 }
