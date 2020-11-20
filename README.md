@@ -46,7 +46,21 @@ Asynchronous short-hand for connection event with support for timeout.
 Returns the context indicator which will match `Connection.AUTONOMOUS`,
 `Connection.HOSTED_ANONYMOUS` or `Connection.HOSTED_AGENT`.
 
-### `.callZome( dna_handle, zome_name, function_name, args ) -> Promise<any>`
+`callZome` and `appInfo` have the same signature as the methods on AppWebsocket in [holochain-condutor-api](https://github.com/holochain/holochain-conductor-api/blob/develop/src/websocket/app.ts). Type defs can be found [here](https://github.com/holochain/holochain-conductor-api/blob/develop/src/api/types.ts).
+
+### ```
+.callZome({
+  cap: CapSecret | null,
+  cell_id: CellId,
+  zome_name: string,
+  fn_name: string,
+  payload: Payload,
+  provenance: AgentPubKey,
+}) -> Promise<any>
+```
+Call a zome function on the respective DNA instance.
+
+### `.appInfo({ app_id: string }) -> Promise<any>`
 Call a zome function on the respective DNA instance.
 
 ### `.signIn() -> Promise<boolean>`
