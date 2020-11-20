@@ -14,7 +14,7 @@
 	      await envoy.ready();
 	      window.envoy		= envoy;
 
-	      console.log( await envoy.zomeCall("holofuel", "transactions", "ledger_state") );
+	      console.log( await envoy.callZome("holofuel", "transactions", "ledger_state") );
 	  })();
 	</script>
     </body>

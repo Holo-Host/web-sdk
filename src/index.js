@@ -71,10 +71,14 @@ class Connection extends EventEmitter {
 	return Connection.HOSTED_ANONYMOUS;
     }
 
-    async zomeCall ( ...args ) {
-	let result;
-	const response			= await this.child.call("zomeCall", ...args );
+    async callZome ( ...args ) {
+	const response			= await this.child.call("callZome", ...args );
 	return response;
+    }
+
+    async appInfo ( ...args ) {
+  const response			= await this.child.call("appInfo", ...args );
+  return response;
     }
 
     async signUp () {

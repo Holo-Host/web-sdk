@@ -28,7 +28,7 @@ describe("Javascript API", () => {
 		}
 	    });
 
-	    const response		= await envoy.zomeCall(
+	    const response		= await envoy.callZome(
 		"holofuel", "transactions", "ledger_state"
 	    );
 

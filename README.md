@@ -46,7 +46,7 @@ Asynchronous short-hand for connection event with support for timeout.
 Returns the context indicator which will match `Connection.AUTONOMOUS`,
 `Connection.HOSTED_ANONYMOUS` or `Connection.HOSTED_AGENT`.
 
-### `.zomeCall( dna_handle, zome_name, function_name, args ) -> Promise<any>`
+### `.callZome( dna_handle, zome_name, function_name, args ) -> Promise<any>`
 Call a zome function on the respective DNA instance.
 
 ### `.signIn() -> Promise<boolean>`
