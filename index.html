@@ -14,7 +14,11 @@
 	      await envoy.ready();
 	      window.envoy		= envoy;
 
-	      console.log( await envoy.callZome("holofuel", "transactions", "ledger_state") );
+	      console.log( await envoy.callZome({
+          cell_id: "cellId",
+          zome_name: "transactions",
+          fn_name: "ledger_state"
+        }));
 	  })();
 	</script>
     </body>

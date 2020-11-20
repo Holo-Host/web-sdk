@@ -28,9 +28,11 @@ describe("Javascript API", () => {
 		}
 	    });
 
-	    const response		= await envoy.callZome(
-		"holofuel", "transactions", "ledger_state"
-	    );
+	    const response		= await envoy.callZome({
+        cell_id: "cellId",
+        zome_name: "transactions",
+        fn_name: "ledger_state"
+      });
 
 	    log.debug("Response: %s", response );
 	    const state			= response.Ok;
