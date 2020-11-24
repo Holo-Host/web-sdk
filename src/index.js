@@ -72,13 +72,33 @@ class Connection extends EventEmitter {
     }
 
     async callZome ( ...args ) {
+	if (args.cell_id) {
+		if (args.cell_id[0] instanceof Buffer) {
+			args.cell_id[0] = args.cell_id[0].toString('base64')
+		}
+		if (args.cell_id[1] instanceof Buffer) {
+			args.cell_id[1] = args.cell_id[1].toString('base64')
+		}
+	}
 	const response			= await this.child.call("callZome", ...args );
 	return response;
     }
 
     async appInfo ( ...args ) {
-  const response			= await this.child.call("appInfo", ...args );
-  return response;
+	const response			= await this.child.call("appInfo", ...args );
+	return response;
+    }
+
+    // this call simplifies the case where there is only one dna in the app
+    async callZomeWithAppId (appId, zomeName, fnName, payload) {
+	const appInfo = await this.appInfo({ app_id: appId })
+	const cellId = appInfo.cell_data[0][0]
+	return this.callZome({
+		cell_id: cellId,
+		zome_name: zomeName,
+		fn_name: fnName,
+		payload
+	})
     }
 
     async signUp () {
