@@ -29,7 +29,7 @@ describe("Javascript API", () => {
 	    });
 
 	    const response		= await envoy.zomeCall(
-		"holofuel", "transactions", "ledger_statezzz"
+		"holofuel", "transactions", "ledger_state"
 	    );
 
 	    log.debug("Response: %s", response );
