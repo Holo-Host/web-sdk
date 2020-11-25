@@ -1,6 +1,6 @@
 {
   "name": "@holo-host/web-sdk",
-  "version": "0.1.3",
+  "version": "0.2.3",
   "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
   "main": "src/index.js",
   "module": "src/index.js",

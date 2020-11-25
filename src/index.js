@@ -77,6 +77,11 @@ class Connection extends EventEmitter {
 	return response;
     }
 
+    async appInfo ( ...args ) {
+      const response			= await this.child.call("appInfo", ...args );
+      return response;
+    }
+
     async signUp () {
 	this.iframe.style.display	= "block";
 	const result			= await this.child.call("signUp");

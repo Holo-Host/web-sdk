@@ -12,7 +12,7 @@ const { Connection }			= require("../../src/index.js");
 
 describe("Javascript API", () => {
 
-    it("should call zome function", async () => {
+    it("should call COMB.call", async () => {
 	try {
 	    const envoy			= new Connection();
 	    await envoy.ready();
@@ -29,7 +29,7 @@ describe("Javascript API", () => {
 	    });
 
 	    const response		= await envoy.zomeCall(
-		"holofuel", "transactions", "ledger_state"
+		"holofuel", "transactions", "ledger_statezzz"
 	    );
 
 	    log.debug("Response: %s", response );
@@ -42,5 +42,4 @@ describe("Javascript API", () => {
 	} finally {
 	}
     });
-
 });
