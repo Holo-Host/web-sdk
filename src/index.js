@@ -72,8 +72,13 @@ class Connection extends EventEmitter {
     }
 
     async zomeCall ( ...args ) {
-	let result;
 	const response			= await this.child.call("zomeCall", ...args );
+	return response;
+    }
+
+
+    async appInfo ( ...args ) {
+	const response			= await this.child.call("appInfo", ...args );
 	return response;
     }
 
