@@ -49,6 +49,9 @@ Returns the context indicator which will match `Connection.AUTONOMOUS`,
 ### `.zomeCall( dna_handle, zome_name, function_name, args ) -> Promise<any>`
 Call a zome function on the respective DNA instance.
 
+### `.appInfo( installed_app_id ) -> Promise<any>`
+Calls appInfo on the conductor with the provided id.
+
 ### `.signIn() -> Promise<boolean>`
 Trigger Chaperone's sign-in prompt.
 
