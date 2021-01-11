@@ -10,7 +10,14 @@ const mock_comb				= require("../mock_comb.js");
 const { Connection }			= require("../../src/index.js");
 
 
+
 describe("Javascript API", () => {
+
+    it("ready should throw an error when COMB throws an error", () => {
+	const envoy			= new Connection();
+
+    })
+
 
     it("should call zome function", async () => {
 	const envoy			= new Connection();
@@ -59,5 +66,35 @@ describe("Javascript API", () => {
 	expect( response		).to.be.an("object");
 	expect( response 		).to.equal(expectedResponse)
     });
+
+    describe("ready", () => {
+	let globalComb;
+	const expectedError = 'timeout error';
+
+	before(() => {
+	    globalComb = global.COMB;
+	    global.COMB = {
+		connect () {
+		    throw new Error(expectedError);
+		}
+	    }
+	})
+
+	after(() => {
+	    global.COMB = globalComb;
+	})
+	
+	it("throws an error from COMB", async () => {
+	    let thrownMessage;
+   	    const envoy			= new Connection();
+	    try {
+		await envoy.ready();
+	    } catch (e)	{
+		thrownMessage = e.message;
+	    }
+	    expect( thrownMessage 	).to.equal(expectedError);
+	})
+    });
+
 
 });

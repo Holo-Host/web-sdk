@@ -16,11 +16,12 @@ class Connection extends EventEmitter {
 
 	this.waiting			= [];
 	this.child			= null;
-	this.connect();
+	this.connecting = this.connect();
     }
 
     ready ( timeout ) {
 	return new Promise((f,r) => {
+	    this.connecting.catch(r)
 	    this.child !== null
 		? f()
 		: this.waiting.push(f);
