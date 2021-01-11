@@ -60,4 +60,33 @@ describe("Javascript API", () => {
 	expect( response 		).to.equal(expectedResponse)
     });
 
+    describe("ready", () => {
+	let globalComb;
+	const expectedError = 'timeout error';
+
+	before(() => {
+	    globalComb = global.COMB;
+	    global.COMB = {
+		connect () {
+		    throw new Error(expectedError);
+		}
+	    }
+	})
+
+	after(() => {
+	    global.COMB = globalComb;
+	})
+	
+	it("throws an error from COMB", async () => {
+	    let thrownMessage;
+   	    const envoy			= new Connection();
+	    try {
+		await envoy.ready();
+	    } catch (e)	{
+		thrownMessage = e.message;
+	    }
+	    expect( thrownMessage 	).to.equal(expectedError);
+	})
+    });
+
 });
