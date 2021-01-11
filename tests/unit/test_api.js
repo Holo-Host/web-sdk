@@ -10,7 +10,6 @@ const mock_comb				= require("../mock_comb.js");
 const { Connection }			= require("../../src/index.js");
 
 
-
 describe("Javascript API", () => {
 
     it("should call zome function", async () => {
@@ -89,6 +88,5 @@ describe("Javascript API", () => {
 	    expect( thrownMessage 	).to.equal(expectedError);
 	})
     });
-
 
 });
