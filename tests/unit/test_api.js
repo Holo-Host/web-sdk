@@ -13,12 +13,6 @@ const { Connection }			= require("../../src/index.js");
 
 describe("Javascript API", () => {
 
-    it("ready should throw an error when COMB throws an error", () => {
-	const envoy			= new Connection();
-
-    })
-
-
     it("should call zome function", async () => {
 	const envoy			= new Connection();
 	await envoy.ready();
