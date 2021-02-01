@@ -15,8 +15,8 @@ class Connection extends EventEmitter {
 
     this.waiting = [];
     this.child = null;
-    this.connecting = this.connect();
     this.signalCb = signalCb
+    this.connecting = this.connect();
   }
 
   ready() {
