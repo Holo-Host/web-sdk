@@ -5,10 +5,9 @@ if (!TESTING)
 
 const { EventEmitter } = require('events');
 
-
 class Connection extends EventEmitter {
 
-  constructor(url) {
+  constructor(url, signalCb) {
     super();
 
     const hostname = window.location.hostname;
@@ -16,24 +15,25 @@ class Connection extends EventEmitter {
 
     this.waiting = [];
     this.child = null;
+    this.signalCb = signalCb
     this.connecting = this.connect();
   }
 
-  ready(timeout) {
-    return new Promise((f, r) => {
-      this.connecting.catch(r)
+  ready() {
+    return new Promise((resolve, reject) => {
+      this.connecting.catch(reject)
       this.child !== null
-        ? f()
-        : this.waiting.push(f);
+        ? resolve()
+        : this.waiting.push(resolve);
     });
   }
 
   async connect() {
     try {
-      this.child = await COMB.connect(this.chaperone_url, 5000);
+      this.child = await COMB.connect(this.chaperone_url, 5000, this.signalCb);
     } catch (err) {
       if (err.name === "TimeoutError")
-        console.log("Chaperone did not load properly.  Is it running?");
+        console.log("Chaperone did not load properly. Is it running?");
       throw err;
     }
 
@@ -76,7 +76,6 @@ class Connection extends EventEmitter {
     const response = await this.child.call("zomeCall", ...args);
     return response;
   }
-
 
   async appInfo(...args) {
     const response = await this.child.call("appInfo", ...args);

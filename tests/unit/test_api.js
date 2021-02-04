@@ -11,7 +11,6 @@ const { Connection } = require("../../src/index.js");
 
 
 describe("Javascript API", () => {
-
   it("should call zome function", async () => {
     const envoy = new Connection();
     await envoy.ready();
@@ -59,6 +58,40 @@ describe("Javascript API", () => {
     expect(response).to.be.an("object");
     expect(response).to.equal(expectedResponse)
   });
+
+  describe('constructor', () => {
+    let globalComb;
+
+    before(() => {
+      globalComb = global.COMB;
+      global.COMB = {
+        connect(_, __, signalCb) {
+          global.COMB.signalCb = signalCb
+        }
+      }
+    })
+
+    after(() => {
+      global.COMB = globalComb;
+    })
+
+    it("should pass its signalCb to COMB", async () => {
+      let signalCbCalledWith
+      const signalCb = signal => {
+        signalCbCalledWith = signal
+      }
+  
+      const envoy = new Connection('', signalCb);
+      await envoy.ready();
+
+      await envoy.connect();
+  
+      const signal = 'Hello web-sdk'
+      global.COMB.signalCb(signal)
+  
+      expect(signalCbCalledWith).to.equal(signal)
+    })
+  })
 
   describe("ready", () => {
     let globalComb;

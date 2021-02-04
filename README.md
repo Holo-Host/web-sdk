@@ -34,10 +34,17 @@ const { Connection } = require('@holo-host/web-sdk');
 const envoy = new Connection();
 ```
 
-### `.ready( timeout ) -> Promise<null>`
-Wait for the connection to be ready with optional timeout.
+### `new Connection( url, signalCb ) -> Connection`
+Returns a connection object. `url` is the url of [chaperone](https://github.com/Holo-Host/chaperone), and is used to specify a development chaperone server. Normally should just be null. `signalCb` is a callback that is called whenever the conductor sends a signal to your app. The callback is passed a single argument, the signal object.
 
-Asynchronous short-hand for connection event with support for timeout.
+```javascript
+const envoy = new Connection(null, signal => console.log('Got signal', signal))
+```
+
+### `.ready( ) -> Promise<null>`
+Wait for the connection to be ready.
+
+Asynchronous short-hand for connection event.
 ```javascript
 .on('connected', () => { fulfill(); });
 ```
