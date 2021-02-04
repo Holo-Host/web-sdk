@@ -1,6 +1,6 @@
 
 global.window = {
-    "location": {
-	"hostname": "https://localhost",
-    }
+  "location": {
+    "hostname": "https://localhost",
+  }
 }
