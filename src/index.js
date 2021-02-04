@@ -33,7 +33,7 @@ class Connection extends EventEmitter {
       this.child = await COMB.connect(this.chaperone_url, 5000, this.signalCb);
     } catch (err) {
       if (err.name === "TimeoutError")
-        console.log("Chaperone did not load properly.  Is it running?");
+        console.log("Chaperone did not load properly. Is it running?");
       throw err;
     }
 
@@ -76,7 +76,6 @@ class Connection extends EventEmitter {
     const response = await this.child.call("zomeCall", ...args);
     return response;
   }
-
 
   async appInfo(...args) {
     const response = await this.child.call("appInfo", ...args);
