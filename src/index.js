@@ -4,6 +4,16 @@ if (!TESTING)
   COMB = require('@holo-host/comb').COMB;
 
 const { EventEmitter } = require('events');
+const { parse } = require("@holo-host/data-translator");
+
+function unpackData (message) {
+  const payload = parse(message).value()
+  if (payload instanceof Error) {
+    throw payload
+  }
+
+  return payload
+}
 
 class Connection extends EventEmitter {
 
@@ -74,30 +84,30 @@ class Connection extends EventEmitter {
 
   async zomeCall(...args) {
     const response = await this.child.call("zomeCall", ...args);
-    return response;
+    return unpackData(response);
   }
 
   async appInfo(...args) {
     const response = await this.child.call("appInfo", ...args);
-    return response;
+    return unpackData(response);
   }
 
   async signUp() {
     this.iframe.style.display = "block";
     const result = await this.child.call("signUp");
     this.iframe.style.display = "none";
-    return result;
+    return unpackData(result);
   }
 
   async signIn() {
     this.iframe.style.display = "block";
     const result = await this.child.call("signIn");
     this.iframe.style.display = "none";
-    return result;
+    return unpackData(result);
   }
 
   async signOut() {
-    return await this.child.run("signOut");
+    return unpackData(await this.child.run("signOut"));
   }
 }
 
