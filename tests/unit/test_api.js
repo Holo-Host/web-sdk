@@ -1,4 +1,5 @@
 const path = require('path');
+const { Package } = require("@holo-host/data-translator");
 const log = require('@whi/stdlog')(path.basename(__filename), {
   level: process.env.LOG_LEVEL || 'fatal',
 });
@@ -9,13 +10,16 @@ require("../mock_browser.js");
 const mock_comb = require("../mock_comb.js");
 const { Connection } = require("../../src/index.js");
 
+function packData (payload) {
+  return new Package(payload).toString()
+}
 
 describe("Javascript API", () => {
   it("should call zome function", async () => {
     const envoy = new Connection();
     await envoy.ready();
 
-    mock_comb.nextResponse({
+    mock_comb.nextResponse(packData({
       "Ok": {
         "balance": "0",
         "credit": "0",
@@ -24,7 +28,7 @@ describe("Javascript API", () => {
         "fees": "0",
         "available": "0",
       }
-    });
+    }));
 
     const response = await envoy.zomeCall(
       "holofuel", "transactions", "ledger_state"
@@ -49,14 +53,14 @@ describe("Javascript API", () => {
       cell_data: [[['hash', 'pubkey'], 'dna_alias']]
     };
 
-    mock_comb.nextResponse(expectedResponse);
+    mock_comb.nextResponse(packData(expectedResponse));
 
     const response = await envoy.appInfo(installed_app_id);
 
     log.debug("Response: %s", response);
 
     expect(response).to.be.an("object");
-    expect(response).to.equal(expectedResponse)
+    expect(response).to.deep.equal(expectedResponse)
   });
 
   describe('constructor', () => {

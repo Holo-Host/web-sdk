@@ -26,7 +26,8 @@
   ],
   "dependencies": {
     "@holo-host/chaperone": "^0.2.2",
-    "@holo-host/comb": "^0.2.0"
+    "@holo-host/comb": "^0.2.0",
+    "@holo-host/data-translator": "^0.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
