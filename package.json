@@ -1,6 +1,6 @@
 {
   "name": "@holo-host/web-sdk",
-  "version": "0.2.2",
+  "version": "0.3.1",
   "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
   "main": "src/index.js",
   "module": "src/index.js",
@@ -26,7 +26,7 @@
   ],
   "dependencies": {
     "@holo-host/chaperone": "^0.2.2",
-    "@holo-host/comb": "^0.1.6"
+    "@holo-host/comb": "^0.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
