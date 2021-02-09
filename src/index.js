@@ -7,7 +7,7 @@ const { EventEmitter } = require('events');
 
 class Connection extends EventEmitter {
 
-  constructor(url, signalCb) {
+  constructor(url, signalCb, branding) {
     super();
 
     const hostname = window.location.hostname;
@@ -16,6 +16,7 @@ class Connection extends EventEmitter {
     this.waiting = [];
     this.child = null;
     this.signalCb = signalCb
+    this.branding = branding
     this.connecting = this.connect();
   }
 
@@ -66,6 +67,9 @@ class Connection extends EventEmitter {
     style.position = "absolute";
     style.top = "0";
     style.left = "0";
+    if (branding !== undefined) {
+      await this.child.call("setBranding", branding.logo_url, branding.app_name)
+    }
   }
 
   async context() {
