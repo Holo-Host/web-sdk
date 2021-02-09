@@ -70,8 +70,8 @@ class Connection extends EventEmitter {
     if (this.branding !== undefined) {
       this.once("connected", () => {
         console.log("calling setBranding");
-        this.child.call("setBranding", branding.logo_url, branding.app_name);
-      }) 
+        this.child.call("setBranding", this.branding.logo_url, this.branding.app_name);
+      })
     }
   }
 
