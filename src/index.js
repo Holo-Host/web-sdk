@@ -68,7 +68,7 @@ class Connection extends EventEmitter {
     style.top = "0";
     style.left = "0";
     if (this.branding !== undefined) {
-      await this.child.call("setBranding", branding.logo_url, branding.app_name)
+      this.once("disconnected", () => this.child.call("setBranding", branding.logo_url, branding.app_name)) 
     }
   }
 
