@@ -69,8 +69,13 @@ class Connection extends EventEmitter {
     style.left = "0";
     if (this.branding !== undefined) {
       this.once("connected", () => {
+        const makeUrlAbsolute = (url) => {
+          const link = document.createElement("a");
+          link.href = url;
+          return (link.protocol + "//" + link.host + link.pathname)
+        }
         console.log("calling setBranding");
-        this.child.call("setBranding", this.branding.logo_url, this.branding.app_name);
+        this.child.call("setBranding", makeUrlAbsolute(this.branding.logo_url), this.branding.app_name);
       })
     }
   }
