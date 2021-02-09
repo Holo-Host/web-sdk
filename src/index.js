@@ -67,7 +67,7 @@ class Connection extends EventEmitter {
     style.position = "absolute";
     style.top = "0";
     style.left = "0";
-    if (branding !== undefined) {
+    if (this.branding !== undefined) {
       await this.child.call("setBranding", branding.logo_url, branding.app_name)
     }
   }
