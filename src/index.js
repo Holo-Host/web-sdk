@@ -5,6 +5,23 @@ if (!TESTING)
 
 const { EventEmitter } = require('events');
 
+function appendQueryParameter (url, name, value) {
+  if (!url.includes("?")) {
+    url += "?"
+  } else {
+    url += "&"
+  }
+  const urlEscaper = new URLSearchParams()
+  urlEscaper.set(name, value)
+  url += urlEscaper.toString()
+  return url
+}
+function makeUrlAbsolute (url) {
+  const link = document.createElement("a");
+  link.href = url;
+  return (link.protocol + "//" + link.host + link.pathname)
+}
+
 class Connection extends EventEmitter {
 
   constructor(url, signalCb, branding) {
@@ -12,11 +29,15 @@ class Connection extends EventEmitter {
 
     const hostname = window.location.hostname;
     this.chaperone_url = url || `http://${hostname}:24273`;
+    if (branding !== undefined) {
+      this.chaperone_url = appendQueryParameter(this.chaperone_url, "logo_url", makeUrlAbsolute(branding.logo_url))
+      this.chaperone_url = appendQueryParameter(this.chaperone_url, "app_name", branding.app_name)
+    }
+
 
     this.waiting = [];
     this.child = null;
     this.signalCb = signalCb
-    this.branding = branding
     this.connecting = this.connect();
   }
 
@@ -67,17 +88,6 @@ class Connection extends EventEmitter {
     style.position = "absolute";
     style.top = "0";
     style.left = "0";
-    if (this.branding !== undefined) {
-      this.once("connected", () => {
-        const makeUrlAbsolute = (url) => {
-          const link = document.createElement("a");
-          link.href = url;
-          return (link.protocol + "//" + link.host + link.pathname)
-        }
-        console.log("calling setBranding");
-        this.child.call("setBranding", makeUrlAbsolute(this.branding.logo_url), this.branding.app_name);
-      })
-    }
   }
 
   async context() {
