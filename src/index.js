@@ -88,6 +88,7 @@ class Connection extends EventEmitter {
     style.position = "absolute";
     style.top = "0";
     style.left = "0";
+    style.display = "none";
   }
 
   async context() {
