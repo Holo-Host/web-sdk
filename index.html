@@ -1,20 +1,40 @@
+<!-- Holo Enabled UI Example
+This demos the following:
+ 1. Connecting to WebSDK with signal callback and holo modal customization
+ 2. Issuing an outbound zomeCall through holo hosting infrastructure via WebSDK
+-->
+
 <html>
     <head>
     </head>
     <body>
-	<h1>Web SDK!</h1>
+	<h1>UI with Web SDK!</h1>
 
 	<script type="text/javascript" src="/dist/holo_hosting_web_sdk.js"></script>
 	<script type="text/javascript">
 	  (async () => {
-	      const envoy		= new HoloWebSDK.Connection();
+		  // Note: All params passed to the Connection method are optional (See README for more info.)
+		  const holoWebClient = new HoloWebSDK.Connection('http://localhost:24273', signal => console.log("Signal : ", signal),
+         				  
+		  {
+                logo_url: null,
+                app_name: 'My Holofuel App'
+            }
+          );
 
-	      envoy.on("connected", console.log.bind(console));
+	      holoWebClient.on("connected", console.log.bind(console));
 
-	      await envoy.ready();
-	      window.envoy		= envoy;
+	      await holoWebClient.ready();
+	      window.holoWebClient = holoWebClient;
 
-	      console.log( await envoy.zomeCall("holofuel", "transactions", "ledger_state") );
+		//   Note: We are optionally triggering the signUp() function
+		//   ** UIs can decide when signup trigger is appropriate for their app
+		//   ** agent keys will be retreived in chaperone and sent with outbound zomecall for validation
+	      await holoWebClient.signUp();
+		//   Optionally choose when to signIn instead:
+		//   await holoWebClient.signIn();
+
+		console.log( await holoWebClient.zomeCall("elemental-chat", "chat", "list_channels", { category: "General" }));
 	  })();
 	</script>
     </body>

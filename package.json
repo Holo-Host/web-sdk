@@ -8,7 +8,13 @@
     "build": "npm run bundle",
     "bundle": "npx webpack --mode production --output-filename holo_hosting_web_sdk.js",
     "test": "npm run test-unit",
-    "test-unit": "mocha ./tests/unit/"
+    "test-unit": "mocha ./tests/unit/",
+    "start-static-chaperone": "cd chaperone/dist && npx simplehttpserver --mime.application/wasm,wasm .",
+    "stop-static-chaperone": "kill -9 $(lsof -t -i:8000)",
+    "start-chaperone": "npx chaperone-server --config ./chaperone-dev-server/chaperone.json",
+    "stop-chaperone": "kill -9 $(lsof -t -i:24273)",
+    "start-websdk": "python -m SimpleHTTPServer 8080",
+    "stop-websdk": "kill -9 $(lsof -t -i:8080)"
   },
   "author": "Holo Ltd.",
   "contributors": [
@@ -25,10 +31,11 @@
     "src/*"
   ],
   "dependencies": {
-    "@holo-host/chaperone": "^0.2.2",
+    "@holo-host/chaperone": "Holo-Host/chaperone#customizable-login-branding",
     "@holo-host/comb": "^0.2.0"
   },
   "devDependencies": {
+    "@holo-host/mock-conductor": "^0.3.0",
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
     "@types/node": "^12.11.1",
