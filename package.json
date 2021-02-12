@@ -31,7 +31,7 @@
     "src/*"
   ],
   "dependencies": {
-    "@holo-host/chaperone": "Holo-Host/chaperone#customizable-login-branding",
+    "@holo-host/chaperone": "Holo-Host/chaperone#B-03916-first-time-login",
     "@holo-host/comb": "^0.2.0"
   },
   "devDependencies": {

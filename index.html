@@ -17,8 +17,10 @@ This demos the following:
 		  const holoWebClient = new HoloWebSDK.Connection('http://localhost:24273', signal => console.log("Signal : ", signal),
          				  
 		  {
+			   // NB: If use'Elemental Chat' as app_name, the info link is hard-coded to requested value by ops
+				app_name: 'My Holochain App',
 				logo_url: './assets/holochain.png',
-                app_name: 'My Holofuel App'
+				info_link: 'https://holo.host'
             }
           );
 

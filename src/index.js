@@ -29,11 +29,15 @@ class Connection extends EventEmitter {
 
     const hostname = window.location.hostname;
     this.chaperone_url = url || `http://${hostname}:24273`;
-    if (branding !== undefined) {
-      this.chaperone_url = appendQueryParameter(this.chaperone_url, "logo_url", makeUrlAbsolute(branding.logo_url))
+    if (!!branding.app_name) {
       this.chaperone_url = appendQueryParameter(this.chaperone_url, "app_name", branding.app_name)
     }
-
+    if (!!branding.logo_url) {
+      this.chaperone_url = appendQueryParameter(this.chaperone_url, "logo_url", makeUrlAbsolute(branding.logo_url))
+    }
+    if (!!branding.info_link) {
+      this.chaperone_url = appendQueryParameter(this.chaperone_url, "info_link", branding.info_link)
+    }
 
     this.waiting = [];
     this.child = null;
