@@ -33,7 +33,7 @@ class Connection extends EventEmitter {
       if (branding.logo_url !== undefined) {
         this.chaperone_url = appendQueryParameter(this.chaperone_url, "logo_url", makeUrlAbsolute(branding.logo_url))
       }
-      if (branding.chaperone_url !== undefined) {
+      if (branding.app_name !== undefined) {
         this.chaperone_url = appendQueryParameter(this.chaperone_url, "app_name", branding.app_name)
       }
     }
