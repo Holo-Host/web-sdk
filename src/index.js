@@ -5,21 +5,8 @@ if (!TESTING)
 
 const { EventEmitter } = require('events');
 
-function appendQueryParameter (url, name, value) {
-  if (!url.includes("?")) {
-    url += "?"
-  } else {
-    url += "&"
-  }
-  const urlEscaper = new URLSearchParams()
-  urlEscaper.set(name, value)
-  url += urlEscaper.toString()
-  return url
-}
 function makeUrlAbsolute (url) {
-  const link = document.createElement("a");
-  link.href = url;
-  return (link.protocol + "//" + link.host + link.pathname)
+  return new URL(url, window.location).href
 }
 
 class Connection extends EventEmitter {
@@ -28,13 +15,13 @@ class Connection extends EventEmitter {
     super();
 
     const hostname = window.location.hostname;
-    this.chaperone_url = url || `http://${hostname}:24273`;
+    this.chaperone_url = new URL(url || `http://${hostname}:24273`);
     if (branding !== undefined) {
       if (branding.logo_url !== undefined) {
-        this.chaperone_url = appendQueryParameter(this.chaperone_url, "logo_url", makeUrlAbsolute(branding.logo_url))
+        this.chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(branding.logo_url))
       }
       if (branding.app_name !== undefined) {
-        this.chaperone_url = appendQueryParameter(this.chaperone_url, "app_name", branding.app_name)
+        this.chaperone_url.searchParams.set("app_name", branding.app_name)
       }
     }
 
@@ -56,7 +43,7 @@ class Connection extends EventEmitter {
 
   async connect() {
     try {
-      this.child = await COMB.connect(this.chaperone_url, 5000, this.signalCb);
+      this.child = await COMB.connect(this.chaperone_url.href, 5000, this.signalCb);
     } catch (err) {
       if (err.name === "TimeoutError")
         console.log("Chaperone did not load properly. Is it running?");
