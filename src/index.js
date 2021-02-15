@@ -5,13 +5,26 @@ if (!TESTING)
 
 const { EventEmitter } = require('events');
 
+function makeUrlAbsolute (url) {
+  return new URL(url, window.location).href
+}
+
 class Connection extends EventEmitter {
 
-  constructor(url, signalCb) {
+  constructor(url, signalCb, branding) {
     super();
 
     const hostname = window.location.hostname;
-    this.chaperone_url = url || `http://${hostname}:24273`;
+    this.chaperone_url = new URL(url || `http://${hostname}:24273`);
+    if (branding !== undefined) {
+      if (branding.logo_url !== undefined) {
+        this.chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(branding.logo_url))
+      }
+      if (branding.app_name !== undefined) {
+        this.chaperone_url.searchParams.set("app_name", branding.app_name)
+      }
+    }
+
 
     this.waiting = [];
     this.child = null;
@@ -30,7 +43,7 @@ class Connection extends EventEmitter {
 
   async connect() {
     try {
-      this.child = await COMB.connect(this.chaperone_url, 5000, this.signalCb);
+      this.child = await COMB.connect(this.chaperone_url.href, 5000, this.signalCb);
     } catch (err) {
       if (err.name === "TimeoutError")
         console.log("Chaperone did not load properly. Is it running?");
@@ -66,6 +79,7 @@ class Connection extends EventEmitter {
     style.position = "absolute";
     style.top = "0";
     style.left = "0";
+    style.display = "none";
   }
 
   async context() {
