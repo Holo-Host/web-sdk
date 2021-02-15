@@ -23,8 +23,11 @@ class Connection extends EventEmitter {
       if (branding.app_name !== undefined) {
         this.chaperone_url.searchParams.set("app_name", branding.app_name)
       }
-    }
 
+      if (branding.info_link !== undefined) {
+        this.chaperone_url.searchParams.set("info_link", branding.info_link)
+      }
+    }
 
     this.waiting = [];
     this.child = null;

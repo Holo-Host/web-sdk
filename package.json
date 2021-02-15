@@ -25,7 +25,7 @@
     "src/*"
   ],
   "dependencies": {
-    "@holo-host/chaperone": "^0.2.2",
+    "@holo-host/chaperone": "Holo-Host/chaperone#B-03916-first-time-login",
     "@holo-host/comb": "^0.2.0"
   },
   "devDependencies": {
