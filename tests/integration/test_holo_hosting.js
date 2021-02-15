@@ -97,7 +97,8 @@ describe("Start Mock Conductor with Chaperone Server (HCC Mode)", () => {
         const holoWebClient = new HoloWebSDK.Connection('http://localhost:24273', signal => console.log("Signal : ", signal),
           {
               logo_url: '../assets/holochain.png',
-              app_name: 'Test Holofuel App'
+              app_name: 'Test Holofuel App',
+              info_link: 'https://holo.host'
           }
         );
         console.log(" ----------------> 2");
@@ -144,6 +145,9 @@ describe("Start Mock Conductor with Chaperone Server (HCC Mode)", () => {
           await chaperone_modal.click(passwordConfirmInput);
           await chaperone_modal.type(passwordConfirmInput, agentPassword);
           expect(passwordConfirmInput, agentPassword);
+
+          const submitButton = await chaperone_modal.waitForSelector('.submit-button');
+          await chaperone_modal.click(submitButton);
         } catch (error) {
           console.log(typeof err.stack, err.stack.toString());
           throw err
