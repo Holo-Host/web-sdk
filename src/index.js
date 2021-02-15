@@ -17,14 +17,14 @@ class Connection extends EventEmitter {
     const hostname = window.location.hostname;
     this.chaperone_url = new URL(url || `http://${hostname}:24273`);
     if (branding !== undefined) {
-      if (branding.logo_url !== undefined) {
+      if (!!branding.logo_url) {
         this.chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(branding.logo_url))
       }
-      if (branding.app_name !== undefined) {
+      if (!!branding.app_name) {
         this.chaperone_url.searchParams.set("app_name", branding.app_name)
       }
 
-      if (branding.info_link !== undefined) {
+      if (!!branding.info_link) {
         this.chaperone_url.searchParams.set("info_link", branding.info_link)
       }
     }
