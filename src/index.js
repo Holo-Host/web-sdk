@@ -1,3 +1,5 @@
+const msgpack = require('tiny-msgpack');
+
 const TESTING = global.COMB !== undefined;
 
 if (!TESTING)
@@ -92,7 +94,8 @@ class Connection extends EventEmitter {
   }
 
   async zomeCall(...args) {
-    const response = await this.child.call("zomeCall", ...args);
+    const newArgs = { ...args, payload: msgpack.encode(args)}
+    const response = await this.child.call("zomeCall", ...newArgs);
     return response;
   }
 
