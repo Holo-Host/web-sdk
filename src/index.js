@@ -95,8 +95,9 @@ class Connection extends EventEmitter {
 
   async zomeCall(...args) {
     let newArgs = args
-    if(!!args.payload){
-      newArgs = { ...args, payload: msgpack.encode(args.payload)}
+    console.log('Args:', newArgs);
+    if(!!args[4]){
+      newArgs = { ...args, payload: msgpack.encode(args[4])}
     }
     const response = await this.child.call("zomeCall", ...newArgs);
     return response;
