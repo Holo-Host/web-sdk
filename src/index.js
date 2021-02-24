@@ -93,12 +93,12 @@ class Connection extends EventEmitter {
     return Connection.HOSTED_ANONYMOUS;
   }
 
-  async zomeCall(...args) {
-    let newArgs = args
-    if(!!args[3]){
-      newArgs = { ...args, payload: msgpack.encode(args[3])}
+  async zomeCall(dnaAlias, zomeName, fnName, payload) {
+    let newPayload = payload
+    if(!!payload){
+      newPayload = msgpack.encode(payload)
     }
-    const response = await this.child.call("zomeCall", ...newArgs);
+    const response = await this.child.call("zomeCall", dnaAlias, zomeName, fnName, newPayload);
     return response;
   }
 
