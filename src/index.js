@@ -1,5 +1,4 @@
 const msgpack = require('tiny-msgpack');
-const { Codec } = require('@holo-host/cryptolib');
 
 const TESTING = global.COMB !== undefined;
 
@@ -97,7 +96,7 @@ class Connection extends EventEmitter {
   async zomeCall(dnaAlias, zomeName, fnName, payload) {
     let newPayload = payload
     if(!!payload){
-      newPayload = Codec.Digest.encode(msgpack.encode(payload))
+      newPayload = Buffer.from(msgpack.encode(payload)).toString('base64')
     }
     const response = await this.child.call("zomeCall", dnaAlias, zomeName, fnName, newPayload);
     return response;
