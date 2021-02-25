@@ -27,6 +27,7 @@
   "dependencies": {
     "@holo-host/chaperone": "1.2.1",
     "@holo-host/comb": "^0.2.0",
+    "@holo-host/cryptolib": "^0.3.0",
     "tiny-msgpack": "^1.0.2"
   },
   "devDependencies": {
