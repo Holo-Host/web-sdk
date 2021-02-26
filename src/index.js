@@ -96,7 +96,7 @@ class Connection extends EventEmitter {
   async zomeCall(dnaAlias, zomeName, fnName, payload) {
     let newPayload = payload
     if(!!payload){
-      newPayload = msgpack.encode(payload)
+      newPayload = Buffer.from(msgpack.encode(payload)).toString('base64')
     }
     const response = await this.child.call("zomeCall", dnaAlias, zomeName, fnName, newPayload);
     return response;
