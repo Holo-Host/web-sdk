@@ -93,7 +93,6 @@ describe("Start Mock Conductor with Chaperone Server (HCC Mode)", () => {
       await page.exposeFunction('expect', (actualValue, expectedValue) => expect(actualValue).to.equal(expectedValue));
 
       response = await page.evaluate(async function () {
-        console.log(" ----------------> 1");
         const holoWebClient = new HoloWebSDK.Connection('http://localhost:24273', signal => console.log("Signal : ", signal),
           {
               logo_url: '../assets/holochain.png',
@@ -101,21 +100,17 @@ describe("Start Mock Conductor with Chaperone Server (HCC Mode)", () => {
               info_link: 'https://holo.host'
           }
         );
-        console.log(" ----------------> 2");
 
 	      holoWebClient.on("connected", console.log.bind(console));
 	      await holoWebClient.ready();
-        console.log(" ----------------> 3");
 
 	      window.holoWebClient = holoWebClient;
-        console.log(" ----------------> 4");
-
+        console.log("PICK UP TESTING WORK HERE...");
+        // NOTE: The below is just a rough sketch of what to do... not tested.
 	      await holoWebClient.signUp();
-        console.log(" ----------------> 5");
-        console.log("Called sign-up...");
 
         const chaperone_modal = frames.find(f => f.url() === 'http://localhost:24273/?logo_url=http%3A%2F%2Flocalhost%3A8080%2Fassets%2Fholochain.png&app_name=My+Holofuel+App');
-        await page.waitForNavigation();
+        // waitForNavigation()
 
         expect(!!chaperone_modal, true);
 
@@ -155,7 +150,8 @@ describe("Start Mock Conductor with Chaperone Server (HCC Mode)", () => {
 
         // zomecall test - trigger outbound zome call to chaperone
         try {
-          // Note: we are calling the Chaperone in HCC mode and using the mock conductor
+          // Note: In this test we are calling the Chaperone in HCC mode and using the mock conductor
+          // (We should prob write an e2e test using develop mode and use pupeeteer to test the zome call through chaperone/envoy)
           const callZomeData = {
             cell_id: MOCK_CELL_ID,
             zome_name: "zome",
