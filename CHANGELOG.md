@@ -4,6 +4,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2021-03-02
+### Added
+- added signals.
+- added branding field to configuring the branding shown on the log in/sign-up screen
+
 ## [0.3.1] - 2021-02-04
 ### Fixed
 - Bump COMB version.
