@@ -34,11 +34,25 @@ const { Connection } = require('@holo-host/web-sdk');
 const envoy = new Connection();
 ```
 
-### `new Connection( url, signalCb ) -> Connection`
-Returns a connection object. `url` is the url of [chaperone](https://github.com/Holo-Host/chaperone), and is used to specify a development chaperone server. Normally should just be null. `signalCb` is a callback that is called whenever the conductor sends a signal to your app. The callback is passed a single argument, the signal object.
+### `new Connection( url, signalCb, branding ) -> Connection`
+Returns a connection object.
+- `url` is the url of [chaperone](https://github.com/Holo-Host/chaperone), and is used to specify a development chaperone server. Normally should just be `null`.
+- `signalCb` is a callback that is called whenever the conductor sends a signal to your app. The callback is passed a single argument, the signal object.
+- `branding` is an object with the following fields each used for configuring the branding shown on the log in/sign-up screen:
+    - `app_name` (required)
+    - `logo_url` (optional)
+    - `info_link` (optional) shows an info button with the specified link next to the Joining Code field
+    - `publisher_name` (optional) displays "published by X" underneath the log in/sign-up page header
 
 ```javascript
-const envoy = new Connection(null, signal => console.log('Got signal', signal))
+const envoy = new Connection(
+    null,
+    signal => console.log('Got signal', signal),
+    {
+        logo_url: 'my-logo.png',
+        app_name: 'My App'
+    }
+)
 ```
 
 ### `.ready( ) -> Promise<null>`
