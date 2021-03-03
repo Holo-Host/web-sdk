@@ -1,5 +1,3 @@
-const msgpack = require('tiny-msgpack');
-
 const TESTING = global.COMB !== undefined;
 
 if (!TESTING)
@@ -93,9 +91,8 @@ class Connection extends EventEmitter {
     return Connection.HOSTED_ANONYMOUS;
   }
 
-  async zomeCall(dnaAlias, zomeName, fnName, payload) {
-    const encodedPayload = Buffer.from(msgpack.encode(payload)).toString('base64')
-    const response = await this.child.call("zomeCall", dnaAlias, zomeName, fnName, encodedPayload);
+  async zomeCall(...args) {
+    const response = await this.child.call("zomeCall", ...args);
     return response;
   }
 
