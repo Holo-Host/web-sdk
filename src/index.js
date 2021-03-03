@@ -1,5 +1,3 @@
-const msgpack = require('tiny-msgpack');
-
 const TESTING = global.COMB !== undefined;
 
 if (!TESTING)

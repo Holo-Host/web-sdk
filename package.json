@@ -25,13 +25,12 @@
     "src/*"
   ],
   "dependencies": {
-    "@holo-host/chaperone": "1.2.1",
-    "@holo-host/comb": "^0.2.0",
-    "tiny-msgpack": "^1.0.2"
+    "@holo-host/comb": "^0.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
+    "@holo-host/chaperone": "1.2.1",
     "@types/node": "^12.11.1",
     "@whi/stdlog": "^0.3.0",
     "babel-loader": "^8.1.0",
