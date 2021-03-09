@@ -5,9 +5,9 @@
   "main": "src/index.js",
   "module": "src/index.js",
   "scripts": {
-    "build": "npm run bundle",
-    "bundle": "npx webpack --mode production --output-filename holo_hosting_web_sdk.js",
-    "test": "npm run test-unit",
+    "build": "yarn bundle",
+    "bundle": "yarn webpack --mode production --output-filename holo_hosting_web_sdk.js",
+    "test": "yarn test-unit",
     "test-unit": "mocha ./tests/unit/"
   },
   "author": "Holo Ltd.",
@@ -30,7 +30,7 @@
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
-    "@holo-host/chaperone": "1.3.0",
+    "@holo-host/chaperone": "Holo-Host/chaperone#3d148ce6ecd74ff4e812b7030da53428d1541ef9",
     "@types/node": "^12.11.1",
     "@whi/stdlog": "^0.3.0",
     "babel-loader": "^8.1.0",
