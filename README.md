@@ -73,6 +73,11 @@ Call a zome function on the respective DNA instance.
 ### `.appInfo( installed_app_id ) -> Promise<any>`
 Calls appInfo on the conductor with the provided id.
 
+### `.holoInfo() -> Promise<any>`
+Returns `{
+  url: string
+}`
+
 ### `.signIn() -> Promise<boolean>`
 Trigger Chaperone's sign-in prompt.
 
