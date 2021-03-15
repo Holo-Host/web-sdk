@@ -118,6 +118,10 @@ class Connection extends EventEmitter {
   async signOut() {
     return await this.child.run("signOut");
   }
+
+  async holoInfo() {
+    return await this.child.run("holoInfo");
+  }
 }
 
 Connection.AUTONOMOUS = 1;
