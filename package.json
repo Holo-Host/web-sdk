@@ -4,7 +4,7 @@
   "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
   "main": "src/index.js",
   "module": "src/index.js",
-  "types": "types.d.ts",
+  "types": "src/types.d.ts",
   "scripts": {
     "build": "npm run bundle",
     "bundle": "npx webpack --mode production --output-filename holo_hosting_web_sdk.js",
