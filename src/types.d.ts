@@ -7,12 +7,28 @@ export type Branding = {
   publisher_name?: string;
 };
 
+export type WebSdkEvent =
+  | "signin"
+  | "signup"
+  | "signout"
+  | "canceled"
+  | "connected"
+  | "disconnected";
+
 export declare class Connection {
   constructor(
     chaperone_url: string,
     signalHandler: AppSignalCb,
     branding: Branding
   );
+
+  ready(): Promise<void>;
+  signIn(): Promise<boolean>;
+  signUp(): Promise<boolean>;
+  signOut(): Promise<boolean>;
+  context(): Promise<number>;
+  holoInfo(): Promise<{ url: string }>;
+  on(event: WebSdkEvent, callback: (event: any) => {}): void;
 
   zomeCall(
     dna_handle: string,
