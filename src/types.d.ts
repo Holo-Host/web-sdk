@@ -37,5 +37,5 @@ export declare class Connection {
     payload: any
   ): Promise<any>;
 
-  appInfo(installed_app_info: string): Promise<AppInfoResponse>;
+  appInfo(installed_app_info?: string): Promise<AppInfoResponse>;
 }
