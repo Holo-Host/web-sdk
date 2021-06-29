@@ -17,7 +17,7 @@ export type WebSdkEvent =
 
 export declare class Connection {
   constructor(
-    chaperone_url: string,
+    chaperone_url: string | null,
     signalHandler: AppSignalCb,
     branding: Branding
   );
