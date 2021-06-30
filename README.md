@@ -78,13 +78,17 @@ Returns `{
   url: string
 }`
 
-### `.signIn() -> Promise<boolean>`
+### `.signIn( opts? ) -> Promise<boolean>`
 Trigger Chaperone's sign-in prompt.
+
+If `opts.cancellable`, then the prompt can be exited to remain anonymous. Default = `true`.
 
 > **WARNING:** This will throw an error if the context is `Connection.AUTONOMOUS`.
 
-### `.signUp() -> Promise<boolean>`
+### `.signUp( opts? ) -> Promise<boolean>`
 Trigger Chaperone's sign-up prompt.
+
+If `opts.cancellable`, then the prompt can be exited to remain anonymous. Default = `true`.
 
 > **WARNING:** This will throw an error if the context is `Connection.AUTONOMOUS`.
 

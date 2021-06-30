@@ -85,6 +85,14 @@ class Connection extends EventEmitter {
     style.top = "0";
     style.left = "0";
     style.display = "none";
+
+    window.addEventListener('popstate', (event) => {
+      if (event.state === "_web_sdk_shown") {
+        history.back()
+      } else {
+        this.iframe.style.display = "none"
+      }
+    })
   }
 
   async context() {
@@ -101,17 +109,37 @@ class Connection extends EventEmitter {
     return response;
   }
 
-  async signUp() {
+  async signUp(opts) {
+    const { cancellable = true } = opts || {}
+    if (cancellable) {
+      history.pushState("_web_sdk_shown", "")
+    }
     this.iframe.style.display = "block";
-    const result = await this.child.call("signUp");
-    this.iframe.style.display = "none";
+    const result = await this.child.call("signUp", opts);
+    if (cancellable) {
+      if (history.state === "_web_sdk_shown") {
+        history.back()
+      }
+    } else {
+      this.iframe.style.display = "none";
+    }
     return result;
   }
 
-  async signIn() {
+  async signIn(opts) {
+    const { cancellable = true } = opts || {}
+    if (cancellable) {
+      history.pushState("_web_sdk_shown", "")
+    }
     this.iframe.style.display = "block";
-    const result = await this.child.call("signIn");
-    this.iframe.style.display = "none";
+    const result = await this.child.call("signIn", opts);
+    if (cancellable) {
+      if (history.state === "_web_sdk_shown") {
+        history.back()
+      }
+    } else {
+      this.iframe.style.display = "none";
+    }
     return result;
   }
 
