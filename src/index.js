@@ -16,6 +16,7 @@ class Connection extends EventEmitter {
 
     const hostname = window.location.hostname;
     this.chaperone_url = new URL(url || `http://${hostname}:24273`);
+    this.chaperone_url.searchParams.set("url", window.location.href)
     if (branding !== undefined) {
       if (branding.logo_url !== undefined) {
         this.chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(branding.logo_url))
