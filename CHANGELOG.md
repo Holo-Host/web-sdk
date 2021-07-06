@@ -4,6 +4,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2021-07-06
+
+### Added
+- Option to allow `signIn`/`signUp` to be cancelled and remain anonymous (on by default) [(#39)](https://github.com/Holo-Host/web-sdk/pull/39)
+
 ## [0.5.0] - 2021-03-15
 ### Added
 - `holoInfo` method to get host url from `chaperone` [(#34)][]
