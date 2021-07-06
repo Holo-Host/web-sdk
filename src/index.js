@@ -1,7 +1,7 @@
 const TESTING = global.COMB !== undefined;
 
 if (!TESTING)
-  COMB = require('@holo-host/comb').COMB;
+  window.COMB = require('@holo-host/comb').COMB;
 
 const { EventEmitter } = require('events');
 
