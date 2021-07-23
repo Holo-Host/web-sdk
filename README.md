@@ -63,9 +63,15 @@ Asynchronous short-hand for connection event.
 .on('connected', () => { fulfill(); });
 ```
 
-### `.context() -> Promise<number>`
-Returns the context indicator which will match `Connection.AUTONOMOUS`,
-`Connection.HOSTED_ANONYMOUS` or `Connection.HOSTED_AGENT`.
+### `.agentInfo() -> Promise<object>`
+Returns an object with properties of an agent created in chaperone:
+```
+{
+  anonymous: boolean,
+  agent_id: string, // in multicodec encoding
+  agent_id_base64: string // base64 encoded
+}
+```
 
 ### `.zomeCall( dna_handle, zome_name, function_name, args ) -> Promise<any>`
 Call a zome function on the respective DNA instance.
