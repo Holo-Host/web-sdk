@@ -95,8 +95,9 @@ class Connection extends EventEmitter {
     })
   }
 
-  async context() {
-    return Connection.HOSTED_ANONYMOUS;
+  async agentInfo() {
+    const response = await this.child.call("agentInfo");
+    return response;
   }
 
   async zomeCall(...args) {
