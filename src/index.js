@@ -11,23 +11,27 @@ function makeUrlAbsolute (url) {
 
 class Connection extends EventEmitter {
 
-  constructor(url, signalCb, branding) {
+  constructor(url, signalCb, opts) {
     super();
 
     const hostname = window.location.hostname;
     this.chaperone_url = new URL(url || `http://${hostname}:24273`);
-    if (branding !== undefined) {
-      if (branding.logo_url !== undefined) {
-        this.chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(branding.logo_url))
+    if (opts !== undefined) {
+      if (opts.logo_url !== undefined) {
+        this.chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(opts.logo_url))
       }
-      if (branding.app_name !== undefined) {
-        this.chaperone_url.searchParams.set("app_name", branding.app_name)
+      if (opts.app_name !== undefined) {
+        this.chaperone_url.searchParams.set("app_name", opts.app_name)
       }
-      if (branding.info_link !== undefined) {
-        this.chaperone_url.searchParams.set("info_link", branding.info_link)
+      if (opts.info_link !== undefined) {
+        this.chaperone_url.searchParams.set("info_link", opts.info_link)
       }
-      if (branding.publisher_name !== undefined) {
-        this.chaperone_url.searchParams.set("publisher_name", branding.publisher_name)
+      if (opts.publisher_name !== undefined) {
+        this.chaperone_url.searchParams.set("publisher_name", opts.publisher_name)
+      }
+      if (opts.registration_server !== undefined) {
+        this.chaperone_url.searchParams.set("registration_server_url", makeUrlAbsolute(opts.registration_server.url))
+        this.chaperone_url.searchParams.set("registration_server_role", opts.registration_server.role)
       }
     }
 
