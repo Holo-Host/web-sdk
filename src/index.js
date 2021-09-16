@@ -31,7 +31,7 @@ class Connection extends EventEmitter {
       }
       if (opts.registration_server !== undefined) {
         this.chaperone_url.searchParams.set("registration_server_url", makeUrlAbsolute(opts.registration_server.url))
-        this.chaperone_url.searchParams.set("registration_server_role", opts.registration_server.role)
+        this.chaperone_url.searchParams.set("registration_server_payload", JSON.stringify(opts.registration_server.payload))
       }
     }
 
