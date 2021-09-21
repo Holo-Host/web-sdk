@@ -52,7 +52,7 @@ class Connection extends EventEmitter {
 
   async connect() {
     try {
-      this.child = await COMB.connect(this.chaperone_url.href, 5000, this.signalCb);
+      this.child = await COMB.connect(this.chaperone_url.href, 60000, this.signalCb);
     } catch (err) {
       if (err.name === "TimeoutError")
         console.log("Chaperone did not load properly. Is it running?");
@@ -99,8 +99,9 @@ class Connection extends EventEmitter {
     })
   }
 
-  async context() {
-    return Connection.HOSTED_ANONYMOUS;
+  async agentInfo() {
+    const response = await this.child.call("agentInfo");
+    return response;
   }
 
   async zomeCall(...args) {
