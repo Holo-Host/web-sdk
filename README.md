@@ -34,15 +34,18 @@ const { Connection } = require('@holo-host/web-sdk');
 const envoy = new Connection();
 ```
 
-### `new Connection( url, signalCb, branding ) -> Connection`
+### `new Connection( url, signalCb, opts ) -> Connection`
 Returns a connection object.
 - `url` is the url of [chaperone](https://github.com/Holo-Host/chaperone), and is used to specify a development chaperone server. Normally should just be `null`.
 - `signalCb` is a callback that is called whenever the conductor sends a signal to your app. The callback is passed a single argument, the signal object.
-- `branding` is an object with the following fields each used for configuring the branding shown on the log in/sign-up screen:
+- `opts` is an object with the following fields each used for configuring the log in/sign-up screen:
     - `app_name` (required)
     - `logo_url` (optional)
     - `info_link` (optional) shows an info button with the specified link next to the Joining Code field
     - `publisher_name` (optional) displays "published by X" underneath the log in/sign-up page header
+    - `registration_server` (optional) is an object describing what server to contact in order to translate the Registration Code entered during sign up into a Membrane Proof suitable for Holochain ([Read more](https://github.com/Holo-Host/holo-nixpkgs/tree/develop/overlays/holo-nixpkgs/holo-registration-service))
+        - `url` (required)
+        - `payload` (optional; defaults to `undefined`) is an arbitrary value that will be passed to the registration server as additional information
 
 ```javascript
 const envoy = new Connection(
@@ -63,9 +66,15 @@ Asynchronous short-hand for connection event.
 .on('connected', () => { fulfill(); });
 ```
 
-### `.context() -> Promise<number>`
-Returns the context indicator which will match `Connection.AUTONOMOUS`,
-`Connection.HOSTED_ANONYMOUS` or `Connection.HOSTED_AGENT`.
+### `.agentInfo() -> Promise<object>`
+Returns an object with properties of an agent created in chaperone:
+```
+{
+  anonymous: boolean,
+  agent_id: string, // in multicodec encoding
+  agent_id_base64: string // base64 encoded
+}
+```
 
 ### `.zomeCall( dna_handle, zome_name, function_name, args ) -> Promise<any>`
 Call a zome function on the respective DNA instance.
@@ -78,13 +87,17 @@ Returns `{
   url: string
 }`
 
-### `.signIn() -> Promise<boolean>`
+### `.signIn( opts? ) -> Promise<boolean>`
 Trigger Chaperone's sign-in prompt.
+
+If `opts.cancellable`, then the prompt can be exited to remain anonymous. Default = `true`.
 
 > **WARNING:** This will throw an error if the context is `Connection.AUTONOMOUS`.
 
-### `.signUp() -> Promise<boolean>`
+### `.signUp( opts? ) -> Promise<boolean>`
 Trigger Chaperone's sign-up prompt.
+
+If `opts.cancellable`, then the prompt can be exited to remain anonymous. Default = `true`.
 
 > **WARNING:** This will throw an error if the context is `Connection.AUTONOMOUS`.
 

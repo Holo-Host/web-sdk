@@ -11,23 +11,27 @@ function makeUrlAbsolute (url) {
 
 class Connection extends EventEmitter {
 
-  constructor(url, signalCb, branding) {
+  constructor(url, signalCb, opts) {
     super();
 
     const hostname = window.location.hostname;
     this.chaperone_url = new URL(url || `http://${hostname}:24273`);
-    if (branding !== undefined) {
-      if (branding.logo_url !== undefined) {
-        this.chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(branding.logo_url))
+    if (opts !== undefined) {
+      if (opts.logo_url !== undefined) {
+        this.chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(opts.logo_url))
       }
-      if (branding.app_name !== undefined) {
-        this.chaperone_url.searchParams.set("app_name", branding.app_name)
+      if (opts.app_name !== undefined) {
+        this.chaperone_url.searchParams.set("app_name", opts.app_name)
       }
-      if (branding.info_link !== undefined) {
-        this.chaperone_url.searchParams.set("info_link", branding.info_link)
+      if (opts.info_link !== undefined) {
+        this.chaperone_url.searchParams.set("info_link", opts.info_link)
       }
-      if (branding.publisher_name !== undefined) {
-        this.chaperone_url.searchParams.set("publisher_name", branding.publisher_name)
+      if (opts.publisher_name !== undefined) {
+        this.chaperone_url.searchParams.set("publisher_name", opts.publisher_name)
+      }
+      if (opts.registration_server !== undefined) {
+        this.chaperone_url.searchParams.set("registration_server_url", makeUrlAbsolute(opts.registration_server.url))
+        this.chaperone_url.searchParams.set("registration_server_payload", JSON.stringify(opts.registration_server.payload))
       }
     }
 
@@ -48,7 +52,7 @@ class Connection extends EventEmitter {
 
   async connect() {
     try {
-      this.child = await COMB.connect(this.chaperone_url.href, 5000, this.signalCb);
+      this.child = await COMB.connect(this.chaperone_url.href, 60000, this.signalCb);
     } catch (err) {
       if (err.name === "TimeoutError")
         console.log("Chaperone did not load properly. Is it running?");
@@ -85,10 +89,19 @@ class Connection extends EventEmitter {
     style.top = "0";
     style.left = "0";
     style.display = "none";
+
+    window.addEventListener('popstate', (event) => {
+      if (event.state === "_web_sdk_shown") {
+        history.back()
+      } else {
+        this.iframe.style.display = "none"
+      }
+    })
   }
 
-  async context() {
-    return Connection.HOSTED_ANONYMOUS;
+  async agentInfo() {
+    const response = await this.child.call("agentInfo");
+    return response;
   }
 
   async zomeCall(...args) {
@@ -101,17 +114,37 @@ class Connection extends EventEmitter {
     return response;
   }
 
-  async signUp() {
+  async signUp(opts) {
+    const { cancellable = true } = opts || {}
+    if (cancellable) {
+      history.pushState("_web_sdk_shown", "")
+    }
     this.iframe.style.display = "block";
-    const result = await this.child.call("signUp");
-    this.iframe.style.display = "none";
+    const result = await this.child.call("signUp", opts);
+    if (cancellable) {
+      if (history.state === "_web_sdk_shown") {
+        history.back()
+      }
+    } else {
+      this.iframe.style.display = "none";
+    }
     return result;
   }
 
-  async signIn() {
+  async signIn(opts) {
+    const { cancellable = true } = opts || {}
+    if (cancellable) {
+      history.pushState("_web_sdk_shown", "")
+    }
     this.iframe.style.display = "block";
-    const result = await this.child.call("signIn");
-    this.iframe.style.display = "none";
+    const result = await this.child.call("signIn", opts);
+    if (cancellable) {
+      if (history.state === "_web_sdk_shown") {
+        history.back()
+      }
+    } else {
+      this.iframe.style.display = "none";
+    }
     return result;
   }
 
