@@ -5,6 +5,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2022-02-11
+### Removed
+- Removes `signalCB` param (is replaced with `signal` event)
+
+### Added
+
+- Added option for `anonymous_allowed` among the customized authentication options
+
+- Adds `unrecoverableAgentState` and `signal` to alert types
+
+- Adds `cellData` and `stateDump` calls
+
+### Updated
+- Replaces `connected` and `disconnected` with `available` and `unavailable`
+
+- Updates ready fn to return after `available` event is received, instead of immediately following the ws connection
+
+- Updates return value for auth calls (signIn/signUp/signOut)
+
+- Renames `zomeCall` to `callZome` (to match Holochain Client)
+
+- Relocates connection params when calling connection method from the class constructor
+
+
 ## [0.5.3] - 2021-10-10
 
 ### Added
