@@ -1,4 +1,3 @@
-
 let next_response;
 
 global.COMB = {
@@ -20,5 +19,10 @@ global.COMB = {
 module.exports = {
   nextResponse(value) {
     next_response = value;
+  },
+  triggerEvent(emitter, event, args) {
+    setTimeout(() => {
+      emitter.emit(event, args);
+    }, 0)
   }
 }
