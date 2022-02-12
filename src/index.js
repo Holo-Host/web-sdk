@@ -1,85 +1,66 @@
 const TESTING = global.COMB !== undefined;
-
-if (!TESTING)
+if (!TESTING) {
   COMB = require('@holo-host/comb').COMB;
+}
 
 const { EventEmitter } = require('events');
 
-function makeUrlAbsolute (url) {
+function makeUrlAbsolute(url) {
   return new URL(url, window.location).href
 }
 
-class Connection extends EventEmitter {
+class WebSDKAPI extends EventEmitter {
 
-  constructor(url, signalCb, opts) {
+  constructor() {
     super();
-
-    const hostname = window.location.hostname;
-    this.chaperone_url = new URL(url || `http://${hostname}:24273`);
-    if (opts !== undefined) {
-      if (opts.logo_url !== undefined) {
-        this.chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(opts.logo_url))
-      }
-      if (opts.app_name !== undefined) {
-        this.chaperone_url.searchParams.set("app_name", opts.app_name)
-      }
-      if (opts.info_link !== undefined) {
-        this.chaperone_url.searchParams.set("info_link", opts.info_link)
-      }
-      if (opts.publisher_name !== undefined) {
-        this.chaperone_url.searchParams.set("publisher_name", opts.publisher_name)
-      }
-      if (opts.registration_server !== undefined) {
-        this.chaperone_url.searchParams.set("registration_server_url", makeUrlAbsolute(opts.registration_server.url))
-        this.chaperone_url.searchParams.set("registration_server_payload", JSON.stringify(opts.registration_server.payload))
-      }
-      if (opts.skip_registration !== undefined) {
-        this.chaperone_url.searchParams.set("skip_registration", opts.skip_registration)
-      }
-    }
-
-    this.waiting = [];
     this.child = null;
-    this.signalCb = signalCb
-    this.connecting = this.connect();
+    this.available = null
   }
 
-  ready() {
+  ready = () => {
     return new Promise((resolve, reject) => {
-      this.connecting.catch(reject)
-      this.child !== null
-        ? resolve()
-        : this.waiting.push(resolve);
+      console.log('SETTING this.AVAILABLE')
+      this.available = resolve
     });
   }
 
-  async connect() {
+  connect = async ({ chaperoneUrl, authFormCustomization } = {}) => {
+    const hostname = window.location.hostname;
+    this.chaperone_url = new URL(chaperoneUrl || `http://${hostname}:24273`);
+    if (authFormCustomization !== undefined) {
+      if (authFormCustomization.logoUrl !== undefined) {
+        this.chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(authFormCustomization.logoUrl))
+      }
+      if (authFormCustomization.appName !== undefined) {
+        this.chaperone_url.searchParams.set("app_name", authFormCustomization.appName)
+      }
+      if (authFormCustomization.infoLink !== undefined) {
+        this.chaperone_url.searchParams.set("info_link", authFormCustomization.infoLink)
+      }
+      if (authFormCustomization.publisherName !== undefined) {
+        this.chaperone_url.searchParams.set("publisher_name", authFormCustomization.publisherName)
+      }
+      if (authFormCustomization.anonymousAllowed !== undefined) {
+        this.chaperone_url.searchParams.set("anonymous_allowed", authFormCustomization.anonymousAllowed)
+      }
+      if (authFormCustomization.registrationServer !== undefined) {
+        this.chaperone_url.searchParams.set("registration_server_url", makeUrlAbsolute(authFormCustomization.registrationServer.url))
+        this.chaperone_url.searchParams.set("registration_server_payload", JSON.stringify(authFormCustomization.registrationServer.payload))
+      }
+      if (authFormCustomization.skipRegistration !== undefined) {
+        this.chaperone_url.searchParams.set("skip_registration", authFormCustomization.skipRegistration)
+      }
+    }
+
     try {
-      this.child = await COMB.connect(this.chaperone_url.href, 60000, this.signalCb);
+      this.child = await COMB.connect(this.chaperone_url.href, 60000);
     } catch (err) {
       if (err.name === "TimeoutError")
         console.log("Chaperone did not load properly. Is it running?");
       throw err;
     }
 
-    let f;
-    while (f = this.waiting.shift()) {
-      f();
-    }
-
-    if (TESTING)
-      return;
-
-    // Alerts:
-    //   signin		- emitted when the user completes a successful sign-in
-    //   signup		- emitted when the user completes a successful sign-up
-    //   signout		- emitted when the user competes a successful sign-out
-    //   canceled		- emitted when the user purposefully exits sign-in/up
-    //   connected		- emitted when the connection is opened
-    //   disconnected	- emitted when the connection is closed
-    this.child.msg_bus.on("alert", (event, ...args) => {
-      this.emit(event);
-    });
+    if (TESTING) return;
 
     this.iframe = document.getElementsByClassName("comb-frame-0")[0];
     this.iframe.setAttribute('allowtransparency', 'true');
@@ -100,24 +81,41 @@ class Connection extends EventEmitter {
         this.iframe.style.display = "none"
       }
     })
+
+    // Alert Types:
+    // - `signin` - emitted when the user completes a successful sign-in
+    // - `signup` - emitted when the user completes a successful sign-up
+    // - `signout` - emitted when the user competes a successful sign-out
+    // - `canceled` - emitted when the user purposefully exits sign-in/up
+    // - `signal` - emitted when a signal is passed from chaperone
+    // - `available` - emitted when the WebSDK to chaperone and envoy are opened and hosted app is ready for zome calls
+    // - `unavailable` - emitted when the ws WebSDK to chaperone and/or envoy is closed
+    // - `unrecoverableAgentState` - emitted when an unrecoverable error event is passed from chapeone
+    this.child.msg_bus.on("alert", (event, ...args) => this.emit(event));
+    this.child.msg_bus.on("available", () => this.available());
+    return
   }
 
-  async agentInfo() {
-    const response = await this.child.call("agentInfo");
+  callZome = async (...args) => {
+    const response = await this.child.call("callZome", ...args);
     return response;
   }
 
-  async zomeCall(...args) {
-    const response = await this.child.call("zomeCall", ...args);
-    return response;
-  }
-
-  async appInfo(...args) {
+  appInfo = async (...args) => {
     const response = await this.child.call("appInfo", ...args);
     return response;
   }
 
-  async signUp(opts) {
+  cellData = async (args) => {
+    return await this.child.call("cellData", ...args);
+  }
+
+  stateDump = async () => {
+    const response = await this.child.call("stateDump");
+    return response;
+  }
+
+  signUp = async (opts) => {
     const { cancellable = true } = opts || {}
     if (cancellable) {
       history.pushState("_web_sdk_shown", "")
@@ -134,7 +132,7 @@ class Connection extends EventEmitter {
     return result;
   }
 
-  async signIn(opts) {
+  signIn = async (opts) => {
     const { cancellable = true } = opts || {}
     if (cancellable) {
       history.pushState("_web_sdk_shown", "")
@@ -151,19 +149,11 @@ class Connection extends EventEmitter {
     return result;
   }
 
-  async signOut() {
+  signOut = async () => {
     return await this.child.run("signOut");
-  }
-
-  async holoInfo() {
-    return await this.child.run("holoInfo");
   }
 }
 
-Connection.AUTONOMOUS = 1;
-Connection.HOSTED_ANONYMOUS = 2;
-Connection.HOSTED_AGENT = 3;
-
 module.exports = {
-  Connection,
+  WebSDKAPI,
 };
