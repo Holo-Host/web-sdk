@@ -19,7 +19,6 @@ class WebSDKAPI extends EventEmitter {
 
   ready = () => {
     return new Promise((resolve, reject) => {
-      console.log('SETTING this.AVAILABLE')
       this.available = resolve
     });
   }

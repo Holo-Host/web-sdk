@@ -29,16 +29,19 @@ npx chaperone-server --config chaperone.json
 
 ### Javascript API
 
-```javascript
-const { Connection } = require("@holo-host/web-sdk");
+### `new WebSDKAPI() -> WebSDKAPI`
+Returns the `WebSDKAPI` Object
 
-const envoy = new Connection();
+```javascript
+const { WebSDKAPI } = require("@holo-host/web-sdk");
+
+const websdk = new WebSDKAPI()
+const holo = await websdk.connect();
 ```
 
-### `new Connection( chaperone_url, auth_form_customization ) -> Connection`
-
-Returns a connection object.
-
+### `await (new WebSDKAPI).connect({ chaperone_url, auth_form_customization }) -> null`
+The `chaperone_url` and `auth_form_customization` options are both optional.
+The `auth_form_customization` options include:
 - `url` is the url of [chaperone](https://github.com/Holo-Host/chaperone), and is used to specify a development chaperone server. Normally should just be `null`.
 - `opts` is an object with the following fields each used for configuring the log in/sign-up screen:
   - `app_name` (required)
@@ -53,7 +56,7 @@ Returns a connection object.
 
 ```javascript
 const websdk = new WebSDKAPI()
-const iframe = await WebSDK.connect({
+const holo = await websdk.connect({
   chaperone_url: null,
   auth_form_customization: {
     logo_url: "my-logo.png",
