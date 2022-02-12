@@ -1,6 +1,6 @@
 {
   "name": "@holo-host/web-sdk",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
   "main": "src/index.js",
   "module": "src/index.js",
@@ -12,7 +12,11 @@
   },
   "author": "Holo Ltd.",
   "contributors": [
-    "Matthew Brisebois <matthew.brisebois@holo.host>"
+    "Matthew Brisebois <matthew.brisebois@holo.host>",
+    "Robbie Carlton <robbie.carlton@holo.host>",
+    "Lisa Jetton <lisa.jetton@holo.host>",
+    "timotree3 <timorcb@gmail.com>",
+    "zo-el <joel.ulahanna@holo.host>"
   ],
   "license": "ISC",
   "repository": {

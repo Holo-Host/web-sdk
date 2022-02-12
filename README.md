@@ -52,7 +52,7 @@ Returns a connection object.
   - `skip_registration` (optional) if false or undefined, a registration code field is shown on the the sign up form. The behavior of this field depends on whether `registration_server `(above)` has been set. If `registration_server` is set, the registration code is sent to the registration server to exchange for a membrane proof. If `registration_server` is not set, the registration code entered is treated as a membrane proof itself and used directly in installing the happ.
 
 ```javascript
-const websdk = new WebSDK()
+const websdk = new WebSDKAPI()
 const iframe = await WebSDK.connect({
   chaperone_url: null,
   auth_form_customization: {
