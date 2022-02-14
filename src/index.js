@@ -9,12 +9,24 @@ function makeUrlAbsolute(url) {
   return new URL(url, window.location).href
 }
 
-class WebSdkApi extends EventEmitter {
 
-  constructor() {
+  // Child Msg Bus Alert Types:
+  // - `sign-in` - emitted when the user completes a successful sign-in
+  // - `sign-up` - emitted when the user completes a successful sign-up
+  // - `sign-out` - emitted when the user competes a successful sign-out
+  // - `canceled` - emitted when the user purposefully exits sign-in/up
+  // - `signal` - emitted when a signal is passed from chaperone
+  // - `available` - emitted when the WebSDK to chaperone and envoy are opened and hosted app is ready for zome calls
+  // - `unavailable` - emitted when the ws WebSDK to chaperone and/or envoy is closed
+  // - `unrecoverable-agent-state` - emitted when an unrecoverable error event is passed from chapeone
+
+class WebSdkApi extends EventEmitter {
+  constructor(child) {
     super();
-    this.child = null;
     this.available = null
+    this.child = child;
+    child.msg_bus.on("alert", (event, ...args) => this.emit(event));
+    child.msg_bus.on("available", () => this.available());
   }
 
   ready = () => {
@@ -23,7 +35,7 @@ class WebSdkApi extends EventEmitter {
     });
   }
 
-  connect = async ({ chaperoneUrl, authFormCustomization } = {}) => {
+  static connect = async ({ chaperoneUrl, authFormCustomization } = {}) => {
     const hostname = window.location.hostname;
     this.chaperone_url = new URL(chaperoneUrl || `http://${hostname}:24273`);
     if (authFormCustomization !== undefined) {
@@ -51,48 +63,39 @@ class WebSdkApi extends EventEmitter {
       }
     }
 
+    let child
     try {
-      this.child = await COMB.connect(this.chaperone_url.href, 60000);
+      child = await COMB.connect(this.chaperone_url.href, 60000);
     } catch (err) {
       if (err.name === "TimeoutError")
         console.log("Chaperone did not load properly. Is it running?");
       throw err;
     }
 
-    if (TESTING) return;
+    // Set styles and history props when in production mode
+    if (!TESTING) {
+      this.iframe = document.getElementsByClassName("comb-frame-0")[0];
+      this.iframe.setAttribute('allowtransparency', 'true');
+  
+      const style = this.iframe.style;
+      style.zIndex = "99999999";
+      style.width = "100%";
+      style.height = "100%";
+      style.position = "absolute";
+      style.top = "0";
+      style.left = "0";
+      style.display = "none";
+  
+      window.addEventListener('popstate', (event) => {
+        if (event.state === "_web_sdk_shown") {
+          history.back()
+        } else {
+          this.iframe.style.display = "none"
+        }
+      })
+    }
 
-    this.iframe = document.getElementsByClassName("comb-frame-0")[0];
-    this.iframe.setAttribute('allowtransparency', 'true');
-
-    const style = this.iframe.style;
-    style.zIndex = "99999999";
-    style.width = "100%";
-    style.height = "100%";
-    style.position = "absolute";
-    style.top = "0";
-    style.left = "0";
-    style.display = "none";
-
-    window.addEventListener('popstate', (event) => {
-      if (event.state === "_web_sdk_shown") {
-        history.back()
-      } else {
-        this.iframe.style.display = "none"
-      }
-    })
-
-    // Alert Types:
-    // - `sign-in` - emitted when the user completes a successful sign-in
-    // - `sign-up` - emitted when the user completes a successful sign-up
-    // - `sign-out` - emitted when the user competes a successful sign-out
-    // - `canceled` - emitted when the user purposefully exits sign-in/up
-    // - `signal` - emitted when a signal is passed from chaperone
-    // - `available` - emitted when the WebSDK to chaperone and envoy are opened and hosted app is ready for zome calls
-    // - `unavailable` - emitted when the ws WebSDK to chaperone and/or envoy is closed
-    // - `unrecoverable-agent-state` - emitted when an unrecoverable error event is passed from chapeone
-    this.child.msg_bus.on("alert", (event, ...args) => this.emit(event));
-    this.child.msg_bus.on("available", () => this.available());
-    return
+    return new WebSdkApi(child);
   }
 
   zomeCall = async (...args) => await this.child.call("zomeCall", ...args)
@@ -140,6 +143,4 @@ class WebSdkApi extends EventEmitter {
   signOut = async () => await this.child.run("signOut")
 }
 
-module.exports = {
-  WebSdkApi,
-};
+module.exports = WebSdkApi

@@ -33,13 +33,12 @@ npx chaperone-server --config chaperone.json
 Returns the `WebSdkApi` Object
 
 ```javascript
-const { WebSdkApi } = require("@holo-host/web-sdk");
-
-const websdk = new WebSdkApi()
-const holo = await websdk.connect();
+const WebSdkApi = require("@holo-host/web-sdk");
+const holo = await WebSdkApi.connect();
 ```
 
-### `await (new WebSdkApi).connect({ chaperone_url, auth_form_customization }) -> null`
+### `await WebSdkApi.connect({ chaperone_url, auth_form_customization }) -> WebSdkApi`
+Establish the connection to Chaperone and instantiate the WebSdkApi type with child frame.
 The `chaperone_url` and `auth_form_customization` options are both optional.
 The `auth_form_customization` options include:
 - `url` is the url of [chaperone](https://github.com/Holo-Host/chaperone), and is used to specify a development chaperone server. Normally should just be `null`.
@@ -55,8 +54,7 @@ The `auth_form_customization` options include:
   - `skip_registration` (optional) if false or undefined, a registration code field is shown on the the sign up form. The behavior of this field depends on whether `registration_server `(above)` has been set. If `registration_server` is set, the registration code is sent to the registration server to exchange for a membrane proof. If `registration_server` is not set, the registration code entered is treated as a membrane proof itself and used directly in installing the happ.
 
 ```javascript
-const websdk = new WebSdkApi()
-const holo = await websdk.connect({
+const holo = await WebSdkApi.connect({
   chaperone_url: null,
   auth_form_customization: {
     logo_url: "my-logo.png",
@@ -116,7 +114,7 @@ type AgentInfo = {
 
 type HostedAppInfo = {
   is_connected: boolean,
-  hha_id: string, // note> added this here instead of making a separate call, make sure to match in chaperone
+  hha_id: string,
   agent_info: AgentInfo
 }
 

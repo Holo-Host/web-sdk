@@ -10,14 +10,14 @@
 	<script type="text/javascript" src="/dist/holo_hosting_web_sdk.js"></script>
 	<script type="text/javascript">
 		(async () => {
-			const websdk = new HoloWebSDK.WebSdkApi();
+			const holo = new HoloWebSDK.connect();
 
-			websdk.on("available", console.log.bind(console));
+			holo.on("available", console.log.bind(console));
 
-			await websdk.ready();
-			window.websdk = websdk;
+			await holo.ready();
+			window.websdk = holo;
 
-			console.log(await websdk.zomeCall({
+			console.log(await holo.zomeCall({
 				roleId: "holofuel",
 				zome: "transactions",
 				fn: "ledger_state",

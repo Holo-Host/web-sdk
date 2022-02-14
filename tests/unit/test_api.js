@@ -1,24 +1,21 @@
-const { EventEmitter } = require('events');
 const path = require('path');
 const log = require('@whi/stdlog')(path.basename(__filename), {
   level: process.env.LOG_LEVEL || 'fatal',
 });
 
 const expect = require('chai').expect;
-let WebSdkApi
+let WebSdkApi = require("../../src/index.js")
 
 require("../mock_browser.js");
 const mock_comb = require("../mock_comb.js");
 
 
-describe("test websdk API", () => {
-  let websdk;
+describe("test API endpoints", () => {
+  let holo;
   before(async () => {
-    ({ WebSdkApi } = require("../../src/index.js"))
-    websdk = new WebSdkApi()
-    await websdk.connect();
+    holo = await WebSdkApi.connect();
   })
-
+  
   it("should call zome function", async () => {
     mock_comb.nextResponse({
       "balance": "0",
@@ -28,8 +25,8 @@ describe("test websdk API", () => {
       "fees": "0",
       "available": "0",
     });
-
-    const response = await websdk.zomeCall({
+        
+    const response = await holo.zomeCall({
       roleId: "holofuel",
       zome: "transactions",
       fn: "ledger_state",
@@ -55,7 +52,7 @@ describe("test websdk API", () => {
 
     mock_comb.nextResponse(expectedResponse);
 
-    const response = await websdk.appInfo(installed_app_id);
+    const response = await holo.appInfo(installed_app_id);
 
     log.debug("Response: %s", response);
 
@@ -74,19 +71,16 @@ describe("test comb error", () => {
         throw new Error(expectedError);
       }
     };
-    ({ WebSdkApi } = require("../../src/index.js"))
-
+    (WebSdkApi = require("../../src/index.js"))
   })
-
   after(() => {
     global.COMB = globalComb;
   })
 
   it("should throw an error from COMB", async () => {
     let thrownMessage;
-    const websdk = new WebSdkApi();
     try {
-      await websdk.connect();
+      await WebSdkApi.connect();
     } catch (e) {
       thrownMessage = e.message;
     }
@@ -95,28 +89,12 @@ describe("test comb error", () => {
 })
 
 describe("test ready method", () => {
-  let globalComb;
-  const emitter = new EventEmitter
-
-  before(() => {
-    globalComb = global.COMB;
-    ({ WebSdkApi } = require("../../src/index.js"))
-  })
-
-  after(() => {
-    global.COMB = globalComb;
-  })
-
-  it("should resolve ready method once the availble event is resolved", async () => {
+  it("should resolve ready method once the available event is resolved", async () => {
     let passed;
-    const websdk = new WebSdkApi();
-    const event = 'available'
+    const holo = await WebSdkApi.connect(); 
     try {
-      emitter.on(event, () => {
-        websdk.available()
-      })
-      mock_comb.triggerEvent(emitter, event);
-      await websdk.ready();
+    mock_comb.triggerEvent('available');
+      await holo.ready();
       passed = true
     } catch (e) {
       passed = false

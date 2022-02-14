@@ -1,8 +1,18 @@
+const { inspect } = require("util");
+
 let next_response;
+let event_listeners = {}
 
 global.COMB = {
   async connect() {
     return Promise.resolve({
+      // Test event listener set with callback
+      msg_bus: {
+        on(event, callback) {
+          event_listeners[event] = callback
+          return
+        }
+      },
       call() {
         if (next_response === undefined)
           return `{"Err":"Next response is undefined"}`
@@ -11,7 +21,7 @@ global.COMB = {
           next_response = undefined;
           return value;
         }
-      }
+      },
     });
   }
 }
@@ -20,9 +30,14 @@ module.exports = {
   nextResponse(value) {
     next_response = value;
   },
-  triggerEvent(emitter, event, args) {
+  triggerEvent(event_name) {
+    const event_callback = event_listeners[event_name]
+    if (!event_callback) {
+      throw new Error(`Expected to find event listener ${event_name}, but none found.  Current event listeners: ${inspect(event_listeners)}`)
+    }
     setTimeout(() => {
-      emitter.emit(event, args);
+      event_callback()
     }, 0)
+    return
   }
 }
