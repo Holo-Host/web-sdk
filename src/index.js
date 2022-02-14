@@ -9,7 +9,7 @@ function makeUrlAbsolute(url) {
   return new URL(url, window.location).href
 }
 
-class WebSDKAPI extends EventEmitter {
+class WebSdkApi extends EventEmitter {
 
   constructor() {
     super();
@@ -82,37 +82,26 @@ class WebSDKAPI extends EventEmitter {
     })
 
     // Alert Types:
-    // - `signin` - emitted when the user completes a successful sign-in
-    // - `signup` - emitted when the user completes a successful sign-up
-    // - `signout` - emitted when the user competes a successful sign-out
+    // - `sign-in` - emitted when the user completes a successful sign-in
+    // - `sign-up` - emitted when the user completes a successful sign-up
+    // - `sign-out` - emitted when the user competes a successful sign-out
     // - `canceled` - emitted when the user purposefully exits sign-in/up
     // - `signal` - emitted when a signal is passed from chaperone
     // - `available` - emitted when the WebSDK to chaperone and envoy are opened and hosted app is ready for zome calls
     // - `unavailable` - emitted when the ws WebSDK to chaperone and/or envoy is closed
-    // - `unrecoverableAgentState` - emitted when an unrecoverable error event is passed from chapeone
+    // - `unrecoverable-agent-state` - emitted when an unrecoverable error event is passed from chapeone
     this.child.msg_bus.on("alert", (event, ...args) => this.emit(event));
     this.child.msg_bus.on("available", () => this.available());
     return
   }
 
-  callZome = async (...args) => {
-    const response = await this.child.call("callZome", ...args);
-    return response;
-  }
+  callZome = async (...args) => await this.child.call("callZome", ...args)
 
-  appInfo = async (...args) => {
-    const response = await this.child.call("appInfo", ...args);
-    return response;
-  }
+  appInfo = async (...args) => await this.child.call("appInfo", ...args)
 
-  cellData = async (args) => {
-    return await this.child.call("cellData", ...args);
-  }
+  cellData = async (args) => await this.child.call("cellData", ...args)
 
-  stateDump = async () => {
-    const response = await this.child.call("stateDump");
-    return response;
-  }
+  stateDump = async () => await this.child.call("stateDump")
 
   signUp = async (opts) => {
     const { cancellable = true } = opts || {}
@@ -148,11 +137,9 @@ class WebSDKAPI extends EventEmitter {
     return result;
   }
 
-  signOut = async () => {
-    return await this.child.run("signOut");
-  }
+  signOut = async () => await this.child.run("signOut")
 }
 
 module.exports = {
-  WebSDKAPI,
+  WebSdkApi,
 };

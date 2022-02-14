@@ -5,7 +5,7 @@ const log = require('@whi/stdlog')(path.basename(__filename), {
 });
 
 const expect = require('chai').expect;
-let WebSDKAPI
+let WebSdkApi
 
 require("../mock_browser.js");
 const mock_comb = require("../mock_comb.js");
@@ -14,8 +14,8 @@ const mock_comb = require("../mock_comb.js");
 describe("test websdk API", () => {
   let websdk;
   before(async () => {
-    ({ WebSDKAPI } = require("../../src/index.js"))
-    websdk = new WebSDKAPI()
+    ({ WebSdkApi } = require("../../src/index.js"))
+    websdk = new WebSdkApi()
     await websdk.connect();
   })
 
@@ -74,7 +74,7 @@ describe("test comb error", () => {
         throw new Error(expectedError);
       }
     };
-    ({ WebSDKAPI } = require("../../src/index.js"))
+    ({ WebSdkApi } = require("../../src/index.js"))
 
   })
 
@@ -82,9 +82,9 @@ describe("test comb error", () => {
     global.COMB = globalComb;
   })
 
-  it("throws an error from COMB", async () => {
+  it("should throw an error from COMB", async () => {
     let thrownMessage;
-    const websdk = new WebSDKAPI();
+    const websdk = new WebSdkApi();
     try {
       await websdk.connect();
     } catch (e) {
@@ -100,16 +100,16 @@ describe("test ready method", () => {
 
   before(() => {
     globalComb = global.COMB;
-    ({ WebSDKAPI } = require("../../src/index.js"))
+    ({ WebSdkApi } = require("../../src/index.js"))
   })
 
   after(() => {
     global.COMB = globalComb;
   })
 
-  it("throws an error from COMB", async () => {
+  it("should resolve ready method once the availble event is resolved", async () => {
     let passed;
-    const websdk = new WebSDKAPI();
+    const websdk = new WebSdkApi();
     const event = 'available'
     try {
       emitter.on(event, () => {
