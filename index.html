@@ -17,7 +17,7 @@
 			await websdk.ready();
 			window.websdk = websdk;
 
-			console.log(await websdk.callZome({
+			console.log(await websdk.zomeCall({
 				roleId: "holofuel",
 				zome: "transactions",
 				fn: "ledger_state",

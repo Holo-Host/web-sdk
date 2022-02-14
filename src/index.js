@@ -95,7 +95,7 @@ class WebSdkApi extends EventEmitter {
     return
   }
 
-  callZome = async (...args) => await this.child.call("callZome", ...args)
+  zomeCall = async (...args) => await this.child.call("zomeCall", ...args)
 
   appInfo = async (...args) => await this.child.call("appInfo", ...args)
 

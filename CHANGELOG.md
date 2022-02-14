@@ -24,8 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updates return value for auth calls (signIn/signUp/signOut)
 
-- Renames `zomeCall` to `callZome` (to match Holochain Client)
-
 - Relocates connection params when calling connection method from the class constructor
 
 

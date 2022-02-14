@@ -29,7 +29,7 @@ describe("test websdk API", () => {
       "available": "0",
     });
 
-    const response = await websdk.callZome({
+    const response = await websdk.zomeCall({
       roleId: "holofuel",
       zome: "transactions",
       fn: "ledger_state",

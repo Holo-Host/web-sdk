@@ -74,7 +74,7 @@ Asynchronous short-hand for available event.
 .on('available', () => { fulfill() });
 ```
 
-### `.callZome( dna_handle, zome_name, function_name, args ) -> Promise<any>`
+### `.zomeCall( dna_handle, zome_name, function_name, args ) -> Promise<any>`
 
 Call a zome function on the respective DNA instance.
 
