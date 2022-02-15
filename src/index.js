@@ -71,6 +71,13 @@ class WebSdkApi extends EventEmitter {
       throw err;
     }
 
+    try {
+      // based on discussed model, chaperone would either return null or throw an error
+      child.call("handhake")
+    } catch (err) {
+      throw err;
+    }
+
     // Set styles and history props when in production mode
     if (!TESTING) {
       this.iframe = document.getElementsByClassName("comb-frame-0")[0];
