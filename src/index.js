@@ -9,7 +9,6 @@ function makeUrlAbsolute(url) {
   return new URL(url, window.location).href
 }
 
-
   // Child Msg Bus Alert Types:
   // - `sign-in` - emitted when the user completes a successful sign-in
   // - `sign-up` - emitted when the user completes a successful sign-up

@@ -7,8 +7,7 @@
   "scripts": {
     "build": "npm run bundle",
     "bundle": "npx webpack --mode production --output-filename holo_hosting_web_sdk.js",
-    "test": "npm run test-unit",
-    "test-unit": "mocha ./tests/unit/"
+    "test": "npx mocha --recursive ./tests"
   },
   "author": "Holo Ltd.",
   "contributors": [
