@@ -26,6 +26,7 @@ npx chaperone-server --config chaperone.json
 ```
 
 ## Usage
+> Check out an example client usage of the file at `/tests/index.html`
 
 ### Javascript API
 
