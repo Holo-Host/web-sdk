@@ -39,7 +39,7 @@ const holo = await WebSdkApi.connect();
 ```
 
 ### `await WebSdkApi.connect({ chaperone_url, auth_form_customization }) -> WebSdkApi`
-Establish the connection to Chaperone and instantiate the WebSdkApi type with child frame.
+Connects to Chaperone and instantiate the WebSdkApi type with child process.
 The `chaperone_url` and `auth_form_customization` options are both optional.
 The `auth_form_customization` options include:
 - `url` is the url of [chaperone](https://github.com/Holo-Host/chaperone), and is used to specify a development chaperone server. Normally should just be `null`.
@@ -67,7 +67,7 @@ const holo = await WebSdkApi.connect({
 ```
 
 ### `.ready() -> Promise<null>`
-Wait for the app to be ready.
+Waits for the app to be ready.
 Asynchronous short-hand for available event.
 ```javascript
 .on('available', () => { fulfill() });
@@ -75,7 +75,7 @@ Asynchronous short-hand for available event.
 
 ### `.zomeCall( dna_handle, zome_name, function_name, args ) -> Promise<any>`
 
-Call a zome function on the respective DNA instance.
+Calls a zome function on the respective DNA instance.
 
 ### `.appInfo( installed_app_id ) -> Promise<InstalledAppInfo>`
 
@@ -87,22 +87,22 @@ Returns the cell data by role id for the respective DNA instance.
 
 ### `.stateDump() -> Promise<any>`
 
-Call the state dump function on user's sourcechain of the respective DNA instance.
+Calls the state dump function on user's sourcechain of the respective DNA instance.
 
 ### `.signIn( opts? ) -> Promise<HostedAppInfo>`
 
-Trigger Chaperone's sign-in prompt.
+Triggers Chaperone's sign-in prompt.
 
 If `opts.cancellable`, then the prompt can be exited to remain anonymous. Default = `true`.
 
 ### `.signUp( opts? ) -> Promise<HostedAppInfo>`
 
-Trigger Chaperone's sign-up prompt.
+Triggers Chaperone's sign-up prompt.
 
 If `opts.cancellable`, then the prompt can be exited to remain anonymous. Default = `true`.
 
 ### `.signOut() -> Promise<HostedAppInfo || null>`
-Trigger Chaperone's sign-out process.
+Triggers Chaperone's sign-out process.
 > Note: We would expect a null value to be returned whenever `anonymous_allowed` is set to false
 
 #### Return Types
