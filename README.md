@@ -30,7 +30,7 @@ npx chaperone-server --config chaperone.json
 
 ### Javascript API
 
-### `new WebSdkApi() -> WebSdkApi`
+### `new WebSdkApi(child) -> WebSdkApi`
 Returns the `WebSdkApi` Object
 
 ```javascript

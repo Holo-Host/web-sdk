@@ -9,16 +9,10 @@ function makeUrlAbsolute(url) {
   return new URL(url, window.location).href
 }
 
-  // Child Msg Bus Alert Types:
-  // - `sign-in` - emitted when the user completes a successful sign-in
-  // - `sign-up` - emitted when the user completes a successful sign-up
-  // - `sign-out` - emitted when the user competes a successful sign-out
-  // - `canceled` - emitted when the user purposefully exits sign-in/up
-  // - `signal` - emitted when a signal is passed from chaperone
-  // - `available` - emitted when the WebSDK to chaperone and envoy are opened and hosted app is ready for zome calls
-  // - `unavailable` - emitted when the ws WebSDK to chaperone and/or envoy is closed
-  // - `unrecoverable-agent-state` - emitted when an unrecoverable error event is passed from chapeone
-
+/**
+ * The WebSdkApi class is a wrapper around the COMB.js library that provides a JavaScript API for Holo-Hosted web apps to call Holochain. 
+ * @param child - The child process connecting to Chaperone that is being monitored.
+ */
 class WebSdkApi extends EventEmitter {
   constructor(child) {
     super();
@@ -34,12 +28,20 @@ class WebSdkApi extends EventEmitter {
     });
   }
 
+  /* The Ready method is a promise that is resolved when the WebSDK is ready to be used. */
   ready = () => {
     return new Promise((resolve, reject) => {
       this.available = resolve
     });
   }
 
+  /**
+   * The `static connect` function is a helper function that connects to the Chaperone server and returns a WebSdkApi object
+   * @param [] 
+   * - chaperoneUrl: The URL of the Chaperone server.
+   * - authFormCustomization: The optional app customizations to display when authorizing the user 
+   * @returns The `connect` function returns a `WebSdkApi` object.
+   */
   static connect = async ({ chaperoneUrl, authFormCustomization } = {}) => {
     const hostname = window.location.hostname;
     const final_chaperone_url = new URL(chaperoneUrl || `http://${hostname}:24273`);
@@ -79,11 +81,11 @@ class WebSdkApi extends EventEmitter {
 
     const webSdkApi = new WebSdkApi(child);
 
-    // Set styles and history props when in production mode
+    // Note: Set styles and history props only when in production mode
     if (!TESTING) {
       webSdkApi.iframe = document.getElementsByClassName("comb-frame-0")[0];
       webSdkApi.iframe.setAttribute('allowtransparency', 'true');
-  
+
       const style = webSdkApi.iframe.style;
       style.zIndex = "99999999";
       style.width = "100%";
@@ -92,7 +94,7 @@ class WebSdkApi extends EventEmitter {
       style.top = "0";
       style.left = "0";
       style.display = "none";
-  
+
       window.addEventListener('popstate', (event) => {
         if (event.state === "_web_sdk_shown") {
           history.back()
