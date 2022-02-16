@@ -42,7 +42,7 @@ class WebSdkApi extends EventEmitter {
 
   static connect = async ({ chaperoneUrl, authFormCustomization } = {}) => {
     const hostname = window.location.hostname;
-    const chaperone_url = new URL(chaperoneUrl || `http://${hostname}:24273`);
+    const final_chaperone_url = new URL(chaperoneUrl || `http://${hostname}:24273`);
     if (authFormCustomization !== undefined) {
       if (authFormCustomization.logoUrl !== undefined) {
         chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(authFormCustomization.logoUrl))
