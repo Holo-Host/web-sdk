@@ -24,7 +24,11 @@ class WebSdkApi extends EventEmitter {
     super();
     this.available = null
     this.child = child;
-    child.msg_bus.on("alert", (event, ...args) => this.emit(event));
+    child.msg_bus.on("alert", (event, ...args) => this.emit(event))
+    child.msg_bus.on("signal", signal => this.emit('signal', signal))
+    child.msg_bus.on("available", () => this.emit('available'))
+    child.msg_bus.on("unavailable", () => this.emit('unavailable'))
+    child.msg_bus.on("unrecoverable-agent-state", () => this.emit('unrecoverable-agent-state'))
     child.msg_bus.on("available", () => this.available());
   }
 
