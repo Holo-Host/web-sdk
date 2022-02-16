@@ -77,12 +77,14 @@ class WebSdkApi extends EventEmitter {
       throw err;
     }
 
+    const webSdkApi = new WebSdkApi(child);
+
     // Set styles and history props when in production mode
     if (!TESTING) {
-      this.iframe = document.getElementsByClassName("comb-frame-0")[0];
-      this.iframe.setAttribute('allowtransparency', 'true');
+      webSdkApi.iframe = document.getElementsByClassName("comb-frame-0")[0];
+      webSdkApi.iframe.setAttribute('allowtransparency', 'true');
   
-      const style = this.iframe.style;
+      const style = webSdkApi.iframe.style;
       style.zIndex = "99999999";
       style.width = "100%";
       style.height = "100%";
@@ -95,12 +97,12 @@ class WebSdkApi extends EventEmitter {
         if (event.state === "_web_sdk_shown") {
           history.back()
         } else {
-          this.iframe.style.display = "none"
+          webSdkApi.iframe.style.display = "none"
         }
       });
     }
 
-    return new WebSdkApi(child);
+    return webSdkApi
   }
 
   zomeCall = async (...args) => await this.child.call("zomeCall", ...args)
