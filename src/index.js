@@ -22,10 +22,16 @@ function makeUrlAbsolute(url) {
 class WebSdkApi extends EventEmitter {
   constructor(child) {
     super();
-    this.available = null
+    this.available = null;
     this.child = child;
     child.msg_bus.on("alert", (event, ...args) => this.emit(event));
-    child.msg_bus.on("available", () => this.available());
+    child.msg_bus.on("signal", signal => this.emit('signal', signal));
+    child.msg_bus.on("unrecoverable-agent-state", () => this.emit('unrecoverable-agent-state'));
+    child.msg_bus.on("unavailable", () => this.emit('unavailable'));
+    child.msg_bus.on("available", () => {
+      this.available()
+      this.emit('available')
+    });
   }
 
   ready = () => {
@@ -36,35 +42,35 @@ class WebSdkApi extends EventEmitter {
 
   static connect = async ({ chaperoneUrl, authFormCustomization } = {}) => {
     const hostname = window.location.hostname;
-    this.chaperone_url = new URL(chaperoneUrl || `http://${hostname}:24273`);
+    const chaperone_url = new URL(chaperoneUrl || `http://${hostname}:24273`);
     if (authFormCustomization !== undefined) {
       if (authFormCustomization.logoUrl !== undefined) {
-        this.chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(authFormCustomization.logoUrl))
+        chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(authFormCustomization.logoUrl))
       }
       if (authFormCustomization.appName !== undefined) {
-        this.chaperone_url.searchParams.set("app_name", authFormCustomization.appName)
+        chaperone_url.searchParams.set("app_name", authFormCustomization.appName)
       }
       if (authFormCustomization.infoLink !== undefined) {
-        this.chaperone_url.searchParams.set("info_link", authFormCustomization.infoLink)
+        chaperone_url.searchParams.set("info_link", authFormCustomization.infoLink)
       }
       if (authFormCustomization.publisherName !== undefined) {
-        this.chaperone_url.searchParams.set("publisher_name", authFormCustomization.publisherName)
+        chaperone_url.searchParams.set("publisher_name", authFormCustomization.publisherName)
       }
       if (authFormCustomization.anonymousAllowed !== undefined) {
-        this.chaperone_url.searchParams.set("anonymous_allowed", authFormCustomization.anonymousAllowed)
+        chaperone_url.searchParams.set("anonymous_allowed", authFormCustomization.anonymousAllowed)
       }
       if (authFormCustomization.registrationServer !== undefined) {
-        this.chaperone_url.searchParams.set("registration_server_url", makeUrlAbsolute(authFormCustomization.registrationServer.url))
-        this.chaperone_url.searchParams.set("registration_server_payload", JSON.stringify(authFormCustomization.registrationServer.payload))
+        chaperone_url.searchParams.set("registration_server_url", makeUrlAbsolute(authFormCustomization.registrationServer.url))
+        chaperone_url.searchParams.set("registration_server_payload", JSON.stringify(authFormCustomization.registrationServer.payload))
       }
       if (authFormCustomization.skipRegistration !== undefined) {
-        this.chaperone_url.searchParams.set("skip_registration", authFormCustomization.skipRegistration)
+        chaperone_url.searchParams.set("skip_registration", authFormCustomization.skipRegistration)
       }
     }
 
     let child
     try {
-      child = await COMB.connect(this.chaperone_url.href, 60000);
+      child = await COMB.connect(chaperone_url.href, 60000);
     } catch (err) {
       if (err.name === "TimeoutError")
         console.log("Chaperone did not load properly. Is it running?");
@@ -91,7 +97,7 @@ class WebSdkApi extends EventEmitter {
         } else {
           this.iframe.style.display = "none"
         }
-      })
+      });
     }
 
     return new WebSdkApi(child);
