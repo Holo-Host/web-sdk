@@ -9,23 +9,29 @@ function makeUrlAbsolute(url) {
   return new URL(url, window.location).href
 }
 
-  // Child Msg Bus Alert Types:
-  // - `sign-in` - emitted when the user completes a successful sign-in
-  // - `sign-up` - emitted when the user completes a successful sign-up
-  // - `sign-out` - emitted when the user competes a successful sign-out
-  // - `canceled` - emitted when the user purposefully exits sign-in/up
-  // - `signal` - emitted when a signal is passed from chaperone
-  // - `available` - emitted when the WebSDK to chaperone and envoy are opened and hosted app is ready for zome calls
-  // - `unavailable` - emitted when the ws WebSDK to chaperone and/or envoy is closed
-  // - `unrecoverable-agent-state` - emitted when an unrecoverable error event is passed from chapeone
+// Child Msg Bus Alert Types:
+// - `sign-in` - emitted when the user completes a successful sign-in
+// - `sign-up` - emitted when the user completes a successful sign-up
+// - `sign-out` - emitted when the user competes a successful sign-out
+// - `canceled` - emitted when the user purposefully exits sign-in/up
+// - `signal` - emitted when a signal is passed from chaperone
+// - `available` - emitted when the WebSDK to chaperone and envoy are opened and hosted app is ready for zome calls
+// - `unavailable` - emitted when the ws WebSDK to chaperone and/or envoy is closed
+// - `unrecoverable-agent-state` - emitted when an unrecoverable error event is passed from chaperone
 
 class WebSdkApi extends EventEmitter {
   constructor(child) {
     super();
-    this.available = null
+    this.available = null;
     this.child = child;
     child.msg_bus.on("alert", (event, ...args) => this.emit(event));
-    child.msg_bus.on("available", () => this.available());
+    child.msg_bus.on("signal", signal => this.emit('signal', signal));
+    child.msg_bus.on("unrecoverable-agent-state", () => this.emit('unrecoverable-agent-state'));
+    child.msg_bus.on("unavailable", () => this.emit('unavailable'));
+    child.msg_bus.on("available", () => {
+      this.available()
+      this.emit('available')
+    });
   }
 
   ready = () => {
@@ -36,53 +42,56 @@ class WebSdkApi extends EventEmitter {
 
   static connect = async ({ chaperoneUrl, authFormCustomization } = {}) => {
     const hostname = window.location.hostname;
-    this.chaperone_url = new URL(chaperoneUrl || `http://${hostname}:24273`);
+    const final_chaperone_url = new URL(chaperoneUrl || `http://${hostname}:24273`);
     if (authFormCustomization !== undefined) {
       if (authFormCustomization.logoUrl !== undefined) {
-        this.chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(authFormCustomization.logoUrl))
+        final_chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(authFormCustomization.logoUrl))
       }
       if (authFormCustomization.appName !== undefined) {
-        this.chaperone_url.searchParams.set("app_name", authFormCustomization.appName)
+        final_chaperone_url.searchParams.set("app_name", authFormCustomization.appName)
       }
       if (authFormCustomization.infoLink !== undefined) {
-        this.chaperone_url.searchParams.set("info_link", authFormCustomization.infoLink)
+        final_chaperone_url.searchParams.set("info_link", authFormCustomization.infoLink)
       }
       if (authFormCustomization.publisherName !== undefined) {
-        this.chaperone_url.searchParams.set("publisher_name", authFormCustomization.publisherName)
+        final_chaperone_url.searchParams.set("publisher_name", authFormCustomization.publisherName)
       }
       if (authFormCustomization.anonymousAllowed !== undefined) {
-        this.chaperone_url.searchParams.set("anonymous_allowed", authFormCustomization.anonymousAllowed)
+        final_chaperone_url.searchParams.set("anonymous_allowed", authFormCustomization.anonymousAllowed)
       }
       if (authFormCustomization.registrationServer !== undefined) {
-        this.chaperone_url.searchParams.set("registration_server_url", makeUrlAbsolute(authFormCustomization.registrationServer.url))
-        this.chaperone_url.searchParams.set("registration_server_payload", JSON.stringify(authFormCustomization.registrationServer.payload))
+        final_chaperone_url.searchParams.set("registration_server_url", makeUrlAbsolute(authFormCustomization.registrationServer.url))
+        final_chaperone_url.searchParams.set("registration_server_payload", JSON.stringify(authFormCustomization.registrationServer.payload))
       }
       if (authFormCustomization.skipRegistration !== undefined) {
-        this.chaperone_url.searchParams.set("skip_registration", authFormCustomization.skipRegistration)
+        final_chaperone_url.searchParams.set("skip_registration", authFormCustomization.skipRegistration)
       }
     }
 
     let child
     try {
-      child = await COMB.connect(this.chaperone_url.href, 60000);
+      child = await COMB.connect(final_chaperone_url.href, 60000);
     } catch (err) {
       if (err.name === "TimeoutError")
         console.log("Chaperone did not load properly. Is it running?");
       throw err;
     }
 
-  const error_message = await child.call("handshake")
-  if (error_message)  {
-    webSdkApi.iframe.display = "none" // I think this whole error check will need to be moved further down in the function for this line to work
-    throw new Error(error_message)
-  }
+    const webSdkApi = new WebSdkApi(child);
+
+    // based on discussed model, chaperone would either return null or an error message (string)
+    const error_message = await child.call("handshake")
+    if (error_message) {
+      webSdkApi.iframe.display = "none"
+      throw new Error(error_message)
+    }
 
     // Set styles and history props when in production mode
     if (!TESTING) {
-      this.iframe = document.getElementsByClassName("comb-frame-0")[0];
-      this.iframe.setAttribute('allowtransparency', 'true');
-  
-      const style = this.iframe.style;
+      webSdkApi.iframe = document.getElementsByClassName("comb-frame-0")[0];
+      webSdkApi.iframe.setAttribute('allowtransparency', 'true');
+
+      const style = webSdkApi.iframe.style;
       style.zIndex = "99999999";
       style.width = "100%";
       style.height = "100%";
@@ -90,17 +99,17 @@ class WebSdkApi extends EventEmitter {
       style.top = "0";
       style.left = "0";
       style.display = "none";
-  
+
       window.addEventListener('popstate', (event) => {
         if (event.state === "_web_sdk_shown") {
           history.back()
         } else {
-          this.iframe.style.display = "none"
+          webSdkApi.iframe.style.display = "none"
         }
-      })
+      });
     }
 
-    return new WebSdkApi(child);
+    return webSdkApi
   }
 
   zomeCall = async (...args) => await this.child.call("zomeCall", ...args)

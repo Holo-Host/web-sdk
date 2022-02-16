@@ -5,7 +5,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.6.0] - 2022-02-11
+## [1.0.0] - 2022-02-11
 ### Removed
 - Removes `signalCB` param (is replaced with `signal` event)
 
@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added option for `anonymous_allowed` among the customized authentication options
 
-- Adds `unrecoverableAgentState` and `signal` to alert types
+- Adds `unrecoverable-agent-state` and `signal` to alert types
 
 - Adds `cellData` and `stateDump` calls
 
