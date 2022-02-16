@@ -24,7 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updates return value for auth calls (signIn/signUp/signOut)
 
-- Relocates connection params when calling connection method from the class constructor
+- Updates the `connect` method to be static and take the `chaperoneUrl` and `authFormCustomization` params (previously passed directly into the class constructor)
+
+- Updates the class constructor params to take the `child` process created by Postmate once connected to Chaperone
 
 
 ## [0.5.3] - 2021-10-10
