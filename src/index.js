@@ -113,6 +113,9 @@ class WebSdkApi extends EventEmitter {
 
   stateDump = async () => await this.child.call("stateDump")
 
+  /* The `signUp` function is called by the `signUp` button in the UI. The `signUp`
+  function is async, so it returns a promise. The promise is resolved when the user is signed up. The
+  promise is rejected if the user cancels the sign up process. */
   signUp = async (opts) => {
     const { cancellable = true } = opts || {}
     if (cancellable) {
@@ -130,6 +133,9 @@ class WebSdkApi extends EventEmitter {
     return result;
   }
 
+  /* The `signIn` function is called by the `signIn` button in the UI. The `signIn`
+  function is async, so it returns a promise. The promise is resolved when the user is signed in. The
+  promise is rejected if the user cancels the sign in process. */
   signIn = async (opts) => {
     const { cancellable = true } = opts || {}
     if (cancellable) {
