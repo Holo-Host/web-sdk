@@ -42,37 +42,37 @@ class WebSdkApi extends EventEmitter {
    * - authFormCustomization: The optional app customizations to display when authorizing the user 
    * @returns The `connect` function returns a `WebSdkApi` object.
    */
-  static connect = async ({ chaperoneUrl, authFormCustomization } = {}) => {
+  static connect = async ({ chaperoneUrl, authFormCustomization: authOpts } = {}) => {
     const hostname = window.location.hostname;
-    const final_chaperone_url = new URL(chaperoneUrl || `http://${hostname}:24273`);
-    if (authFormCustomization !== undefined) {
-      if (authFormCustomization.logoUrl !== undefined) {
-        final_chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(authFormCustomization.logoUrl))
+    const url = new URL(chaperoneUrl || `http://${hostname}:24273`);
+    if (authOpts !== undefined) {
+      if (authOpts.logoUrl !== undefined) {
+        url.searchParams.set("logo_url", makeUrlAbsolute(authOpts.logoUrl))
       }
-      if (authFormCustomization.appName !== undefined) {
-        final_chaperone_url.searchParams.set("app_name", authFormCustomization.appName)
+      if (authOpts.appName !== undefined) {
+        url.searchParams.set("app_name", authOpts.appName)
       }
-      if (authFormCustomization.infoLink !== undefined) {
-        final_chaperone_url.searchParams.set("info_link", authFormCustomization.infoLink)
+      if (authOpts.infoLink !== undefined) {
+        url.searchParams.set("info_link", authOpts.infoLink)
       }
-      if (authFormCustomization.publisherName !== undefined) {
-        final_chaperone_url.searchParams.set("publisher_name", authFormCustomization.publisherName)
+      if (authOpts.publisherName !== undefined) {
+        url.searchParams.set("publisher_name", authOpts.publisherName)
       }
-      if (authFormCustomization.anonymousAllowed !== undefined) {
-        final_chaperone_url.searchParams.set("anonymous_allowed", authFormCustomization.anonymousAllowed)
+      if (authOpts.anonymousAllowed !== undefined) {
+        url.searchParams.set("anonymous_allowed", authOpts.anonymousAllowed)
       }
-      if (authFormCustomization.registrationServer !== undefined) {
-        final_chaperone_url.searchParams.set("registration_server_url", makeUrlAbsolute(authFormCustomization.registrationServer.url))
-        final_chaperone_url.searchParams.set("registration_server_payload", JSON.stringify(authFormCustomization.registrationServer.payload))
+      if (authOpts.registrationServer !== undefined) {
+        url.searchParams.set("registration_server_url", makeUrlAbsolute(authOpts.registrationServer.url))
+        url.searchParams.set("registration_server_payload", JSON.stringify(authOpts.registrationServer.payload))
       }
-      if (authFormCustomization.skipRegistration !== undefined) {
-        final_chaperone_url.searchParams.set("skip_registration", authFormCustomization.skipRegistration)
+      if (authOpts.skipRegistration !== undefined) {
+        url.searchParams.set("skip_registration", authOpts.skipRegistration)
       }
     }
 
     let child
     try {
-      child = await COMB.connect(final_chaperone_url.href, 60000);
+      child = await COMB.connect(url.href, 60000);
     } catch (err) {
       if (err.name === "TimeoutError")
         console.log("Chaperone did not load properly. Is it running?");
@@ -85,7 +85,6 @@ class WebSdkApi extends EventEmitter {
     if (!TESTING) {
       webSdkApi.iframe = document.getElementsByClassName("comb-frame-0")[0];
       webSdkApi.iframe.setAttribute('allowtransparency', 'true');
-
       const style = webSdkApi.iframe.style;
       style.zIndex = "99999999";
       style.width = "100%";
@@ -94,7 +93,6 @@ class WebSdkApi extends EventEmitter {
       style.top = "0";
       style.left = "0";
       style.display = "none";
-
       window.addEventListener('popstate', (event) => {
         if (event.state === "_web_sdk_shown") {
           history.back()
