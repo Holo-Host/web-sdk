@@ -71,12 +71,11 @@ class WebSdkApi extends EventEmitter {
       throw err;
     }
 
-    try {
-      // based on discussed model, chaperone would either return null or throw an error
-      child.call("handhake")
-    } catch (err) {
-      throw err;
-    }
+  const error_message = await child.call("handshake")
+  if (error_message)  {
+    webSdkApi.iframe.display = "none" // I think this whole error check will need to be moved further down in the function for this line to work
+    throw new Error(error_message)
+  }
 
     // Set styles and history props when in production mode
     if (!TESTING) {
