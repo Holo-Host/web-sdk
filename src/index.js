@@ -10,7 +10,7 @@ function makeUrlAbsolute(url) {
 }
 
 /**
- * The WebSdkApi class is a wrapper around the COMB.js library that provides a JavaScript API for Holo-Hosted web apps to call Holochain. 
+ * The `WebSdkApi` class is a wrapper around the COMB.js library that provides a JavaScript API for Holo-Hosted web apps to call Holochain. 
  * @param child - The child process connecting to Chaperone that is being monitored.
  */
 class WebSdkApi extends EventEmitter {
@@ -28,7 +28,7 @@ class WebSdkApi extends EventEmitter {
     });
   }
 
-  /* The Ready method is a promise that is resolved when the WebSDK is ready to be used. */
+  /* The `ready` function is a promise that is resolved when the WebSDK is ready to be used. */
   ready = () => {
     return new Promise((resolve, reject) => {
       this.available = resolve
@@ -115,7 +115,7 @@ class WebSdkApi extends EventEmitter {
 
   /* The `signUp` function is called by the `signUp` button in the UI. The `signUp`
   function is async, so it returns a promise. The promise is resolved when the user is signed up. The
-  promise is rejected if the user cancels the sign up process. */
+  promise is rejected if a Holo error occurs or the user cancels the sign up process (when the cancellable opt is provided). */
   signUp = async (opts) => {
     const { cancellable = true } = opts || {}
     if (cancellable) {
@@ -135,7 +135,7 @@ class WebSdkApi extends EventEmitter {
 
   /* The `signIn` function is called by the `signIn` button in the UI. The `signIn`
   function is async, so it returns a promise. The promise is resolved when the user is signed in. The
-  promise is rejected if the user cancels the sign in process. */
+  promise is rejected if a Holo error occurs or the user cancels the sign in process (when the cancellable opt is provided). */
   signIn = async (opts) => {
     const { cancellable = true } = opts || {}
     if (cancellable) {
