@@ -45,32 +45,32 @@ class WebSdkApi extends EventEmitter {
     const final_chaperone_url = new URL(chaperoneUrl || `http://${hostname}:24273`);
     if (authFormCustomization !== undefined) {
       if (authFormCustomization.logoUrl !== undefined) {
-        chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(authFormCustomization.logoUrl))
+        final_chaperone_url.searchParams.set("logo_url", makeUrlAbsolute(authFormCustomization.logoUrl))
       }
       if (authFormCustomization.appName !== undefined) {
-        chaperone_url.searchParams.set("app_name", authFormCustomization.appName)
+        final_chaperone_url.searchParams.set("app_name", authFormCustomization.appName)
       }
       if (authFormCustomization.infoLink !== undefined) {
-        chaperone_url.searchParams.set("info_link", authFormCustomization.infoLink)
+        final_chaperone_url.searchParams.set("info_link", authFormCustomization.infoLink)
       }
       if (authFormCustomization.publisherName !== undefined) {
-        chaperone_url.searchParams.set("publisher_name", authFormCustomization.publisherName)
+        final_chaperone_url.searchParams.set("publisher_name", authFormCustomization.publisherName)
       }
       if (authFormCustomization.anonymousAllowed !== undefined) {
-        chaperone_url.searchParams.set("anonymous_allowed", authFormCustomization.anonymousAllowed)
+        final_chaperone_url.searchParams.set("anonymous_allowed", authFormCustomization.anonymousAllowed)
       }
       if (authFormCustomization.registrationServer !== undefined) {
-        chaperone_url.searchParams.set("registration_server_url", makeUrlAbsolute(authFormCustomization.registrationServer.url))
-        chaperone_url.searchParams.set("registration_server_payload", JSON.stringify(authFormCustomization.registrationServer.payload))
+        final_chaperone_url.searchParams.set("registration_server_url", makeUrlAbsolute(authFormCustomization.registrationServer.url))
+        final_chaperone_url.searchParams.set("registration_server_payload", JSON.stringify(authFormCustomization.registrationServer.payload))
       }
       if (authFormCustomization.skipRegistration !== undefined) {
-        chaperone_url.searchParams.set("skip_registration", authFormCustomization.skipRegistration)
+        final_chaperone_url.searchParams.set("skip_registration", authFormCustomization.skipRegistration)
       }
     }
 
     let child
     try {
-      child = await COMB.connect(chaperone_url.href, 60000);
+      child = await COMB.connect(final_chaperone_url.href, 60000);
     } catch (err) {
       if (err.name === "TimeoutError")
         console.log("Chaperone did not load properly. Is it running?");
