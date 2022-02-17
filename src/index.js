@@ -10,13 +10,13 @@ function makeUrlAbsolute(url) {
 }
 
 /**
- * The `WebSdkApi` class is a wrapper around the COMB.js library that provides a JavaScript API for Holo-Hosted web apps to call Holochain. 
+ * The `WebSdkApi` class is a wrapper around the COMB.js library that provides a JavaScript API for Holo-Hosted web apps to call Holochain.
  * @param child - The child process connecting to Chaperone that is being monitored.
  */
 class WebSdkApi extends EventEmitter {
   constructor(child) {
     super();
-    this.available = null;
+    this.available = () => {}; // Starts as a no-op, overwritten as a resolve once .ready is called
     this.child = child;
     child.msg_bus.on("alert", (event, ...args) => this.emit(event));
     child.msg_bus.on("signal", signal => this.emit('signal', signal));
@@ -37,9 +37,9 @@ class WebSdkApi extends EventEmitter {
 
   /**
    * The `static connect` function is a helper function that connects to the Chaperone server and returns a WebSdkApi object
-   * @param [] 
+   * @param []
    * - chaperoneUrl: The URL of the Chaperone server.
-   * - authFormCustomization: The optional app customizations to display when authorizing the user 
+   * - authFormCustomization: The optional app customizations to display when authorizing the user
    * @returns The `connect` function returns a `WebSdkApi` object.
    */
   static connect = async ({ chaperoneUrl, authFormCustomization: authOpts } = {}) => {
