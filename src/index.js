@@ -81,6 +81,7 @@ class WebSdkApi extends EventEmitter {
 
     const webSdkApi = new WebSdkApi(child);
 
+    // Set styles and history props when in production mode
     // Note: Set styles and history props only when in production mode
     if (!TESTING) {
       webSdkApi.iframe = document.getElementsByClassName("comb-frame-0")[0];
@@ -100,6 +101,13 @@ class WebSdkApi extends EventEmitter {
           webSdkApi.iframe.style.display = "none"
         }
       });
+    }
+
+    // Note: Based on discussed model, chaperone either returns null or an error message (string)
+    const error_message = await child.call("handshake")
+    if (error_message) {
+      webSdkApi.iframe.display = "none"
+      throw new Error(error_message)
     }
 
     return webSdkApi

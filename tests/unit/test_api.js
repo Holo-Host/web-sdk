@@ -13,9 +13,11 @@ const mock_comb = require("../mock_comb.js");
 describe("test API endpoints", () => {
   let holo;
   before(async () => {
+    // Expected handshake response when successful is null
+    mock_comb.nextResponse(null);
     holo = await WebSdkApi.connect();
   })
-  
+
   it("should call zome function", async () => {
     mock_comb.nextResponse({
       "balance": "0",
@@ -25,7 +27,7 @@ describe("test API endpoints", () => {
       "fees": "0",
       "available": "0",
     });
-        
+
     const response = await holo.zomeCall({
       roleId: "holofuel",
       zome: "transactions",
@@ -80,6 +82,8 @@ describe("test comb error", () => {
   it("should throw an error from COMB", async () => {
     let thrownMessage;
     try {
+      // Expected handshake response when successful is null
+      mock_comb.nextResponse(null);
       await WebSdkApi.connect();
     } catch (e) {
       thrownMessage = e.message;
@@ -91,9 +95,11 @@ describe("test comb error", () => {
 describe("test ready method", () => {
   it("should resolve ready method once the available event is resolved", async () => {
     let passed;
-    const holo = await WebSdkApi.connect(); 
+    // Expected handshake response when successful is null
+    mock_comb.nextResponse(null);
+    const holo = await WebSdkApi.connect();
     try {
-    mock_comb.triggerEvent('available');
+      mock_comb.triggerEvent('available');
       await holo.ready();
       passed = true
     } catch (e) {
