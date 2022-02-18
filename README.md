@@ -68,12 +68,12 @@ const holo = await WebSdkApi.connect({
 
 ### `.ready() -> Promise<null>`
 Waits for the app to be ready.
-Asynchronous short-hand for available event.
+Asynchronous short-hand for `'available'` event.
 ```javascript
 .on('available', () => { fulfill() });
 ```
 
-### `.zomeCall( dna_handle, zome_name, function_name, args ) -> Promise<any>`
+### `.zomeCall( role_id, zome_name, function_name, args ) -> Promise<any>`
 
 Calls a zome function on the respective DNA instance.
 
@@ -129,7 +129,7 @@ type DisabledAppReason =
   | { user: null }
   | { error: string }
 
-type InstalledAppInfoStatus = 
+type InstalledAppInfoStatus =
   | { disabled: { reason: DisabledAppReason } }
   | { paused: { reason: { error: string } } }
   | { running: null }
@@ -151,5 +151,3 @@ type InstalledAppInfo = {
 - `available` - emitted when the connection to chaperone and envoy are opened and hosted app is ready for zome calls
 - `unavailable` - emitted when the ws connection to chaperone and/or envoy is closed
 - `unrecoverable-agent-state` - emitted when an unrecoverable error event is passed from chapeone
-
-
