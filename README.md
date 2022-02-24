@@ -89,19 +89,19 @@ Returns the cell data by role id for the respective DNA instance.
 
 Calls the state dump function on user's sourcechain of the respective DNA instance.
 
-### `.signIn( opts? ) -> Promise<HostedAppInfo>`
+### `.signIn( opts? ) -> Promise<AgentInfo>`
 
 Triggers Chaperone's sign-in prompt.
 
 If `opts.cancellable`, then the prompt can be exited to remain anonymous. Default = `true`.
 
-### `.signUp( opts? ) -> Promise<HostedAppInfo>`
+### `.signUp( opts? ) -> Promise<AgentInfo>`
 
 Triggers Chaperone's sign-up prompt.
 
 If `opts.cancellable`, then the prompt can be exited to remain anonymous. Default = `true`.
 
-### `.signOut() -> Promise<HostedAppInfo || null>`
+### `.signOut() -> Promise<AgentInfo || null>`
 Triggers Chaperone's sign-out process.
 > Note: We would expect a null value to be returned whenever `anonymous_allowed` is set to false
 
@@ -114,8 +114,8 @@ type AgentInfo = {
 }
 
 type HostedAppInfo = {
-  is_connected: boolean,
-  hha_id: string,
+  is_available: boolean,
+  happ_id: string,
   agent_info: AgentInfo
 }
 
