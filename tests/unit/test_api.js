@@ -13,8 +13,8 @@ const mock_comb = require("../mock_comb.js");
 describe("test API endpoints", () => {
   let holo;
   before(async () => {
-    // Expected handshake response when successful is null
-    mock_comb.nextResponse(null);
+    // Expected handshake response when successful is { happ_id, agent_info }
+    mock_comb.nextResponse({ happ_id: '', agent_info: {} });
     holo = await WebSdkApi.connect();
   })
 
@@ -82,8 +82,8 @@ describe("test comb error", () => {
   it("should throw an error from COMB", async () => {
     let thrownMessage;
     try {
-      // Expected handshake response when successful is null
-      mock_comb.nextResponse(null);
+      // Expected handshake response when successful is { happ_id, agent_info }
+      mock_comb.nextResponse({ happ_id: '', agent_info: {} });
       await WebSdkApi.connect();
     } catch (e) {
       thrownMessage = e.message;
@@ -95,8 +95,8 @@ describe("test comb error", () => {
 describe("test ready method", () => {
   it("should resolve ready method once the available event is resolved", async () => {
     let passed;
-    // Expected handshake response when successful is null
-    mock_comb.nextResponse(null);
+    // Expected handshake response when successful is { happ_id, agent_info }
+    mock_comb.nextResponse({ happ_id: '', agent_info: {} });
     const holo = await WebSdkApi.connect();
     try {
       mock_comb.triggerEvent('available');
