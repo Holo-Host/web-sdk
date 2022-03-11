@@ -65,9 +65,9 @@ class WebSdkApi extends EventEmitter {
       if (authOpts.anonymousAllowed !== undefined) {
         url.searchParams.set("anonymous_allowed", authOpts.anonymousAllowed)
       }
-      if (authOpts.registrationServer !== undefined) {
-        url.searchParams.set("registration_server_url", makeUrlAbsolute(authOpts.registrationServer.url))
-        url.searchParams.set("registration_server_payload", JSON.stringify(authOpts.registrationServer.payload))
+      if (authOpts.membraneProofServer !== undefined) {
+        url.searchParams.set("membrane_proof_server_url", makeUrlAbsolute(authOpts.membraneProofServer.url))
+        url.searchParams.set("membrane_proof_server_payload", JSON.stringify(authOpts.membraneProofServer.payload))
       }
       if (authOpts.skipRegistration !== undefined) {
         url.searchParams.set("skip_registration", authOpts.skipRegistration)

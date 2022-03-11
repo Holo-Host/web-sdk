@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - No longer throws an error if `available` event is received before `.ready` is called.
 
+`###` Changed
+- renamed `registrationServer` to `membraneProofServer`, in constructor and `registration_server` to `membrane_proof_server` in connection to chaperone.
+
 ## [0.6.0-prerelease] - 2022-02-11
 ### Removed
 - Removes `signalCB` param (is replaced with `signal` event)
