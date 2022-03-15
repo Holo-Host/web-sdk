@@ -35,7 +35,7 @@ Returns the `WebSdkApi` Object
 
 ```javascript
 const WebSdkApi = require("@holo-host/web-sdk");
-const holo = await WebSdkApi.connect();
+const holo = new WebSdkApi(child);
 ```
 
 ### `await WebSdkApi.connect({ chaperone_url, auth_form_customization }) -> WebSdkApi`
