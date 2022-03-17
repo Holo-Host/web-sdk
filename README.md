@@ -52,7 +52,7 @@ The `auth_form_customization` options include:
   - `membrane_proof_server` (optional) is an object describing what server to contact in order to translate the Registration Code entered during sign up into a Membrane Proof suitable for Holochain ([Read more](https://github.com/Holo-Host/holo-nixpkgs/tree/develop/overlays/holo-nixpkgs/holo-registration-service))
     - `url` (required)
     - `payload` (optional; defaults to `undefined`) is an arbitrary value that will be passed to the registration server as additional information
-  - `skip_registration` (optional) if false or undefined, a registration code field is shown on the the sign up form. The behavior of this field depends on whether `membrane_proof_server `(above)` has been set. If `membrane_proof_server` is set, the registration code is sent to the registration server to exchange for a membrane proof. If `membrane_proof_server` is not set, the registration code entered is treated as a membrane proof itself and used directly in installing the happ.
+  - `skip_registration` (optional) if false or undefined, a registration code field is shown on the the sign up form. The behavior of this field depends on whether `membrane_proof_server `(above)` has been set. If `membrane_proof_server` is set, the registration code is sent to the membrane-proof server to exchange for a membrane proof. If `membrane_proof_server` is not set, the registration code entered is treated as a membrane proof itself and used directly in installing the happ.
 
 ```javascript
 const holo = await WebSdkApi.connect({
