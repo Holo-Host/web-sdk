@@ -16,22 +16,26 @@ function makeUrlAbsolute(url) {
 class WebSdkApi extends EventEmitter {
   constructor(child) {
     super();
-    this.available = () => {}; // Starts as a no-op, overwritten as a resolve once .ready is called
     this.child = child;
     child.msg_bus.on("alert", (event, ...args) => this.emit(event));
     child.msg_bus.on("signal", signal => this.emit('signal', signal));
     child.msg_bus.on("unrecoverable-agent-state", () => this.emit('unrecoverable-agent-state'));
-    child.msg_bus.on("unavailable", () => this.emit('unavailable'));
-    child.msg_bus.on("available", () => {
-      this.available()
+    child.msg_bus.on("unavailable", () => {
+      this.isAvailable = false
+      this.emit('unavailable')
+    })
+    child.msg_bus.on("available", async () => {
+      this.isAvailable = true
       this.emit('available')
     });
   }
 
   /* The `ready` function is a promise that is resolved when the WebSDK is ready to be used. */
   ready = () => {
-    return new Promise((resolve, reject) => {
-      this.available = resolve
+    if (this.isAvailable) return
+
+    return new Promise(resolve => {
+      this.once("available", resolve)
     });
   }
 
@@ -61,9 +65,9 @@ class WebSdkApi extends EventEmitter {
       if (authOpts.anonymousAllowed !== undefined) {
         url.searchParams.set("anonymous_allowed", authOpts.anonymousAllowed)
       }
-      if (authOpts.registrationServer !== undefined) {
-        url.searchParams.set("registration_server_url", makeUrlAbsolute(authOpts.registrationServer.url))
-        url.searchParams.set("registration_server_payload", JSON.stringify(authOpts.registrationServer.payload))
+      if (authOpts.membraneProofServer !== undefined) {
+        url.searchParams.set("membrane_proof_server_url", makeUrlAbsolute(authOpts.membraneProofServer.url))
+        url.searchParams.set("membrane_proof_server_payload", JSON.stringify(authOpts.membraneProofServer.payload))
       }
       if (authOpts.skipRegistration !== undefined) {
         url.searchParams.set("skip_registration", authOpts.skipRegistration)
@@ -104,11 +108,14 @@ class WebSdkApi extends EventEmitter {
     }
 
     // Note: Based on discussed model, chaperone either returns null or an error message (string)
-    const error_message = await child.call("handshake")
+    const { error_message, agent_info, happ_id } = await child.call("handshake")
     if (error_message) {
       webSdkApi.iframe.display = "none"
       throw new Error(error_message)
     }
+
+    webSdkApi.agentInfo = agent_info
+    webSdkApi.happId = happ_id
 
     return webSdkApi
   }
@@ -130,7 +137,9 @@ class WebSdkApi extends EventEmitter {
       history.pushState("_web_sdk_shown", "")
     }
     this.iframe.style.display = "block";
-    const result = await this.child.call("signUp", opts);
+    const agentInfo = await this.child.call("signUp", opts);
+    this.agentInfo = agentInfo
+
     if (cancellable) {
       if (history.state === "_web_sdk_shown") {
         history.back()
@@ -138,7 +147,8 @@ class WebSdkApi extends EventEmitter {
     } else {
       this.iframe.style.display = "none";
     }
-    return result;
+
+    return agentInfo;
   }
 
   /* The `signIn` function is called by the `signIn` button in the UI. The `signIn`
@@ -150,7 +160,9 @@ class WebSdkApi extends EventEmitter {
       history.pushState("_web_sdk_shown", "")
     }
     this.iframe.style.display = "block";
-    const result = await this.child.call("signIn", opts);
+    const agentInfo = await this.child.call("signIn", opts);
+    this.agentInfo = agentInfo
+
     if (cancellable) {
       if (history.state === "_web_sdk_shown") {
         history.back()
@@ -158,10 +170,15 @@ class WebSdkApi extends EventEmitter {
     } else {
       this.iframe.style.display = "none";
     }
-    return result;
+    return agentInfo;
   }
 
-  signOut = async () => await this.child.run("signOut")
+  signOut = async () => {
+    const agentInfo = await this.child.run("signOut")
+    this.agentInfo = agentInfo
+
+    return agentInfo;
+  }
 }
 
 module.exports = WebSdkApi
