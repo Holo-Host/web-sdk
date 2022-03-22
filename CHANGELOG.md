@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1-prerelease] - 2022-03-22
+
 ### Added
 `webSdkApi` instances now have `isAvailable`, `agentInfo` and `happId` fields that are updated as chaperone state changes [(#61)](https://github.com/Holo-Host/web-sdk/pull/61)
 
