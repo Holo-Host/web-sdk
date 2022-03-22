@@ -1,3 +1,4 @@
+
 # Holo Hosting Web SDK
 
 This module is designed so that web UIs can work directly with Holochain, or in the context of the
@@ -39,7 +40,8 @@ const holo = new WebSdkApi(child);
 ```
 
 ### `await WebSdkApi.connect({ chaperone_url, auth_form_customization }) -> WebSdkApi`
-Connects to Chaperone and instantiate the WebSdkApi type with child process.
+Connects to Chaperone and returns a client object.
+
 The `chaperone_url` and `auth_form_customization` options are both optional.
 The `auth_form_customization` options include:
 - `url` is the url of [chaperone](https://github.com/Holo-Host/chaperone), and is used to specify a development chaperone server. Normally should just be `null`.
@@ -65,6 +67,16 @@ const holo = await WebSdkApi.connect({
   }
 });
 ```
+## Client variables
+These represent various aspects of chaperone state locally in the client
+
+### .agentInfo: AgentInfo
+
+### .isAvailable: Bool
+
+### .happId: String
+
+## Client methods
 
 ### `.ready() -> Promise<null>`
 Waits for the app to be ready.
@@ -111,12 +123,6 @@ type AgentInfo = {
   id: string, // pub key
   is_anonymous: boolean,
   host_url: string
-}
-
-type HostedAppInfo = {
-  is_available: boolean,
-  happ_id: string,
-  agent_info: AgentInfo
 }
 
 type InstalledCell = {
