@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.2-prerelease] - 2022-03-22
+
+### Fixed
+- Import issue, `main` and `module` values updated
+
 ## [0.6.1-prerelease] - 2022-03-22
 
 ### Added
