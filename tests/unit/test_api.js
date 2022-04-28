@@ -91,20 +91,3 @@ describe("test comb error", () => {
     expect(thrownMessage).to.equal(expectedError);
   })
 })
-
-describe("test ready method", () => {
-  it("should resolve ready method once the available event is resolved", async () => {
-    let passed;
-    // Expected handshake response when successful is { happ_id, agent_state }
-    mock_comb.nextResponse({ happ_id: '', agent_state: {} });
-    const holo = await WebSdkApi.connect();
-    try {
-      mock_comb.triggerEvent('available');
-      await holo.ready();
-      passed = true
-    } catch (e) {
-      passed = false
-    }
-    expect(passed).to.equal(true);
-  })
-});

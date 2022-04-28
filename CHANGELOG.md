@@ -3,7 +3,15 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.6.3-prerelease] - 2022-28-22
+### Fixed
+- Race condition between client state and content of events
+
+### Changed
+- Updated api to reflect changes in chaperone. Emits single `agent-state` event when: switching to a new agent, availability changes, or on unrecoverable agent state. This replaces previous events `available`, `unavailable`, `unrecoverable-agent-state`
+
+### Removed
+- `.ready` method
 
 ## [0.6.2-prerelease] - 2022-03-22
 
@@ -18,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - No longer throws an error if `available` event is received before `.ready` is called.
 
-`###` Changed
+### Changed
 - renamed `registrationServer` to `membraneProofServer`, in constructor and `registration_server` to `membrane_proof_server` in connection to chaperone.
 
 ## [0.6.0-prerelease] - 2022-02-11

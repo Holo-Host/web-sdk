@@ -39,22 +39,22 @@ const WebSdkApi = require("@holo-host/web-sdk");
 const holo = new WebSdkApi(child);
 ```
 
-### `await WebSdkApi.connect({ chaperone_url, auth_form_customization }) -> WebSdkApi`
+### `await WebSdkApi.connect({ chaperone_url, authFormCustomization }) -> WebSdkApi`
 Connects to Chaperone and returns a client object.
 
 The `chaperone_url` and `auth_form_customization` options are both optional.
 The `auth_form_customization` options include:
 - `url` is the url of [chaperone](https://github.com/Holo-Host/chaperone), and is used to specify a development chaperone server. Normally should just be `null`.
 - `opts` is an object with the following fields each used for configuring the log in/sign-up screen:
-  - `app_name` (required)
-  - `logo_url` (optional)
-  - `info_link` (optional) shows an info button with the specified link next to the Joining Code field
-  - `publisher_name` (optional) displays "published by X" underneath the log in/sign-up page header
-  - `anonymous_allowed` (optional) provides boolean value determining whether or not the hosted app allows anonymous/public use. If false, the app will not be enabled and hosted for use until an agent has logged-in. If value is not provided, the value will default to true.
-  - `membrane_proof_server` (optional) is an object describing what server to contact in order to translate the Registration Code entered during sign up into a Membrane Proof suitable for Holochain ([Read more](https://github.com/Holo-Host/holo-nixpkgs/tree/develop/overlays/holo-nixpkgs/membrane-proof-service))
+  - `appName` (required)
+  - `logoUrl` (optional)
+  - `infoLink` (optional) shows an info button with the specified link next to the Joining Code field
+  - `publisherName` (optional) displays "published by X" underneath the log in/sign-up page header
+  - `anonymousAllowed` (optional) (NOT IMPLEMENTED) provides boolean value determining whether or not the hosted app allows anonymous/public use. If false, the app will not be enabled and hosted for use until an agent has logged-in. If value is not provided, the value will default to true.
+  - `membraneProofServer` (optional) is an object describing what server to contact in order to translate the Registration Code entered during sign up into a Membrane Proof suitable for Holochain ([Read more](https://github.com/Holo-Host/holo-nixpkgs/tree/develop/overlays/holo-nixpkgs/membrane-proof-service))
     - `url` (required)
     - `payload` (optional; defaults to `undefined`) is an arbitrary value that will be passed to the registration server as additional information
-  - `skip_registration` (optional) if false or undefined, a registration code field is shown on the the sign up form. The behavior of this field depends on whether `membrane_proof_server `(above)` has been set. If `membrane_proof_server` is set, the registration code is sent to the membrane-proof server to exchange for a membrane proof. If `membrane_proof_server` is not set, the registration code entered is treated as a membrane proof itself and used directly in installing the happ.
+  - `skipRegistration` (optional) if false or undefined, a registration code field is shown on the the sign up form. The behavior of this field depends on whether `membraneProofServer `(above)` has been set. If `membrane_proof_server` is set, the registration code is sent to the membrane-proof server to exchange for a membrane proof. If `membrane_proof_server` is not set, the registration code entered is treated as a membrane proof itself and used directly in installing the happ.
 
 ```javascript
 const holo = await WebSdkApi.connect({
@@ -70,20 +70,11 @@ const holo = await WebSdkApi.connect({
 ## Client variables
 These represent various aspects of chaperone state locally in the client
 
-### .agentInfo: AgentInfo
-
-### .isAvailable: Bool
+### .agent: AgentState
 
 ### .happId: String
 
 ## Client methods
-
-### `.ready() -> Promise<null>`
-Waits for the app to be ready.
-Asynchronous short-hand for `'available'` event.
-```javascript
-.on('available', () => { fulfill() });
-```
 
 ### `.zomeCall( role_id, zome_name, function_name, args ) -> Promise<any>`
 
@@ -95,11 +86,11 @@ Calls appInfo on the conductor with the provided id.
 
 ### `.cellData( role_id ) -> Promise<CellData>`
 
-Returns the cell data by role id for the respective DNA instance.
+(NOT IMPLEMENTED) Returns the cell data by role id for the respective DNA instance.
 
 ### `.stateDump() -> Promise<any>`
 
-Calls the state dump function on user's sourcechain of the respective DNA instance.
+(NOT IMPLEMENTED) Calls the state dump function on user's sourcechain of the respective DNA instance.
 
 ### `.signIn( opts? ) -> Promise<AgentInfo>`
 
@@ -119,10 +110,12 @@ Triggers Chaperone's sign-out process.
 
 #### Return Types
 ```typescript
-type AgentInfo = {
+type AgentState = {
   id: string, // pub key
-  is_anonymous: boolean,
-  host_url: string
+  isAnonymous: boolean,
+  isAvailable: boolean, // "isAvailable: true" means the agent is connected to envoy, the app is installed, and you can make zome calls
+  hostUrl: string,
+  unrecoverableError: string,
 }
 
 type InstalledCell = {
@@ -149,11 +142,5 @@ type InstalledAppInfo = {
 
 ### `on( event, callback )`
 **Events**
-- `sign-in` - emitted when the user completes a successful sign-in
-- `sign-up` - emitted when the user completes a successful sign-up
-- `sign-out` - emitted when the user competes a successful sign-out
-- `canceled` - emitted when the user purposefully exits sign-in/up
 - `signal` - emitted when a signal is passed from chaperone
-- `available` - emitted when the connection to chaperone and envoy are opened and hosted app is ready for zome calls
-- `unavailable` - emitted when the ws connection to chaperone and/or envoy is closed
-- `unrecoverable-agent-state` - emitted when an unrecoverable error event is passed from chapeone
+- `agent-state` - emitted switching to a new agent, availability changes, or on unrecoverable agent state. The event passes one argument, and object of type `AgentState` (see above)
