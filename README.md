@@ -113,7 +113,7 @@ Triggers Chaperone's sign-out process.
 type AgentState = {
   id: string, // pub key
   isAnonymous: boolean,
-  isAvailable: boolean, // "isAvailable: true" means the agent is connected to envoy, the app is installed, and you can make zome calls
+  isAvailable: boolean, // "isAvailable: true" means the agent is connected to a host, the app is installed, and you can make zome calls
   hostUrl: string,
   unrecoverableError: string,
 }
