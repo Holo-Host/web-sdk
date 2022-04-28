@@ -115,7 +115,7 @@ type AgentState = {
   isAnonymous: boolean,
   isAvailable: boolean, // "isAvailable: true" means the agent is connected to a host, the app is installed, and you can make zome calls
   hostUrl: string,
-  unrecoverableError: string,
+  unrecoverableError: string, // If non-null, this agent is in a bad state. The solution is probably to call signOut.
 }
 
 type InstalledCell = {
