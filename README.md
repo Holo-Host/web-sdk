@@ -143,4 +143,4 @@ type InstalledAppInfo = {
 ### `on( event, callback )`
 **Events**
 - `signal` - emitted when a signal is passed from chaperone
-- `agent-state` - emitted switching to a new agent, availability changes, or on unrecoverable agent state. The event passes one argument, and object of type `AgentState` (see above)
+- `agent-state` - emitted switching to a new agent, availability changes, or on unrecoverable agent state. The event passes one argument, the current value of `this.agent`
