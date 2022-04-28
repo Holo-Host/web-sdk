@@ -66,6 +66,9 @@ class WebSdkApi extends EventEmitter {
       if (authOpts.skipRegistration !== undefined) {
         url.searchParams.set("skip_registration", authOpts.skipRegistration)
       }
+      if (authOpts.isPubPortal !== undefined) {
+        url.searchParams.set("is_pub_portal", authOpts.isPubPortal)
+      }
     }
 
     let child
