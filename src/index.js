@@ -27,9 +27,8 @@ class WebSdkApi extends EventEmitter {
     this.child = child;
     child.msg_bus.on("signal", signal => this.emit('signal', signal));
     child.msg_bus.on("agent-state", agent_state => {
-      const agent = presentAgentState(agent_state)
-      this.agent = agent
-      this.emit('agent-state', agent)
+      this.agent = presentAgentState(agent_state)
+      this.emit('agent-state', this.agent)
     })
   }
 
