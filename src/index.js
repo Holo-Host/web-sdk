@@ -132,12 +132,15 @@ class WebSdkApi extends EventEmitter {
       history.pushState("_web_sdk_shown", "")
     }
     this.iframe.style.display = "block";
-    await this.child.call("signUp", opts);
-    await new Promise(resolve => {
+
+    const waitForAgentState = new Promise(resolve => {
       this.once("agent-state", () => {
         resolve()
       })
     })
+
+    await this.child.call("signUp", opts);
+    await waitForAgentState
 
     if (cancellable) {
       if (history.state === "_web_sdk_shown") {
@@ -160,13 +163,15 @@ class WebSdkApi extends EventEmitter {
       history.pushState("_web_sdk_shown", "")
     }
     this.iframe.style.display = "block";
-    await this.child.call("signIn", opts)
 
-    await new Promise(resolve => {
+    const waitForAgentState = new Promise(resolve => {
       this.once("agent-state", () => {
         resolve()
       })
     })
+
+    await this.child.call("signIn", opts)
+    await waitForAgentState
 
     if (cancellable) {
       if (history.state === "_web_sdk_shown") {
@@ -179,13 +184,14 @@ class WebSdkApi extends EventEmitter {
   }
 
   signOut = async () => {
-    await this.child.run("signOut")
-
-    await new Promise(resolve => {
+    const waitForAgentState = new Promise(resolve => {
       this.once("agent-state", () => {
         resolve()
       })
     })
+
+    await this.child.run("signOut")
+    await waitForAgentState
 
     return this.agent
   }
