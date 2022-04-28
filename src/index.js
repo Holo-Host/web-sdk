@@ -9,6 +9,14 @@ function makeUrlAbsolute(url) {
   return new URL(url, window.location).href
 }
 
+const presentAgentState = agent_state => ({
+  id: agent_state.id,
+  isAnonymous: agent_state.is_anonymous,
+  isAvailable: agent_state.is_available,
+  unrecoverableError: agent_state.unrecoverable_error,
+  hostUrl: agent_state.host_url
+})
+
 /**
  * The `WebSdkApi` class is a wrapper around the COMB.js library that provides a JavaScript API for Holo-Hosted web apps to call Holochain.
  * @param child - The child process connecting to Chaperone that is being monitored.
@@ -17,26 +25,12 @@ class WebSdkApi extends EventEmitter {
   constructor(child) {
     super();
     this.child = child;
-    child.msg_bus.on("alert", (event, ...args) => this.emit(event));
     child.msg_bus.on("signal", signal => this.emit('signal', signal));
-    child.msg_bus.on("unrecoverable-agent-state", () => this.emit('unrecoverable-agent-state'));
-    child.msg_bus.on("unavailable", () => {
-      this.isAvailable = false
-      this.emit('unavailable')
+    child.msg_bus.on("agent-state", agent_state => {
+      const agent = presentAgentState(agent_state)
+      this.agent = agent
+      this.emit('agent-state', agent)
     })
-    child.msg_bus.on("available", async () => {
-      this.isAvailable = true
-      this.emit('available')
-    });
-  }
-
-  /* The `ready` function is a promise that is resolved when the WebSDK is ready to be used. */
-  ready = () => {
-    if (this.isAvailable) return
-
-    return new Promise(resolve => {
-      this.once("available", resolve)
-    });
   }
 
   /**
@@ -108,13 +102,13 @@ class WebSdkApi extends EventEmitter {
     }
 
     // Note: Based on discussed model, chaperone either returns null or an error message (string)
-    const { error_message, agent_info, happ_id } = await child.call("handshake")
+    const { error_message, agent_state, happ_id } = await child.call("handshake")
     if (error_message) {
-      webSdkApi.iframe.display = "none"
+      webSdkApi.iframe.style.display = "none"
       throw new Error(error_message)
     }
 
-    webSdkApi.agentInfo = agent_info
+    webSdkApi.agent = presentAgentState(agent_state)
     webSdkApi.happId = happ_id
 
     return webSdkApi
@@ -137,8 +131,12 @@ class WebSdkApi extends EventEmitter {
       history.pushState("_web_sdk_shown", "")
     }
     this.iframe.style.display = "block";
-    const agentInfo = await this.child.call("signUp", opts);
-    this.agentInfo = agentInfo
+    await this.child.call("signUp", opts);
+    await new Promise(resolve => {
+      this.child.msg_bus.once("agent-state", () => {
+        resolve()
+      })
+    })
 
     if (cancellable) {
       if (history.state === "_web_sdk_shown") {
@@ -148,7 +146,7 @@ class WebSdkApi extends EventEmitter {
       this.iframe.style.display = "none";
     }
 
-    return agentInfo;
+    return this.agent
   }
 
   /* The `signIn` function is called by the `signIn` button in the UI. The `signIn`
@@ -156,12 +154,18 @@ class WebSdkApi extends EventEmitter {
   promise is rejected if a Holo error occurs or the user cancels the sign in process (when the cancellable opt is provided). */
   signIn = async (opts) => {
     const { cancellable = true } = opts || {}
+
     if (cancellable) {
       history.pushState("_web_sdk_shown", "")
     }
     this.iframe.style.display = "block";
-    const agentInfo = await this.child.call("signIn", opts);
-    this.agentInfo = agentInfo
+    await this.child.call("signIn", opts);
+
+    await new Promise(resolve => {
+      this.child.msg_bus.once("agent-state", () => {
+        resolve()
+      })
+    })
 
     if (cancellable) {
       if (history.state === "_web_sdk_shown") {
@@ -170,14 +174,19 @@ class WebSdkApi extends EventEmitter {
     } else {
       this.iframe.style.display = "none";
     }
-    return agentInfo;
+    return this.agent;
   }
 
   signOut = async () => {
     const agentInfo = await this.child.run("signOut")
-    this.agentInfo = agentInfo
 
-    return agentInfo;
+    await new Promise(resolve => {
+      this.child.msg_bus.once("agent-state", () => {
+        resolve()
+      })
+    })
+
+    return this.agent;
   }
 }
 
