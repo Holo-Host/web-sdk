@@ -27,6 +27,7 @@ class WebSdkApi extends EventEmitter {
     this.child = child;
     child.msg_bus.on("signal", signal => this.emit('signal', signal));
     child.msg_bus.on("agent-state", agent_state => {
+      console.log('^&* WEBSDK agent_state', agent_state)
       const agent = presentAgentState(agent_state)
       this.agent = agent
       this.emit('agent-state', agent)
@@ -133,7 +134,7 @@ class WebSdkApi extends EventEmitter {
     this.iframe.style.display = "block";
     await this.child.call("signUp", opts);
     await new Promise(resolve => {
-      this.child.msg_bus.once("agent-state", () => {
+      this.once("agent-state", () => {
         resolve()
       })
     })
@@ -143,7 +144,7 @@ class WebSdkApi extends EventEmitter {
         history.back()
       }
     } else {
-      this.iframe.style.display = "none";
+      this.iframe.style.display = "none"
     }
 
     return this.agent
@@ -159,10 +160,10 @@ class WebSdkApi extends EventEmitter {
       history.pushState("_web_sdk_shown", "")
     }
     this.iframe.style.display = "block";
-    await this.child.call("signIn", opts);
+    await this.child.call("signIn", opts)
 
     await new Promise(resolve => {
-      this.child.msg_bus.once("agent-state", () => {
+      this.once("agent-state", () => {
         resolve()
       })
     })
@@ -174,19 +175,19 @@ class WebSdkApi extends EventEmitter {
     } else {
       this.iframe.style.display = "none";
     }
-    return this.agent;
+    return this.agent
   }
 
   signOut = async () => {
-    const agentInfo = await this.child.run("signOut")
+    await this.child.run("signOut")
 
     await new Promise(resolve => {
-      this.child.msg_bus.once("agent-state", () => {
+      this.once("agent-state", () => {
         resolve()
       })
     })
 
-    return this.agent;
+    return this.agent
   }
 }
 
