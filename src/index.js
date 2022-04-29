@@ -98,7 +98,8 @@ class WebSdkApi extends EventEmitter {
       style.display = "none";
       window.addEventListener('popstate', (event) => {
         if (event.state === "_web_sdk_shown") {
-          history.back()
+            console.log("^&* web-sdk would call history.back", history)
+//          history.back()
         } else {
           webSdkApi.iframe.style.display = "none"
         }
@@ -121,17 +122,18 @@ class WebSdkApi extends EventEmitter {
   setShouldShowForm = (should_show_form) => {
     if (should_show_form) {
       if (this.cancellable) {
-        history.pushState("_web_sdk_shown", "")
+//        history.pushState("_web_sdk_shown", "")
       }
       this.iframe.style.display = "block";
     } else {
       if (this.cancellable) {
         if (history.state === "_web_sdk_shown") {
-          history.back()
+          console.log("^&* web-sdk would call history.back", history)
+//          history.back()
         }
-      } else {
+      } // else {
         this.iframe.style.display = "none"
-      }
+//      }
     }
   }
 
