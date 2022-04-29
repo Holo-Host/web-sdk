@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Updated api to reflect changes in chaperone. Emits single `agent-state` event when: switching to a new agent, availability changes, or on unrecoverable agent state. This replaces previous events `available`, `unavailable`, `unrecoverable-agent-state`
+- Uses `should_show_form` field of `agent_state` to update form state
+- No longer awaits agent state before returning from `signIn/Up/Out`
 
 ### Removed
 - `.ready` method
