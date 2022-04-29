@@ -5,6 +5,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.4-prerelease] - 2022-28-22
+No change
+
 ## [0.6.3-prerelease] - 2022-28-22
 ### Fixed
 - Race condition between client state and content of events
