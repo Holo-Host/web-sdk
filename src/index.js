@@ -14,7 +14,8 @@ const presentAgentState = agent_state => ({
   isAnonymous: agent_state.is_anonymous,
   isAvailable: agent_state.is_available,
   unrecoverableError: agent_state.unrecoverable_error,
-  hostUrl: agent_state.host_url
+  hostUrl: agent_state.host_url,
+  // shouldShowForm: agent_state: should_show_form // We might need to expose this later
 })
 
 /**
@@ -27,6 +28,7 @@ class WebSdkApi extends EventEmitter {
     this.child = child;
     child.msg_bus.on("signal", signal => this.emit('signal', signal));
     child.msg_bus.on("agent-state", agent_state => {
+      this.setShouldShowForm(agent_state.should_show_form)
       this.agent = presentAgentState(agent_state)
       this.emit('agent-state', this.agent)
     })
@@ -116,6 +118,23 @@ class WebSdkApi extends EventEmitter {
     return webSdkApi
   }
 
+  setShouldShowForm = (should_show_form) => {
+    if (should_show_form) {
+      if (this.cancellable) {
+        history.pushState("_web_sdk_shown", "")
+      }
+      this.iframe.style.display = "block";
+    } else {
+      if (this.cancellable) {
+        if (history.state === "_web_sdk_shown") {
+          history.back()
+        }
+      } else {
+        this.iframe.style.display = "none"
+      }
+    }
+  }
+
   zomeCall = async (...args) => await this.child.call("zomeCall", ...args)
 
   appInfo = async (...args) => await this.child.call("appInfo", ...args)
@@ -129,29 +148,9 @@ class WebSdkApi extends EventEmitter {
   promise is rejected if a Holo error occurs or the user cancels the sign up process (when the cancellable opt is provided). */
   signUp = async (opts) => {
     const { cancellable = true } = opts || {}
-    if (cancellable) {
-      history.pushState("_web_sdk_shown", "")
-    }
-    this.iframe.style.display = "block";
-
-    const waitForAgentState = new Promise(resolve => {
-      this.once("agent-state", () => {
-        resolve()
-      })
-    })
+    this.cancellable = cancellable
 
     await this.child.call("signUp", opts);
-    await waitForAgentState
-
-    if (cancellable) {
-      if (history.state === "_web_sdk_shown") {
-        history.back()
-      }
-    } else {
-      this.iframe.style.display = "none"
-    }
-
-    return this.agent
   }
 
   /* The `signIn` function is called by the `signIn` button in the UI. The `signIn`
@@ -159,42 +158,13 @@ class WebSdkApi extends EventEmitter {
   promise is rejected if a Holo error occurs or the user cancels the sign in process (when the cancellable opt is provided). */
   signIn = async (opts) => {
     const { cancellable = true } = opts || {}
-
-    if (cancellable) {
-      history.pushState("_web_sdk_shown", "")
-    }
-    this.iframe.style.display = "block";
-
-    const waitForAgentState = new Promise(resolve => {
-      this.once("agent-state", () => {
-        resolve()
-      })
-    })
+    this.cancellable = cancellable
 
     await this.child.call("signIn", opts)
-    await waitForAgentState
-
-    if (cancellable) {
-      if (history.state === "_web_sdk_shown") {
-        history.back()
-      }
-    } else {
-      this.iframe.style.display = "none";
-    }
-    return this.agent
   }
 
   signOut = async () => {
-    const waitForAgentState = new Promise(resolve => {
-      this.once("agent-state", () => {
-        resolve()
-      })
-    })
-
     await this.child.run("signOut")
-    await waitForAgentState
-
-    return this.agent
   }
 }
 
