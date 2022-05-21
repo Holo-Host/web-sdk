@@ -224,7 +224,7 @@ interface WebSdk {
   //
   // The returned promise resolves when the client has received a response from the host.
   //
-  // This does *not* return the zome call result directly. Instead, it returns a result which is eithor `"ok"` or `"error"`. (See `ZomeCallResult` below)
+  // This does *not* return the zome call result directly. Instead, it returns a result which is either `"ok"` or `"error"`. (See `ZomeCallResult` below)
   //
   // `zomeName`, `fnName` and `payload` have the same meaning as in [AppWebsocket.callZome].
   //
