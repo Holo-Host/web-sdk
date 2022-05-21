@@ -92,6 +92,7 @@ const main = async () => {
   // The credentials overlay is now visible to the user. Wait for them to sign in
   while (client.agent.isAnonymous || !client.agent.isAvailable) {
     await sleep(50)
+    // Again, this while/sleep pattern is for demo only. See comment above about doing this using an event handler
   }
 
   console.log(client.agent)
