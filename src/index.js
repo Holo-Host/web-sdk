@@ -9,26 +9,31 @@ function makeUrlAbsolute (url) {
   return new URL(url, window.location).href
 }
 
+// We make sure to only expose camelCase properties to the UI
 const presentAgentState = agent_state => ({
   id: agent_state.id,
   isAnonymous: agent_state.is_anonymous,
   isAvailable: agent_state.is_available,
   unrecoverableError: agent_state.unrecoverable_error,
   hostUrl: agent_state.host_url
-  // shouldShowForm: agent_state: should_show_form // We might need to expose this later
+  // We're keeping shouldShowForm as an implementation detail
+  // until there's a use-case for reacting to it in a UI.
+  //
+  // shouldShowForm: agent_state.should_show_form
 })
 
 /**
- * The `WebSdkApi` class is a wrapper around the COMB.js library that provides a JavaScript API for Holo-Hosted web apps to call Holochain.
+ * A `WebSdkApi` is a connection to a Chaperone iframe containing Holo's client logic.
  * @param child - The child process connecting to Chaperone that is being monitored.
  */
 class WebSdkApi extends EventEmitter {
+  // Private constructor. Use `connect` instead.
   constructor (child) {
     super()
-    this.child = child
+    this._child = child
     child.msg_bus.on('signal', signal => this.emit('signal', signal))
     child.msg_bus.on('agent-state', agent_state => {
-      this.setShouldShowForm(agent_state.should_show_form)
+      this._setShouldShowForm(agent_state.should_show_form)
       this.agent = presentAgentState(agent_state)
       this.emit('agent-state', this.agent)
     })
@@ -45,8 +50,7 @@ class WebSdkApi extends EventEmitter {
     chaperoneUrl,
     authFormCustomization: authOpts
   } = {}) => {
-    const hostname = window.location.hostname
-    const url = new URL(chaperoneUrl || `http://${hostname}:24273`)
+    const url = new URL(chaperoneUrl || 'https://chaperone.holo.host')
     if (authOpts !== undefined) {
       if (authOpts.logoUrl !== undefined) {
         url.searchParams.set('logo_url', makeUrlAbsolute(authOpts.logoUrl))
@@ -59,9 +63,6 @@ class WebSdkApi extends EventEmitter {
       }
       if (authOpts.publisherName !== undefined) {
         url.searchParams.set('publisher_name', authOpts.publisherName)
-      }
-      if (authOpts.anonymousAllowed !== undefined) {
-        url.searchParams.set('anonymous_allowed', authOpts.anonymousAllowed)
       }
       if (authOpts.membraneProofServer !== undefined) {
         url.searchParams.set(
@@ -76,8 +77,12 @@ class WebSdkApi extends EventEmitter {
       if (authOpts.skipRegistration !== undefined) {
         url.searchParams.set('skip_registration', authOpts.skipRegistration)
       }
-      if (authOpts.isPubPortal !== undefined) {
-        url.searchParams.set('is_pub_portal', authOpts.isPubPortal)
+      // INTERNAL OPTION
+      // anonymous_allowed is barely implemented in Chaperone, and is subject to change,
+      // so exposing this in the documentation is misleading.
+      // This is currently useful for some special hApps that can't support an anonymous instance.
+      if (authOpts.anonymousAllowed !== undefined) {
+        url.searchParams.set('anonymous_allowed', authOpts.anonymousAllowed)
       }
     }
 
@@ -115,7 +120,8 @@ class WebSdkApi extends EventEmitter {
       })
     }
 
-    // Note: Based on discussed model, chaperone either returns null or an error message (string)
+    // Chaperone either returns agent_state and happ_id (success case)
+    // or error_message
     const { error_message, agent_state, happ_id } = await child.call(
       'handshake'
     )
@@ -130,20 +136,20 @@ class WebSdkApi extends EventEmitter {
     return webSdkApi
   }
 
-  setShouldShowForm = should_show_form => {
+  _setShouldShowForm = should_show_form => {
     // Without this check, we call history.back() too many times and end up exiting the UI
-    if (this.should_show_form === should_show_form) {
+    if (this._should_show_form === should_show_form) {
       return
     }
 
-    this.should_show_form = should_show_form
+    this._should_show_form = should_show_form
     if (should_show_form) {
-      if (this.cancellable) {
+      if (this._cancellable) {
         history.pushState('_web_sdk_shown', '')
       }
       this.iframe.style.display = 'block'
     } else {
-      if (this.cancellable) {
+      if (this._cancellable) {
         if (history.state === '_web_sdk_shown') {
           history.back()
         }
@@ -152,36 +158,42 @@ class WebSdkApi extends EventEmitter {
     }
   }
 
-  zomeCall = async (...args) => await this.child.call('zomeCall', ...args)
+  zomeCall = async (...args) => await this._child.call('zomeCall', ...args)
 
-  appInfo = async (...args) => await this.child.call('appInfo', ...args)
+  appInfo = async (...args) => await this._child.call('appInfo', ...args)
 
-  cellData = async args => await this.child.call('cellData', ...args)
+  stateDump = async () => await this._child.call('stateDump')
 
-  stateDump = async () => await this.child.call('stateDump')
-
-  /* The `signUp` function is called by the `signUp` button in the UI. The `signUp`
-  function is async, so it returns a promise. The promise is resolved when the user is signed up. The
-  promise is rejected if a Holo error occurs or the user cancels the sign up process (when the cancellable opt is provided). */
+  /*
+  Triggers a request to show the credentials form
+  and start on the "Create Credentials" page.
+  
+  The returned promise resolves as soon as the iframe (Chaperone)
+  has received the request.
+  
+  If cancellable == true, then the form will have a close button
+  and if the user clicks it or presses the back arrow,
+  the credentials overlay will close.
+  */
   signUp = async opts => {
     const { cancellable = true } = opts || {}
-    this.cancellable = cancellable
+    this._cancellable = cancellable
 
-    await this.child.call('signUp', opts)
+    await this._child.call('signUp', opts)
   }
 
-  /* The `signIn` function is called by the `signIn` button in the UI. The `signIn`
-  function is async, so it returns a promise. The promise is resolved when the user is signed in. The
-  promise is rejected if a Holo error occurs or the user cancels the sign in process (when the cancellable opt is provided). */
+  /*
+  Same as signUp, but starts on the "Login" page instead.
+ */
   signIn = async opts => {
     const { cancellable = true } = opts || {}
-    this.cancellable = cancellable
+    this._cancellable = cancellable
 
-    await this.child.call('signIn', opts)
+    await this._child.call('signIn', opts)
   }
 
   signOut = async () => {
-    await this.child.run('signOut')
+    await this._child.run('signOut')
   }
 }
 
