@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+- `isPubPortal`, `publisherName` and `infoLink` auth options
+
+### Changed
+- Renamed `skipRegistration` option to `requireRegistrationCode`
+
 ## [0.6.4-prerelease] - 2022-28-22
 No change
 

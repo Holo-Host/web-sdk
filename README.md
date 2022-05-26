@@ -49,8 +49,7 @@ const main = async () => {
     authFormCustomization: {
       logoUrl: "my-logo.png",
       appName: "My App",
-      publisherName: "the best publisher ever",
-      skipRegistration: true
+      requireRegistrationCode: false
     }
   })
 
@@ -158,7 +157,6 @@ export async function connect (opts?: {
   // The above screenshots of the Login and Create Credentials screens
   // were generated with
   // {
-  //   publisherName: 'publisherName',
   //   appName: 'appName',
   //   logoUrl: '/docs_images/placeholder-logo.png',
   // }
@@ -166,16 +164,12 @@ export async function connect (opts?: {
   authFormCustomization?: {
     // The name of the hosted hApp. Currently shows up as "appName Login"
     appName?: string
-    // The name of the publisher. (The person paying for the hosting of the hApp.) Currently shows up as "published by publisherName"
-    publisherName?: string
     // The URL of the hApp logo. Currently displayed on a white background with no `width` or `height` constraints.
     logoUrl?: string
     // Determines whether the "REGISTRATION CODE" field is shown.
     // 
-    // Set this to `true` if your hApp does not require any Membrane Proofs.
-    skipRegistration?: boolean
-    // If specified, there will be an info "(?)" button next to the "REGISTRATION CODE" field that when clicked, will open `infoLink` in a new tab.
-    infoLink?: string
+    // Set this to `true` if you want to prompt the user for a registration code that will be passed directly to your happ as a mem_proof (ie, not using a memproof server). This field does nothing if the membraneProofServer option (see below) is set.
+    requireRegistrationCode?: boolean
     // Publishers may provide a "Membrane Proof Server" if they want control over sign-ups of new agents in the hApp.
     //
     // If `membraneProofServer` is not specified, then the "REGISTRATION CODE" field will be base64 decoded and passed as a Membrane Proof when installing the DNA for the hApp.
