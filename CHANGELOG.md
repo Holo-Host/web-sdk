@@ -5,10 +5,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.6.4-prerelease] - 2022-28-22
+## [0.6.5-prerelease] - 2022-05-30
+
+### Removed
+- `isPubPortal`, `publisherName` and `infoLink` auth options
+
+### Changed
+- Renamed `skipRegistration` option to `requireRegistrationCode`
+
+## [0.6.4-prerelease] - 2022-03-28
 No change
 
-## [0.6.3-prerelease] - 2022-28-22
+## [0.6.3-prerelease] - 2022-03-28
 ### Fixed
 - Race condition between client state and content of events
 

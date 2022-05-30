@@ -58,12 +58,6 @@ class WebSdkApi extends EventEmitter {
       if (authOpts.appName !== undefined) {
         url.searchParams.set('app_name', authOpts.appName)
       }
-      if (authOpts.infoLink !== undefined) {
-        url.searchParams.set('info_link', authOpts.infoLink)
-      }
-      if (authOpts.publisherName !== undefined) {
-        url.searchParams.set('publisher_name', authOpts.publisherName)
-      }
       if (authOpts.membraneProofServer !== undefined) {
         url.searchParams.set(
           'membrane_proof_server_url',
@@ -74,8 +68,8 @@ class WebSdkApi extends EventEmitter {
           JSON.stringify(authOpts.membraneProofServer.payload)
         )
       }
-      if (authOpts.skipRegistration !== undefined) {
-        url.searchParams.set('skip_registration', authOpts.skipRegistration)
+      if (authOpts.requireRegistrationCode !== undefined) {
+        url.searchParams.set('require_registration_code', authOpts.requireRegistrationCode)
       }
       // INTERNAL OPTION
       // anonymous_allowed is barely implemented in Chaperone, and is subject to change,
