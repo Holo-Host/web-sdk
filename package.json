@@ -1,9 +1,9 @@
 {
   "name": "@holo-host/web-sdk",
-  "version": "0.6.0-prerelease",
+  "version": "0.6.5-prerelease",
   "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
-  "main": "src/index.js",
-  "module": "src/index.js",
+  "main": "dist/holo_hosting_web_sdk.js",
+  "module": "dist/holo_hosting_web_sdk.js",
   "scripts": {
     "build": "npm run bundle",
     "bundle": "npx webpack --mode production --output-filename holo_hosting_web_sdk.js",
@@ -12,7 +12,7 @@
   "author": "Holo Ltd.",
   "contributors": [
     "Matthew Brisebois <matthew.brisebois@holo.host>",
-    "Robbie Carlton <robbie.carlton@holo.host>",
+    "Robbie Carlton <robbie.carlton@gmail.com>",
     "Lisa Jetton <lisa.jetton@holo.host>",
     "timotree3 <timorcb@gmail.com>",
     "zo-el <joel.ulahanna@holo.host>"
