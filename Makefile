@@ -1,8 +1,8 @@
 clean-files:
 	find . -name '*~' -exec rm {} \;
-preview-package:	clean-files test
+preview-package:	clean-files
 	npm pack --dry-run .
-create-package:		clean-files test
+create-package:		clean-files
 	npm pack .
-publish-package:	clean-files test
+publish-package:	clean-files
 	npm publish --access public .
