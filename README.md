@@ -270,10 +270,26 @@ type AgentState = {
   // If true, the agent is connected to a host, the app is installed, and you can make zome calls.
   isAvailable: boolean
   // If defined, then the agent has encountered an unrecoverable state, and the best course of action may be to notify the user or sign out.
-  unrecoverableError: string | undefined
+  unrecoverableError: UnrecoverableError | undefined
   // The URL of the HoloPort that is hosting the current agent. Useful for debugging.
   hostUrl: string
 }
+
+type UnrecoverableError = {
+  // Returned if the *publisher* has paused the happ in Publisher Portal. 
+  type: 'paused'
+} | {
+  // Returned if envoy cannot find the happ, likely because the publisher hasn't published it to the Holo network
+  type: 'not_hosted'
+} | {
+  // Internal holochain error
+  type: 'error_getting_app_info'
+  data: string
+} | {
+  // Internal holochain error
+  type: 'error_enabling'
+  data: string
+} | 
 
 type ZomeCallResult =
   // Returned if Holochain returned an error response, or if the host encountered an error with handling the request.
