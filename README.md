@@ -235,7 +235,7 @@ interface WebSdk {
     // The HDK will produce a MessagePack deserialization error if does not match the format expected by the DNA. You can `msgpack.decode()` the bytes in the error message to debug.
     payload: unknown,
     // A CapSecret, returned from a holochain `generate_cap_secret` call. Internally it's a 64 byte Uint8Array
-    cap_secret?: CapSecret
+    capSecret?: CapSecret
   }): Promise<ZomeCallResult>
   // The state of the current hosted agent. See `AgentState` below for structure.
   agent: AgentState
