@@ -23,9 +23,8 @@ We guard Login inside of an iframe so that the happ UI cannot directly access th
 
 ## Local dev environment (holo-dev-server)
 
-The production Chaperone at <https://chaperone.holo.host> is configured to connect to real HoloPorts, so it only works if you've already published your hApp to the Holo Hosting network. If you're still developing your happ, you can create a local Chaperone which directs all agents to a locally simulated HoloPort using a program called [`holo-dev-server`](https://github.com/Holo-Host/envoy-chaperone/tree/main/holo-dev-server).
+The production Chaperone at <https://chaperone.holo.host> is configured to connect to real HoloPorts, so it only works if you've already published your hApp to the Holo Hosting network. If you're still developing your happ, you can create a local Chaperone which directs all agents to a locally simulated HoloPort using a program called [`holo-dev-server`](https://holo-host.github.io/envoy-chaperone/).
 
-(holo-dev-server is developed in a private repostiory. We're planning on creating public download links for released binaries eventually, but in the meantime, reach out to us for help getting set up.)
 
 ## Examples
 
