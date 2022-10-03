@@ -3,6 +3,7 @@ const { inspect } = require("util");
 let next_response;
 let event_listeners = {}
 
+
 ;(<any>global).COMB = {
   async connect() {
     return Promise.resolve({
@@ -26,7 +27,9 @@ let event_listeners = {}
   }
 }
 
-module.exports = {
+console.log("(<any>global).COMB", )
+
+export default {
   nextResponse(value) {
     next_response = value;
   },

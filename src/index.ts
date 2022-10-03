@@ -79,7 +79,7 @@ class WebSdkApi extends EventEmitter {
   static connect = async ({
     chaperoneUrl,
     authFormCustomization: authOpts = {}
-  }: { chaperoneUrl: string, authFormCustomization: AuthFormCustomization }) => {
+  }: { chaperoneUrl: string, authFormCustomization?: AuthFormCustomization }) => {
     const url = new URL(chaperoneUrl || 'https://chaperone.holo.host')
     if (authOpts !== undefined) {
       if (authOpts.logoUrl !== undefined) {

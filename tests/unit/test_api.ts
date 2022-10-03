@@ -1,20 +1,24 @@
-const path = require('path');
-const log = require('@whi/stdlog')(path.basename(__filename), {
+import path from 'path'
+import makeLog from '@whi/stdlog'
+const log = makeLog(path.basename(__filename), {
   level: process.env.LOG_LEVEL || 'fatal',
 });
 
-const expect = require('chai').expect;
-let WebSdkApiLib = require("../../src/index.ts")
+import { expect } from 'chai'
+let WebSdkApi
+WebSdkApi = import("../../src/index")
 
-require("../mock_browser.ts");
-const mock_comb = require("../mock_comb.ts");
+import "../mock_browser.ts"
+import mock_comb  from "../mock_comb"
 
 describe("test API endpoints", () => {
   let holo;
   before(async () => {
     // Expected handshake response when successful is { happ_id, agent_state }
     mock_comb.nextResponse({ happ_id: '', agent_state: {} });
-    holo = await WebSdkApiLib.connect({});
+    holo = await WebSdkApi.connect({
+      chaperoneUrl: ''
+    });
   })
 
   it("should call zome function", async () => {
@@ -72,7 +76,7 @@ describe("test comb error", () => {
         throw new Error(expectedError);
       }
     };
-    (WebSdkApiLib = require("../../src/index.ts"))
+    WebSdkApi = import("../../src/index")
   })
   after(() => {
     (<any>global).COMB = globalComb;
@@ -83,7 +87,7 @@ describe("test comb error", () => {
     try {
       // Expected handshake response when successful is { happ_id, agent_state }
       mock_comb.nextResponse({ happ_id: '', agent_state: {} });
-      await WebSdkApiLib.connect({});
+      await WebSdkApi.connect({});
     } catch (e) {
       thrownMessage = e.message;
     }

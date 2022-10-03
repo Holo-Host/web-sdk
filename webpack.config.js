@@ -1,41 +1,40 @@
 module.exports			= {
-	target: "web",
+  target: "web",
+  mode: 'development', // production | development
+  devtool: 'source-map',
 
-	mode: 'development', // production | development
-	devtool: 'source-map',
+  entry: [ "babel-polyfill", "./src/index.ts" ],
 
-	entry: [ "babel-polyfill", "./src/index.ts" ],
+  // Assign 'module.exports' to the variable defined by `output.library`
+  output: {
+    library: "HoloWebSDK",
+    libraryTarget: "umd",
 
-	// Assign 'module.exports' to the variable defined by `output.library`
-	output: {
-		library: "HoloWebSDK",
-		libraryTarget: "umd",
+    publicPath: "/dist/",
+  },
 
-		publicPath: "/dist/",
-	},
+  resolve: {
+    extensions: [".ts", ".js"]
+  },
 
-	resolve: {
-		extensions: [".ts", ".js"]
-	},
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/, loader: "ts-loader"
+      }, 
+      {
+        test: /\.m?js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
+      }
+    ],
+  },
 
-	module: {
-		rules: [
-			{
-				test: /\.tsx?$/, loader: "ts-loader"
-			}, 
-			{
-				test: /\.m?js$/,
-				exclude: /(node_modules|bower_components)/,
-				use: {
-					loader: 'babel-loader',
-					options: {
-						presets: ['@babel/preset-env']
-					}
-				}
-			}
-		],
-	},
-
-	plugins: [
-	],
+  plugins: [
+  ],
 };
