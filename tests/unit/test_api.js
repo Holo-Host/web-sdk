@@ -73,7 +73,7 @@ describe("test comb error", () => {
         throw new Error(expectedError);
       }
     };
-    (WebSdkApi = require("../../src/index.js"))
+    (WebSdkApi = require("../../dist/index.js"))
   })
   after(() => {
     global.COMB = globalComb;

@@ -1,4 +1,4 @@
-const TESTING = global.COMB !== undefined
+const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
   if (typeof window !== "undefined") (<any>window).COMB = require('@holo-host/comb').COMB
 }
@@ -182,15 +182,13 @@ class WebSdkApi extends EventEmitter {
     }
   }
 
-  zomeCall = async (...args) => {
-    throw new Error(String(args))
-    console.log('^&* zome call', args)
-    return this._child.call('zomeCall', ...args)
-  }
+  // _child.call returns a promise, so all of these functions do as well
 
-  appInfo = async (...args) => await this._child.call('appInfo', ...args)
+  zomeCall = (...args) => this._child.call('zomeCall', ...args)
 
-  stateDump = async () => await this._child.call('stateDump')
+  appInfo = (...args) => this._child.call('appInfo', ...args)
+
+  stateDump = () => this._child.call('stateDump')
 
   /*
   Triggers a request to show the credentials form
@@ -220,9 +218,7 @@ class WebSdkApi extends EventEmitter {
     await this._child.call('signIn', opts)
   }
 
-  signOut = async () => {
-    await this._child.run('signOut')
-  }
+  signOut = () => this._child.run('signOut')
 }
 
 module.exports = WebSdkApi

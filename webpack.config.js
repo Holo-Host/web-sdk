@@ -15,7 +15,7 @@ module.exports			= {
 	},
 
 	resolve: {
-		extensions: [".ts"]
+		extensions: [".ts", ".js"]
 	},
 
 	module: {
@@ -23,9 +23,6 @@ module.exports			= {
 			{
 				test: /\.tsx?$/, loader: "ts-loader"
 			}, 
-			// {
-			// 	test: /\.js?$/, loader: "source-map-loader"
-			// }, 
 			{
 				test: /\.m?js$/,
 				exclude: /(node_modules|bower_components)/,
