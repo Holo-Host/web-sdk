@@ -1,6 +1,6 @@
 {
   "name": "@holo-host/web-sdk",
-  "version": "0.6.7-prerelease",
+  "version": "0.6.10",
   "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
   "main": "dist/holo_hosting_web_sdk.js",
   "module": "dist/holo_hosting_web_sdk.js",
@@ -31,18 +31,20 @@
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
     "@holo-host/chaperone": "^8.0.1",
-    "@types/node": "^12.11.1",
+    "@types/node": "^12.20.55",
     "@whi/stdlog": "^0.3.0",
     "babel-loader": "^8.1.0",
     "babel-polyfill": "^6.26.0",
     "chai": "^4.2.0",
     "mocha": "^6.2.1",
     "puppeteer": "^2.1.1",
-    "typescript": "^3.6.4",
+    "typescript": "^3.9.10",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "@holo-host/comb": "^0.3.0"
+    "@holo-host/comb": "^0.3.0",
+    "source-map-loader": "^4.0.0",
+    "ts-loader": "^9.4.1"
   }
 }
