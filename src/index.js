@@ -50,6 +50,7 @@ class WebSdkApi extends EventEmitter {
     chaperoneUrl,
     authFormCustomization: authOpts
   } = {}) => {
+    console.log('^&* CONNECTING TO WEB_SDK', chaperoneUrl)
     const url = new URL(chaperoneUrl || 'https://chaperone.holo.host')
     if (authOpts !== undefined) {
       if (authOpts.logoUrl !== undefined) {
