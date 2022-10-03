@@ -5,6 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Switched to typescript [(#78)]
+- Bumped webpack version [(#78)]
+- switched to yarn [(#78)]
+
+[(#78)](https://github.com/Holo-Host/web-sdk/pull/78)
+
 ## [0.6.7-prerelease] - 2022-08-17
 
 ### Fixed
