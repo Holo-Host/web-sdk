@@ -221,4 +221,4 @@ class WebSdkApi extends EventEmitter {
   signOut = () => this._child.run('signOut')
 }
 
-module.exports = WebSdkApi
+export = WebSdkApi

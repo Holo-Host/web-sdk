@@ -4,18 +4,17 @@ const log = require('@whi/stdlog')(path.basename(__filename), {
 });
 
 const expect = require('chai').expect;
-let WebSdkApi = require("../../src/index.js")
+let WebSdkApiLib = require("../../src/index.ts")
 
-require("../mock_browser.js");
-const mock_comb = require("../mock_comb.js");
-
+require("../mock_browser.ts");
+const mock_comb = require("../mock_comb.ts");
 
 describe("test API endpoints", () => {
   let holo;
   before(async () => {
     // Expected handshake response when successful is { happ_id, agent_state }
     mock_comb.nextResponse({ happ_id: '', agent_state: {} });
-    holo = await WebSdkApi.connect();
+    holo = await WebSdkApiLib.connect({});
   })
 
   it("should call zome function", async () => {
@@ -67,16 +66,16 @@ describe("test comb error", () => {
   let globalComb;
   const expectedError = 'timeout error';
   before(() => {
-    globalComb = global.COMB;
-    global.COMB = {
+    globalComb = (<any>global).COMB;
+    (<any>global).COMB = {
       connect() {
         throw new Error(expectedError);
       }
     };
-    (WebSdkApi = require("../../dist/index.js"))
+    (WebSdkApiLib = require("../../src/index.ts"))
   })
   after(() => {
-    global.COMB = globalComb;
+    (<any>global).COMB = globalComb;
   })
 
   it("should throw an error from COMB", async () => {
@@ -84,7 +83,7 @@ describe("test comb error", () => {
     try {
       // Expected handshake response when successful is { happ_id, agent_state }
       mock_comb.nextResponse({ happ_id: '', agent_state: {} });
-      await WebSdkApi.connect();
+      await WebSdkApiLib.connect({});
     } catch (e) {
       thrownMessage = e.message;
     }

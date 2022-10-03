@@ -3,7 +3,7 @@ const { inspect } = require("util");
 let next_response;
 let event_listeners = {}
 
-global.COMB = {
+;(<any>global).COMB = {
   async connect() {
     return Promise.resolve({
       // Test event listener set with callback
