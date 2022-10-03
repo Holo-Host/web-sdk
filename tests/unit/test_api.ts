@@ -4,11 +4,12 @@ const log = require('@whi/stdlog')(path.basename(__filename), {
 })
 
 import { expect } from 'chai'
-let WebSdkApi
-WebSdkApi = import("../../src/index")
 
-import "../mock_browser.ts"
-import mock_comb  from "../mock_comb"
+require("../mock_browser")
+const mock_comb = require("../mock_comb")
+
+let WebSdkApi
+WebSdkApi = require("../../src/index")
 
 describe("test API endpoints", () => {
   let holo;
@@ -75,7 +76,7 @@ describe("test comb error", () => {
         throw new Error(expectedError);
       }
     };
-    WebSdkApi = import("../../src/index")
+    WebSdkApi = require("../../src/index")
   })
   after(() => {
     (<any>global).COMB = globalComb;

@@ -27,9 +27,7 @@ let event_listeners = {}
   }
 }
 
-console.log("(<any>global).COMB", )
-
-export default {
+module.exports = {
   nextResponse(value) {
     next_response = value;
   },

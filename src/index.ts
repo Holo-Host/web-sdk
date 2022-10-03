@@ -112,7 +112,7 @@ class WebSdkApi extends EventEmitter {
 
     let child
     try {
-      child = await (<any>window).COMB.connect(url.href, 60000)
+      child = await ((<any>window).COMB || (<any>global).COMB).connect(url.href, 60000)
     } catch (err) {
       if (err.name === 'TimeoutError')
         console.log('Chaperone did not load properly. Is it running?')
