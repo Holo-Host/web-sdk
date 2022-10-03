@@ -1,4 +1,4 @@
-module.exports			= {
+module.exports = {
   target: "web",
   mode: 'development', // production | development
   devtool: 'source-map',

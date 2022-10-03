@@ -1,8 +1,7 @@
-import path from 'path'
-import makeLog from '@whi/stdlog'
-const log = makeLog(path.basename(__filename), {
-  level: process.env.LOG_LEVEL || 'fatal',
-});
+const path = require('path')
+const log = require('@whi/stdlog')(path.basename(__filename), {
+  level: process.env.LOG_LEVEL || 'fatal'
+})
 
 import { expect } from 'chai'
 let WebSdkApi
