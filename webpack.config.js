@@ -1,38 +1,40 @@
+module.exports = {
+  target: "web",
+  mode: 'development', // production | development
+  devtool: 'source-map',
 
-const path			= require('path');
-// const CopyWebpackPlugin		= require('copy-webpack-plugin');
+  entry: [ "babel-polyfill", "./src/index.ts" ],
 
-module.exports			= {
-    target: "web",
+  // Assign 'module.exports' to the variable defined by `output.library`
+  output: {
+    library: "HoloWebSDK",
+    libraryTarget: "umd",
 
-    mode: 'development', // production | development
-    devtool: 'source-map',
+    publicPath: "/dist/",
+  },
 
-    entry: [ "babel-polyfill", "./src/index.js" ],
+  resolve: {
+    extensions: [".ts", ".js"]
+  },
 
-    // Assign 'module.exports' to the variable defined by `output.library`
-    output: {
-	library: "HoloWebSDK",
-	libraryTarget: "umd",
-
-	publicPath: "/dist/",
-    },
-
-    module: {
-	rules: [
-	    {
-		test: /\.m?js$/,
-		exclude: /(node_modules|bower_components)/,
-		use: {
-		    loader: 'babel-loader',
-		    options: {
-			presets: ['@babel/preset-env']
-		    }
-		}
-	    }
-	],
-    },
-
-    plugins: [
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/, loader: "ts-loader"
+      }, 
+      {
+        test: /\.m?js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
+      }
     ],
+  },
+
+  plugins: [
+  ],
 };

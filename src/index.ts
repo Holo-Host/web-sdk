@@ -1,12 +1,42 @@
-const TESTING = global.COMB !== undefined
+const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
-  if (typeof window !== "undefined") window.COMB = require('@holo-host/comb').COMB
+  if (typeof window !== "undefined") (<any>window).COMB = require('@holo-host/comb').COMB
+}
+
+type AuthFormCustomization = {
+  // The name of the hosted hApp. Currently shows up as "appName Login"
+  appName?: string
+  // The URL of the hApp logo. Currently displayed on a white background with no `width` or `height` constraints.
+  logoUrl?: string
+  // Determines whether the "REGISTRATION CODE" field is shown.
+  // 
+  // Set this to `true` if you want to prompt the user for a registration code that will be passed directly to your happ as a mem_proof (ie, not using a memproof server). This field does nothing if the membraneProofServer option (see below) is set.
+  requireRegistrationCode?: boolean
+  // Publishers may provide a "Membrane Proof Server" if they want control over sign-ups of new agents in the hApp.
+  //
+  // If `membraneProofServer` is not specified, then the "REGISTRATION CODE" field will be base64 decoded and passed as a Membrane Proof when installing the DNA for the hApp.
+  //
+  // If `membraneProofServer` is specified, it works as follows:
+  // 1. When the user clicks "Submit" on the "Create Credentials" form, an HTTP request is made to `membraneProofServer.url` containing information like
+  //   - The public key of newly created agent
+  //   - The value entered into the "REGISTRATION CODE" field
+  //   - The contents of `membraneProofServer.payload`
+  // 2. The `membraneProofServer` returns with a Membrane Proof or an error.
+  //
+  // See here for an example implementation of the unstable Membrane Proof Server Protocol https://github.com/Holo-Host/holo-nixpkgs/tree/develop/overlays/holo-nixpkgs/membrane-proof-service
+  membraneProofServer?: {
+    url: string
+    // An arbitrary value that will be passed to the Membrane Proof Server as additional information
+    payload: unknown
+  },
+
+  anonymousAllowed?: boolean
 }
 
 const { EventEmitter } = require('events')
 
 function makeUrlAbsolute (url) {
-  return new URL(url, window.location).href
+  return new URL(url, window.location.href).href
 }
 
 // We make sure to only expose camelCase properties to the UI
@@ -48,8 +78,8 @@ class WebSdkApi extends EventEmitter {
    */
   static connect = async ({
     chaperoneUrl,
-    authFormCustomization: authOpts
-  } = {}) => {
+    authFormCustomization: authOpts = {}
+  }: { chaperoneUrl: string, authFormCustomization?: AuthFormCustomization }) => {
     const url = new URL(chaperoneUrl || 'https://chaperone.holo.host')
     if (authOpts !== undefined) {
       if (authOpts.logoUrl !== undefined) {
@@ -69,20 +99,20 @@ class WebSdkApi extends EventEmitter {
         )
       }
       if (authOpts.requireRegistrationCode !== undefined) {
-        url.searchParams.set('require_registration_code', authOpts.requireRegistrationCode)
+        url.searchParams.set('require_registration_code', String(authOpts.requireRegistrationCode))
       }
       // INTERNAL OPTION
       // anonymous_allowed is barely implemented in Chaperone, and is subject to change,
       // so exposing this in the documentation is misleading.
       // This is currently useful for some special hApps that can't support an anonymous instance.
       if (authOpts.anonymousAllowed !== undefined) {
-        url.searchParams.set('anonymous_allowed', authOpts.anonymousAllowed)
+        url.searchParams.set('anonymous_allowed', String(authOpts.anonymousAllowed))
       }
     }
 
     let child
     try {
-      child = await COMB.connect(url.href, 60000)
+      child = await ((<any>window).COMB || (<any>global).COMB).connect(url.href, 60000)
     } catch (err) {
       if (err.name === 'TimeoutError')
         console.log('Chaperone did not load properly. Is it running?')
@@ -152,11 +182,13 @@ class WebSdkApi extends EventEmitter {
     }
   }
 
-  zomeCall = async (...args) => await this._child.call('zomeCall', ...args)
+  // _child.call returns a promise, so all of these functions do as well
 
-  appInfo = async (...args) => await this._child.call('appInfo', ...args)
+  zomeCall = (...args) => this._child.call('zomeCall', ...args)
 
-  stateDump = async () => await this._child.call('stateDump')
+  appInfo = (...args) => this._child.call('appInfo', ...args)
+
+  stateDump = () => this._child.call('stateDump')
 
   /*
   Triggers a request to show the credentials form
@@ -186,9 +218,7 @@ class WebSdkApi extends EventEmitter {
     await this._child.call('signIn', opts)
   }
 
-  signOut = async () => {
-    await this._child.run('signOut')
-  }
+  signOut = () => this._child.run('signOut')
 }
 
-module.exports = WebSdkApi
+export = WebSdkApi
