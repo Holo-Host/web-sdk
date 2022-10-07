@@ -31,6 +31,7 @@
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
     "@holo-host/chaperone": "^8.0.1",
+    "@holochain/client": "^0.9.2",
     "@types/node": "^12.20.55",
     "@whi/stdlog": "^0.3.0",
     "babel-loader": "^8.1.0",

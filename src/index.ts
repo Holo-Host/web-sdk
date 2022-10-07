@@ -1,7 +1,26 @@
+import { EventEmitter } from 'events'
+import { RoleId, CapSecret, AppInfoResponse } from '@holochain/client'
+
 const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
   if (typeof window !== "undefined") (<any>window).COMB = require('@holo-host/comb').COMB
 }
+
+// PLACEHOLDER START
+// This code is a placeholder, ultimately these types will be imported directly from `@holochain/client`
+type CallZomeArgs = {
+  roleId: RoleId,
+  zomeName: string,
+  fnName: string,
+  capSecret: CapSecret,
+  payload: any
+}
+
+interface AppAgentClient extends EventEmitter {
+  callZome(args: CallZomeArgs): Promise<any>;
+  appInfo(): Promise<AppInfoResponse>
+}
+// PLACEHOLDER END
 
 type AuthFormCustomization = {
   // The name of the hosted hApp. Currently shows up as "appName Login"
@@ -33,7 +52,6 @@ type AuthFormCustomization = {
   anonymousAllowed?: boolean
 }
 
-const { EventEmitter } = require('events')
 
 function makeUrlAbsolute (url) {
   return new URL(url, window.location.href).href
@@ -56,16 +74,23 @@ const presentAgentState = agent_state => ({
  * A `WebSdkApi` is a connection to a Chaperone iframe containing Holo's client logic.
  * @param child - The child process connecting to Chaperone that is being monitored.
  */
-class WebSdkApi extends EventEmitter {
+class WebSdkApi extends EventEmitter implements AppAgentClient {
   // Private constructor. Use `connect` instead.
+  #child: any;
+  #agent: any
+  #iframe: any;
+  #happId: string;
+  #should_show_form: boolean;
+  #cancellable: boolean;
+
   constructor (child) {
     super()
-    this._child = child
+    this.#child = child
     child.msg_bus.on('signal', signal => this.emit('signal', signal))
     child.msg_bus.on('agent-state', agent_state => {
       this._setShouldShowForm(agent_state.should_show_form)
-      this.agent = presentAgentState(agent_state)
-      this.emit('agent-state', this.agent)
+      this.#agent = presentAgentState(agent_state)
+      this.emit('agent-state', this.#agent)
     })
   }
 
@@ -124,9 +149,9 @@ class WebSdkApi extends EventEmitter {
     // Set styles and history props when in production mode
     // Note: Set styles and history props only when in production mode
     if (!TESTING) {
-      webSdkApi.iframe = document.getElementsByClassName('comb-frame-0')[0]
-      webSdkApi.iframe.setAttribute('allowtransparency', 'true')
-      const style = webSdkApi.iframe.style
+      webSdkApi.#iframe = document.getElementsByClassName('comb-frame-0')[0]
+      webSdkApi.#iframe.setAttribute('allowtransparency', 'true')
+      const style = webSdkApi.#iframe.style
       style.zIndex = '99999999'
       style.width = '100%'
       style.height = '100%'
@@ -139,7 +164,7 @@ class WebSdkApi extends EventEmitter {
         if (event.state === '_web_sdk_shown') {
           history.back()
         } else {
-          webSdkApi.iframe.style.display = 'none'
+          webSdkApi.#iframe.style.display = 'none'
         }
       })
     }
@@ -150,45 +175,45 @@ class WebSdkApi extends EventEmitter {
       'handshake'
     )
     if (error_message) {
-      webSdkApi.iframe.style.display = 'none'
+      webSdkApi.#iframe.style.display = 'none'
       throw new Error(error_message)
     }
 
-    webSdkApi.agent = presentAgentState(agent_state)
-    webSdkApi.happId = happ_id
+    webSdkApi.#agent = presentAgentState(agent_state)
+    webSdkApi.#happId = happ_id
 
     return webSdkApi
   }
 
   _setShouldShowForm = should_show_form => {
     // Without this check, we call history.back() too many times and end up exiting the UI
-    if (this._should_show_form === should_show_form) {
+    if (this.#should_show_form === should_show_form) {
       return
     }
 
-    this._should_show_form = should_show_form
+    this.#should_show_form = should_show_form
     if (should_show_form) {
-      if (this._cancellable) {
+      if (this.#cancellable) {
         history.pushState('_web_sdk_shown', '')
       }
-      this.iframe.style.display = 'block'
+      this.#iframe.style.display = 'block'
     } else {
-      if (this._cancellable) {
+      if (this.#cancellable) {
         if (history.state === '_web_sdk_shown') {
           history.back()
         }
       }
-      this.iframe.style.display = 'none'
+      this.#iframe.style.display = 'none'
     }
   }
 
   // _child.call returns a promise, so all of these functions do as well
 
-  zomeCall = (...args) => this._child.call('zomeCall', ...args)
+  callZome = (args: CallZomeArgs): Promise<any> => this.#child.call('zomeCall', args)
 
-  appInfo = (...args) => this._child.call('appInfo', ...args)
+  appInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
 
-  stateDump = () => this._child.call('stateDump')
+  stateDump = () => this.#child.call('stateDump')
 
   /*
   Triggers a request to show the credentials form
@@ -203,9 +228,9 @@ class WebSdkApi extends EventEmitter {
   */
   signUp = async opts => {
     const { cancellable = true } = opts || {}
-    this._cancellable = cancellable
+    this.#cancellable = cancellable
 
-    await this._child.call('signUp', opts)
+    await this.#child.call('signUp', opts)
   }
 
   /*
@@ -213,12 +238,12 @@ class WebSdkApi extends EventEmitter {
  */
   signIn = async opts => {
     const { cancellable = true } = opts || {}
-    this._cancellable = cancellable
+    this.#cancellable = cancellable
 
-    await this._child.call('signIn', opts)
+    await this.#child.call('signIn', opts)
   }
 
-  signOut = () => this._child.run('signOut')
+  signOut = () => this.#child.run('signOut')
 }
 
-export = WebSdkApi
+export default WebSdkApi
