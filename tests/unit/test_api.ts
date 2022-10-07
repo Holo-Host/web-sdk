@@ -9,7 +9,9 @@ require("../mock_browser")
 const mock_comb = require("../mock_comb")
 
 let WebSdkApi
-WebSdkApi = require("../../src/index")
+WebSdkApi = require("../../src/index").default
+
+console.log('^&* WebSdkApi', WebSdkApi)
 
 describe("test API endpoints", () => {
   let holo;
@@ -31,7 +33,7 @@ describe("test API endpoints", () => {
       "available": "0",
     });
 
-    const response = await holo.zomeCall({
+    const response = await holo.callZome({
       roleId: "holofuel",
       zome: "transactions",
       fn: "ledger_state",
@@ -76,7 +78,7 @@ describe("test comb error", () => {
         throw new Error(expectedError);
       }
     };
-    WebSdkApi = require("../../src/index")
+    WebSdkApi = require("../../src/index").default
   })
   after(() => {
     (<any>global).COMB = globalComb;
