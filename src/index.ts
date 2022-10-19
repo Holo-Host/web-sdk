@@ -233,7 +233,7 @@ interface AppAgentClient extends EventEmitter {
 // so make sure they're up to date
 
 export type HoloSignal = {
-  data: any,
+  data: unknown,
   cell: InstalledCell
 }
 
