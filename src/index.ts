@@ -1,57 +1,10 @@
 import { EventEmitter } from 'events'
-import { RoleId, CapSecret, AppInfoResponse } from '@holochain/client'
+import { RoleId, CapSecret, AppInfoResponse, InstalledCell } from '@holochain/client'
 
 const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
   if (typeof window !== "undefined") (<any>window).COMB = require('@holo-host/comb').COMB
 }
-
-// PLACEHOLDER START
-// This code is a placeholder, ultimately these types will be imported directly from `@holochain/client`
-type CallZomeArgs = {
-  roleId: RoleId,
-  zomeName: string,
-  fnName: string,
-  capSecret: CapSecret,
-  payload: any
-}
-
-interface AppAgentClient extends EventEmitter {
-  callZome(args: CallZomeArgs): Promise<any>;
-  appInfo(): Promise<AppInfoResponse>
-}
-// PLACEHOLDER END
-
-type AuthFormCustomization = {
-  // The name of the hosted hApp. Currently shows up as "appName Login"
-  appName?: string
-  // The URL of the hApp logo. Currently displayed on a white background with no `width` or `height` constraints.
-  logoUrl?: string
-  // Determines whether the "REGISTRATION CODE" field is shown.
-  // 
-  // Set this to `true` if you want to prompt the user for a registration code that will be passed directly to your happ as a mem_proof (ie, not using a memproof server). This field does nothing if the membraneProofServer option (see below) is set.
-  requireRegistrationCode?: boolean
-  // Publishers may provide a "Membrane Proof Server" if they want control over sign-ups of new agents in the hApp.
-  //
-  // If `membraneProofServer` is not specified, then the "REGISTRATION CODE" field will be base64 decoded and passed as a Membrane Proof when installing the DNA for the hApp.
-  //
-  // If `membraneProofServer` is specified, it works as follows:
-  // 1. When the user clicks "Submit" on the "Create Credentials" form, an HTTP request is made to `membraneProofServer.url` containing information like
-  //   - The public key of newly created agent
-  //   - The value entered into the "REGISTRATION CODE" field
-  //   - The contents of `membraneProofServer.payload`
-  // 2. The `membraneProofServer` returns with a Membrane Proof or an error.
-  //
-  // See here for an example implementation of the unstable Membrane Proof Server Protocol https://github.com/Holo-Host/holo-nixpkgs/tree/develop/overlays/holo-nixpkgs/membrane-proof-service
-  membraneProofServer?: {
-    url: string
-    // An arbitrary value that will be passed to the Membrane Proof Server as additional information
-    payload: unknown
-  },
-
-  anonymousAllowed?: boolean
-}
-
 
 function makeUrlAbsolute (url) {
   return new URL(url, window.location.href).href
@@ -77,20 +30,20 @@ const presentAgentState = agent_state => ({
 class WebSdkApi extends EventEmitter implements AppAgentClient {
   // Private constructor. Use `connect` instead.
   #child: any;
-  #agent: any
+  agent: any
   #iframe: any;
-  #happId: string;
+  happId: string;
   #should_show_form: boolean;
   #cancellable: boolean;
 
   constructor (child) {
     super()
     this.#child = child
-    child.msg_bus.on('signal', signal => this.emit('signal', signal))
-    child.msg_bus.on('agent-state', agent_state => {
+    child.msg_bus.on('signal', (signal: HoloSignal) => this.emit('signal', signal))
+    child.msg_bus.on('agent-state', (agent_state: AgentState) => {
       this._setShouldShowForm(agent_state.should_show_form)
-      this.#agent = presentAgentState(agent_state)
-      this.emit('agent-state', this.#agent)
+      this.agent = presentAgentState(agent_state)
+      this.emit('agent-state', this.agent)
     })
   }
 
@@ -179,8 +132,8 @@ class WebSdkApi extends EventEmitter implements AppAgentClient {
       throw new Error(error_message)
     }
 
-    webSdkApi.#agent = presentAgentState(agent_state)
-    webSdkApi.#happId = happ_id
+    webSdkApi.agent = presentAgentState(agent_state)
+    webSdkApi.happId = happ_id
 
     return webSdkApi
   }
@@ -209,7 +162,17 @@ class WebSdkApi extends EventEmitter implements AppAgentClient {
 
   // _child.call returns a promise, so all of these functions do as well
 
-  callZome = (args: CallZomeArgs): Promise<any> => this.#child.call('zomeCall', args)
+  callZome = async (args: CallZomeArgs): Promise<any> => {
+    // translate Result type from chaperone into normal 
+    const result = await this.#child.call('zomeCall', args)
+    switch (result.type) {
+      case 'ok':
+        return result.data
+      case 'error':
+        throw new Error(result.data)
+      default
+    }
+  }
 
   appInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
 
@@ -247,3 +210,69 @@ class WebSdkApi extends EventEmitter implements AppAgentClient {
 }
 
 export default WebSdkApi
+
+// PLACEHOLDER START
+// This code is a placeholder, ultimately these types will be imported directly from `@holochain/client`
+type CallZomeArgs = {
+  roleId: RoleId,
+  zomeName: string,
+  fnName: string,
+  capSecret: CapSecret,
+  payload: any
+}
+
+interface AppAgentClient extends EventEmitter {
+  callZome(args: CallZomeArgs): Promise<any>;
+  appInfo(): Promise<AppInfoResponse>
+}
+// PLACEHOLDER END
+
+// DUPLICATION START
+// This code is duplicated from Chaperone. There isn't a neat way to share the code directly without publishing these types as their own npm module, 
+// so make sure they're up to date
+
+export type HoloSignal = {
+  data: any,
+  cell: InstalledCell
+}
+
+export type AgentState = {
+  id: string,
+  is_anonymous: boolean,
+  host_url: string,
+  is_available: boolean,
+  unrecoverable_error: any,
+  should_show_form?: boolean
+}
+
+// DUPLICATION END
+
+type AuthFormCustomization = {
+  // The name of the hosted hApp. Currently shows up as "appName Login"
+  appName?: string
+  // The URL of the hApp logo. Currently displayed on a white background with no `width` or `height` constraints.
+  logoUrl?: string
+  // Determines whether the "REGISTRATION CODE" field is shown.
+  // 
+  // Set this to `true` if you want to prompt the user for a registration code that will be passed directly to your happ as a mem_proof (ie, not using a memproof server). This field does nothing if the membraneProofServer option (see below) is set.
+  requireRegistrationCode?: boolean
+  // Publishers may provide a "Membrane Proof Server" if they want control over sign-ups of new agents in the hApp.
+  //
+  // If `membraneProofServer` is not specified, then the "REGISTRATION CODE" field will be base64 decoded and passed as a Membrane Proof when installing the DNA for the hApp.
+  //
+  // If `membraneProofServer` is specified, it works as follows:
+  // 1. When the user clicks "Submit" on the "Create Credentials" form, an HTTP request is made to `membraneProofServer.url` containing information like
+  //   - The public key of newly created agent
+  //   - The value entered into the "REGISTRATION CODE" field
+  //   - The contents of `membraneProofServer.payload`
+  // 2. The `membraneProofServer` returns with a Membrane Proof or an error.
+  //
+  // See here for an example implementation of the unstable Membrane Proof Server Protocol https://github.com/Holo-Host/holo-nixpkgs/tree/develop/overlays/holo-nixpkgs/membrane-proof-service
+  membraneProofServer?: {
+    url: string
+    // An arbitrary value that will be passed to the Membrane Proof Server as additional information
+    payload: unknown
+  },
+
+  anonymousAllowed?: boolean
+}
