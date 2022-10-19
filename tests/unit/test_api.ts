@@ -11,8 +11,6 @@ const mock_comb = require("../mock_comb")
 let WebSdkApi
 WebSdkApi = require("../../src/index").default
 
-console.log('^&* WebSdkApi', WebSdkApi)
-
 describe("test API endpoints", () => {
   let holo;
   before(async () => {
@@ -25,13 +23,16 @@ describe("test API endpoints", () => {
 
   it("should call zome function", async () => {
     mock_comb.nextResponse({
-      "balance": "0",
-      "credit": "0",
-      "payable": "0",
-      "receivable": "0",
-      "fees": "0",
-      "available": "0",
-    });
+      type: 'ok',
+      data: {
+        "balance": "0",
+        "credit": "0",
+        "payable": "0",
+        "receivable": "0",
+        "fees": "0",
+        "available": "0",  
+      }
+    })
 
     const response = await holo.callZome({
       roleId: "holofuel",
