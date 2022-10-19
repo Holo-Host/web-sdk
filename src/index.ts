@@ -170,7 +170,8 @@ class WebSdkApi extends EventEmitter implements AppAgentClient {
         return result.data
       case 'error':
         throw new Error(result.data)
-      default
+      default:
+        throw new Error(`Unrecognized zome result type: ${result.type}`)
     }
   }
 
