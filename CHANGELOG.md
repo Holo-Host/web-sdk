@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.8-prerelease] - 2022-10-20
+
 ### Changed
 - Updates api to new js client pattern [(#79)]
   - WebSdk implements the AppAgentClient interface
