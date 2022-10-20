@@ -6,10 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- Updates api to new js client pattern [(#79)]
+  - WebSdk implements the AppAgentClient interface
+  - Zome call now unwraps succesful results and throws errors
+  - See changes to README for full details of api changes
 - Switched to typescript [(#78)]
 - Bumped webpack version [(#78)]
 - switched to yarn [(#78)]
 
+[(#79)]: https://github.com/Holo-Host/web-sdk/pull/79
 [(#78)]: https://github.com/Holo-Host/web-sdk/pull/78
 
 ## [0.6.7-prerelease] - 2022-08-17

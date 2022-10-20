@@ -68,8 +68,8 @@ const main = async () => {
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
   while (!client.agent.isAvailable) {
     await sleep(50)
-    // In a real UI, we would register an event handler for `client.on('agent-state')`
-    // and store the agent state in a reactive UI state so that our components can just branch on isAvailable.
+    // ATTN! This is not production quality code. In a real UI, you should register an event handler for `client.on('agent-state')`
+    // and store the agent state in reactive state so that your components can just branch on isAvailable.
   }
 
   // Check what kind of agent we have
@@ -217,12 +217,12 @@ interface WebSdk {
   //
   // The returned promise resolves when the client has received a response from the host.
   //
-  // This does *not* return the zome call result directly. Instead, it returns a result which is either `"ok"` or `"error"`. (See `ZomeCallResult` below)
+  // This returns the zome call result directly on success, and throws an error on failure
   //
   // `zomeName`, `fnName` and `payload` have the same meaning as in [AppWebsocket.callZome].
   //
   // [AppWebsocket.callZome]: https://github.com/holochain/holochain-client-js/blob/develop/docs/API_appwebsocket.md#appwebsocketcallzome-cell_id-zome_name-fn_name-payload-provenance-cap-
-  async zomeCall(args: {
+  async callZome(args: {
     // The role ID of the DNA to call into. Determined by the `happ.yaml` for your hApp
     roleId: string
     // The name of the zome to call into. Determined by the `dna.yaml` of your hApp
@@ -235,7 +235,7 @@ interface WebSdk {
     payload: unknown,
     // A CapSecret, returned from a holochain `generate_cap_secret` call. Internally it's a 64 byte Uint8Array
     capSecret?: CapSecret
-  }): Promise<ZomeCallResult>
+  }): Promise<any>
   // The state of the current hosted agent. See `AgentState` below for structure.
   agent: AgentState
   // The unique ID within the Holo Hosting network for the current hApp. 
@@ -260,6 +260,16 @@ interface WebSdk {
   async appInfo(): Promise<InstalledAppInfo>
   // (NOT IMPLEMENTED) Calls StateDump using the Holochain admin websocket on the hosted agent's sourcechain, and returns the result.
   async stateDump(): Promise<StateDump>
+}
+
+// HoloSignal and AgentState types are exported from this package
+
+type HoloSignal = {
+  // The payload of the signal as provided by the DNA
+  data: unknown
+  // The hash of the DNA that emitted this signal
+  // (Helpful to disambiguate if the hApp has multiple DNAs)
+  cell: InstalledCell
 }
 
 type AgentState = {
@@ -292,31 +302,19 @@ type UnrecoverableError = {
   data: string
 } | 
 
-type ZomeCallResult =
-  // Returned if Holochain returned an error response, or if the host encountered an error with handling the request.
-  | { type: 'error'; data: string }
-  // Returned if successful. `data` should be the value returned by the DNA
-  | { type: 'ok'; data: unknown }
-
-type Signal = {
-  // The payload of the signal as provided by the DNA
-  data: unknown
-  // The hash of the DNA that emitted this signal
-  // (Helpful to disambiguate if the hApp has multiple DNAs)
-  dna_hash: Uint8Array
-}
-
 // TODO: Once this feature is implemented, update this to match the state dump structure in holochain-client-js 
 type StateDump = void
 
 // BELOW THIS LINE COPIED FROM
 // https://github.com/holochain/holochain-client-js/blob/develop/src/api/types.ts
+type InstalledCell = {
+  cell_id: [Uint8Array, Uint8Array]
+  role_id: string
+}
+
 type InstalledAppInfo = {
   installed_app_id: string
-  cell_data: Array<{
-    cell_id: [Uint8Array, Uint8Array]
-    role_id: string
-  }>
+  cell_data: Array<>
   status: InstalledAppInfoStatus
 }
 
