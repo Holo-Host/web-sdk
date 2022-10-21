@@ -164,7 +164,7 @@ class WebSdkApi extends EventEmitter implements AppAgentClient {
 
   callZome = async (args: CallZomeArgs): Promise<any> => {
     // translate Result type from chaperone into normal 
-    const result = await this.#child.call('zomeCall', args)
+    const result = await this.#child.call('callZome', args)
     switch (result.type) {
       case 'ok':
         return result.data
@@ -218,7 +218,7 @@ type CallZomeArgs = {
   roleId: RoleId,
   zomeName: string,
   fnName: string,
-  capSecret: CapSecret,
+  capSecret?: CapSecret,
   payload: any
 }
 
@@ -274,6 +274,9 @@ type AuthFormCustomization = {
     // An arbitrary value that will be passed to the Membrane Proof Server as additional information
     payload: unknown
   },
-
+  // INTERNAL OPTION
+  // anonymous_allowed is barely implemented in Chaperone, and is subject to change,
+  // so exposing this in the documentation is misleading.
+  // This is currently useful for some special hApps that can't support an anonymous instance.
   anonymousAllowed?: boolean
 }
