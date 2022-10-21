@@ -17,7 +17,7 @@
 			await holo.ready();
 			window.websdk = holo;
 
-			console.log(await holo.zomeCall({
+			console.log(await holo.callZome({
 				roleId: "holofuel",
 				zome: "transactions",
 				fn: "ledger_state",
