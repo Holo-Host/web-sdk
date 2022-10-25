@@ -1,6 +1,6 @@
 # Holo Hosting Web SDK
 
-Web SDK is the core interface for accessing Holo-Hosted Holochain apps from a web UI. Web SDK provides the same methods for manipulating a Holochain agent as `AppWebsocket` from [holochain-client-js][] (`zomeCall` and `appInfo`), but additionally provides methods for determining *which hosted agent* to access (`signIn`, `signUp`, and `signOut`).
+Web SDK is the core interface for accessing Holo-Hosted Holochain apps from a web UI. Web SDK provides the same methods for manipulating a Holochain agent as `AppWebsocket` from [holochain-client-js][] (`callZome` and `appInfo`), but additionally provides methods for determining *which hosted agent* to access (`signIn`, `signUp`, and `signOut`).
 
 [holochain-client-js]: https://github.com/holochain/holochain-client-js
 
@@ -105,7 +105,7 @@ const main = async () => {
   */
 
   // Commit an entry to the test DNA
-  const result = await client.zomeCall({
+  const result = await client.callZome({
     roleId: "test",
     zomeName: "test",
     fnName: "create_link",
@@ -120,7 +120,7 @@ const main = async () => {
   */
 
   // Any error returned by Holochain or the DNA itself is passed through as a normal value
-  const error_result = await client.zomeCall({
+  const error_result = await client.callZome({
     roleId: "test",
     zomeName: "test",
     fnName: "create_link",
