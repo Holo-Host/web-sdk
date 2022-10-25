@@ -1,6 +1,6 @@
 # Holo Hosting Web SDK
 
-Web SDK is the core interface for accessing Holo-Hosted Holochain apps from a web UI. Web SDK provides the same methods for manipulating a Holochain agent as `AppWebsocket` from [holochain-client-js][] (`zomeCall` and `appInfo`), but additionally provides methods for determining *which hosted agent* to access (`signIn`, `signUp`, and `signOut`).
+Web SDK is the core interface for accessing Holo-Hosted Holochain apps from a web UI. Web SDK provides the same methods for manipulating a Holochain agent as `AppWebsocket` from [holochain-client-js][] (`callZome` and `appInfo`), but additionally provides methods for determining *which hosted agent* to access (`signIn`, `signUp`, and `signOut`).
 
 [holochain-client-js]: https://github.com/holochain/holochain-client-js
 
@@ -23,9 +23,8 @@ We guard Login inside of an iframe so that the happ UI cannot directly access th
 
 ## Local dev environment (holo-dev-server)
 
-The production Chaperone at <https://chaperone.holo.host> is configured to connect to real HoloPorts, so it only works if you've already published your hApp to the Holo Hosting network. If you're still developing your happ, you can create a local Chaperone which directs all agents to a locally simulated HoloPort using a program called [`holo-dev-server`](https://github.com/Holo-Host/envoy-chaperone/tree/main/holo-dev-server).
+The production Chaperone at <https://chaperone.holo.host> is configured to connect to real HoloPorts, so it only works if you've already published your hApp to the Holo Hosting network. If you're still developing your happ, you can create a local Chaperone which directs all agents to a locally simulated HoloPort using a program called [`holo-dev-server`](https://holo-host.github.io/envoy-chaperone/).
 
-(holo-dev-server is developed in a private repostiory. We're planning on creating public download links for released binaries eventually, but in the meantime, reach out to us for help getting set up.)
 
 ## Examples
 
@@ -69,8 +68,8 @@ const main = async () => {
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
   while (!client.agent.isAvailable) {
     await sleep(50)
-    // In a real UI, we would register an event handler for `client.on('agent-state')`
-    // and store the agent state in a reactive UI state so that our components can just branch on isAvailable.
+    // ATTN! This is not production quality code. In a real UI, you should register an event handler for `client.on('agent-state')`
+    // and store the agent state in reactive state so that your components can just branch on isAvailable.
   }
 
   // Check what kind of agent we have
@@ -106,7 +105,7 @@ const main = async () => {
   */
 
   // Commit an entry to the test DNA
-  const result = await client.zomeCall({
+  const result = await client.callZome({
     roleId: "test",
     zomeName: "test",
     fnName: "create_link",
@@ -121,7 +120,7 @@ const main = async () => {
   */
 
   // Any error returned by Holochain or the DNA itself is passed through as a normal value
-  const error_result = await client.zomeCall({
+  const error_result = await client.callZome({
     roleId: "test",
     zomeName: "test",
     fnName: "create_link",
@@ -218,12 +217,12 @@ interface WebSdk {
   //
   // The returned promise resolves when the client has received a response from the host.
   //
-  // This does *not* return the zome call result directly. Instead, it returns a result which is either `"ok"` or `"error"`. (See `ZomeCallResult` below)
+  // This returns the zome call result directly on success, and throws an error on failure
   //
   // `zomeName`, `fnName` and `payload` have the same meaning as in [AppWebsocket.callZome].
   //
   // [AppWebsocket.callZome]: https://github.com/holochain/holochain-client-js/blob/develop/docs/API_appwebsocket.md#appwebsocketcallzome-cell_id-zome_name-fn_name-payload-provenance-cap-
-  async zomeCall(args: {
+  async callZome(args: {
     // The role ID of the DNA to call into. Determined by the `happ.yaml` for your hApp
     roleId: string
     // The name of the zome to call into. Determined by the `dna.yaml` of your hApp
@@ -233,8 +232,10 @@ interface WebSdk {
     // The payload to pass to the function.
     // 
     // The HDK will produce a MessagePack deserialization error if does not match the format expected by the DNA. You can `msgpack.decode()` the bytes in the error message to debug.
-    payload: unknown
-  }): Promise<ZomeCallResult>
+    payload: unknown,
+    // A CapSecret, returned from a holochain `generate_cap_secret` call. Internally it's a 64 byte Uint8Array
+    capSecret?: CapSecret
+  }): Promise<any>
   // The state of the current hosted agent. See `AgentState` below for structure.
   agent: AgentState
   // The unique ID within the Holo Hosting network for the current hApp. 
@@ -261,6 +262,16 @@ interface WebSdk {
   async stateDump(): Promise<StateDump>
 }
 
+// HoloSignal and AgentState types are exported from this package
+
+type HoloSignal = {
+  // The payload of the signal as provided by the DNA
+  data: unknown
+  // The hash of the DNA that emitted this signal
+  // (Helpful to disambiguate if the hApp has multiple DNAs)
+  cell: InstalledCell
+}
+
 type AgentState = {
   // The base64-encoded public key of the current hosted agent
   id: string
@@ -270,36 +281,40 @@ type AgentState = {
   // If true, the agent is connected to a host, the app is installed, and you can make zome calls.
   isAvailable: boolean
   // If defined, then the agent has encountered an unrecoverable state, and the best course of action may be to notify the user or sign out.
-  unrecoverableError: string | undefined
+  unrecoverableError: UnrecoverableError | undefined
   // The URL of the HoloPort that is hosting the current agent. Useful for debugging.
   hostUrl: string
 }
 
-type ZomeCallResult =
-  // Returned if Holochain returned an error response, or if the host encountered an error with handling the request.
-  | { type: 'error'; data: string }
-  // Returned if successful. `data` should be the value returned by the DNA
-  | { type: 'ok'; data: unknown }
-
-type Signal = {
-  // The payload of the signal as provided by the DNA
-  data: unknown
-  // The hash of the DNA that emitted this signal
-  // (Helpful to disambiguate if the hApp has multiple DNAs)
-  dna_hash: Uint8Array
-}
+type UnrecoverableError = {
+  // Returned if the *publisher* has paused the happ in Publisher Portal. 
+  type: 'paused'
+} | {
+  // Returned if envoy cannot find the happ, likely because the publisher hasn't published it to the Holo network
+  type: 'not_hosted'
+} | {
+  // Internal holochain error
+  type: 'error_getting_app_info'
+  data: string
+} | {
+  // Internal holochain error
+  type: 'error_enabling'
+  data: string
+} | 
 
 // TODO: Once this feature is implemented, update this to match the state dump structure in holochain-client-js 
 type StateDump = void
 
 // BELOW THIS LINE COPIED FROM
 // https://github.com/holochain/holochain-client-js/blob/develop/src/api/types.ts
+type InstalledCell = {
+  cell_id: [Uint8Array, Uint8Array]
+  role_id: string
+}
+
 type InstalledAppInfo = {
   installed_app_id: string
-  cell_data: Array<{
-    cell_id: [Uint8Array, Uint8Array]
-    role_id: string
-  }>
+  cell_data: Array<>
   status: InstalledAppInfoStatus
 }
 

@@ -5,6 +5,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.8-prerelease] - 2022-10-20
+
+### Changed
+- Updates api to new js client pattern [(#79)]
+  - WebSdk implements the AppAgentClient interface
+  - Zome call now unwraps succesful results and throws errors
+  - See changes to README for full details of api changes
+- Switched to typescript [(#78)]
+- Bumped webpack version [(#78)]
+- switched to yarn [(#78)]
+
+[(#79)]: https://github.com/Holo-Host/web-sdk/pull/79
+[(#78)]: https://github.com/Holo-Host/web-sdk/pull/78
+
+## [0.6.7-prerelease] - 2022-08-17
+
+### Fixed
+- COMB undefined error
+
+## [0.6.6-prerelease] - 2022-06-03
+
+### Changed
+- updated `comb` to v0.3.0
+
 ## [0.6.5-prerelease] - 2022-05-30
 
 ### Removed
