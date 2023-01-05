@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Uses AppAgentClient from @holochain/client@0.10.4
+  - Including `createCloneCell` and `archiveCloneCell`
+
 ## [0.6.8-prerelease] - 2022-10-20
 
 ### Changed

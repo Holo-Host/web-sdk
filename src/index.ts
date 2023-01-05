@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events'
-import { RoleId, CapSecret, AppInfoResponse, InstalledCell } from '@holochain/client'
+import Emittery from "emittery"
+import { AppInfoResponse, InstalledCell, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AppArchiveCloneCellRequest, ArchiveCloneCellResponse } from '@holochain/client'
 
 const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
@@ -27,7 +27,7 @@ const presentAgentState = agent_state => ({
  * A `WebSdkApi` is a connection to a Chaperone iframe containing Holo's client logic.
  * @param child - The child process connecting to Chaperone that is being monitored.
  */
-class WebSdkApi extends EventEmitter implements AppAgentClient {
+class WebSdkApi implements AppAgentClient {
   // Private constructor. Use `connect` instead.
   #child: any;
   agent: any
@@ -35,15 +35,15 @@ class WebSdkApi extends EventEmitter implements AppAgentClient {
   happId: string;
   #should_show_form: boolean;
   #cancellable: boolean;
+  #emitter = new Emittery();
 
   constructor (child) {
-    super()
     this.#child = child
-    child.msg_bus.on('signal', (signal: HoloSignal) => this.emit('signal', signal))
+    child.msg_bus.on('signal', (signal: HoloSignal) => this.#emitter.emit('signal', signal))
     child.msg_bus.on('agent-state', (agent_state: AgentState) => {
       this._setShouldShowForm(agent_state.should_show_form)
       this.agent = presentAgentState(agent_state)
-      this.emit('agent-state', this.agent)
+      this.#emitter.emit('agent-state', this.agent)
     })
   }
 
@@ -162,7 +162,7 @@ class WebSdkApi extends EventEmitter implements AppAgentClient {
 
   // _child.call returns a promise, so all of these functions do as well
 
-  callZome = async (args: CallZomeArgs): Promise<any> => {
+  callZome = async (args: AppAgentCallZomeRequest): Promise<any> => {
     // translate Result type from chaperone into normal 
     const result = await this.#child.call('callZome', args)
     switch (result.type) {
@@ -177,7 +177,15 @@ class WebSdkApi extends EventEmitter implements AppAgentClient {
 
   appInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
 
+  createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => this.#child.call('createCloneCell', args)
+
+  archiveCloneCell = (args: AppArchiveCloneCellRequest): Promise<ArchiveCloneCellResponse> => this.#child.call('archiveCloneCell', args)
+
   stateDump = () => this.#child.call('stateDump')
+
+  on(eventName, listener) {
+    return this.#emitter.on(eventName, listener);
+  }
 
   /*
   Triggers a request to show the credentials form
@@ -211,22 +219,6 @@ class WebSdkApi extends EventEmitter implements AppAgentClient {
 }
 
 export default WebSdkApi
-
-// PLACEHOLDER START
-// This code is a placeholder, ultimately these types will be imported directly from `@holochain/client`
-type CallZomeArgs = {
-  roleId: RoleId,
-  zomeName: string,
-  fnName: string,
-  capSecret?: CapSecret,
-  payload: any
-}
-
-interface AppAgentClient extends EventEmitter {
-  callZome(args: CallZomeArgs): Promise<any>;
-  appInfo(): Promise<AppInfoResponse>
-}
-// PLACEHOLDER END
 
 // DUPLICATION START
 // This code is duplicated from Chaperone. There isn't a neat way to share the code directly without publishing these types as their own npm module, 
