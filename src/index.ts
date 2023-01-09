@@ -1,5 +1,5 @@
 import Emittery from "emittery"
-import { AppInfoResponse, InstalledCell, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AppArchiveCloneCellRequest, ArchiveCloneCellResponse } from '@holochain/client'
+import { AppInfoResponse, InstalledCell, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse } from '@holochain/client'
 
 const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
@@ -36,6 +36,7 @@ class WebSdkApi implements AppAgentClient {
   #should_show_form: boolean;
   #cancellable: boolean;
   #emitter = new Emittery();
+  myPubKey: AgentPubKey;
 
   constructor (child) {
     this.#child = child
@@ -179,8 +180,10 @@ class WebSdkApi implements AppAgentClient {
 
   createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => this.#child.call('createCloneCell', args)
 
-  archiveCloneCell = (args: AppArchiveCloneCellRequest): Promise<ArchiveCloneCellResponse> => this.#child.call('archiveCloneCell', args)
+  disableCloneCell = (args: AppDisableCloneCellRequest): Promise<DisableCloneCellResponse> => this.#child.call('disableCloneCell', args)
 
+  enableCloneCell = (args: AppEnableCloneCellRequest): Promise<EnableCloneCellResponse> => this.#child.call('enableCloneCell', args)
+  
   stateDump = () => this.#child.call('stateDump')
 
   on(eventName, listener) {

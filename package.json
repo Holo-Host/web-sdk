@@ -46,6 +46,6 @@
   },
   "dependencies": {
     "@holo-host/comb": "^0.3.0",
-    "@holochain/client": "0.10.4"
+    "@holochain/client": "^0.11.9"
   }
 }
