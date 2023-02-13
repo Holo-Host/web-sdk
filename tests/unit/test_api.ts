@@ -55,7 +55,7 @@ describe("test API endpoints", () => {
 
     const expectedResponse = {
       installed_app_id,
-      cell_data: [[['dna_hash', 'agent_pub_key'], 'dna_alias']]
+      cell_data: [[['dna_hash', 'agent_pub_key'], 'role_name']]
     };
 
     mock_comb.nextResponse(expectedResponse);
