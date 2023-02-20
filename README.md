@@ -270,6 +270,8 @@ type HoloSignal = {
   // The hash of the DNA that emitted this signal
   // (Helpful to disambiguate if the hApp has multiple DNAs)
   cell: InstalledCell
+  //
+  zome_name: String
 }
 
 type AgentState = {

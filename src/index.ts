@@ -229,7 +229,8 @@ export default WebSdkApi
 
 export type HoloSignal = {
   data: unknown,
-  cell: InstalledCell
+  cell: InstalledCell,
+  zome_name: string,
 }
 
 export type AgentState = {
