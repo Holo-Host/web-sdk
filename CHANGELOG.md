@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Uses AppAgentClient from @holochain/client@0.12.0
   - Including `createCloneCell` and `enableCloneCell` and `disableCloneCell`
 - Tests moved from mocha to jest
+- CI uses yarn instead of npm
+
+### Added
+- CI tests on node 16.x
+
+### Removed
+- CI tests on node 12.x (holochain/client no longer supports it)
+
 
 ## [0.6.8-prerelease] - 2022-10-20
 
