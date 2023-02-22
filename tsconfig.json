@@ -3,7 +3,8 @@
     "outDir": "dist",
     "allowJs": false,
     "target": "es6",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "esModuleInterop": true
   },
   "include": ["./src/**/*"]
 }
