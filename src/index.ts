@@ -161,28 +161,15 @@ class WebSdkApi implements AppAgentClient {
     }
   }
 
-  // _child.call returns a promise, so all of these functions do as well
-
-  callZome = async (args: AppAgentCallZomeRequest): Promise<any> => {
-    // translate Result type from chaperone into normal 
-    const result = await this.#child.call('callZome', args)
-    switch (result.type) {
-      case 'ok':
-        return result.data
-      case 'error':
-        throw new Error(result.data)
-      default:
-        throw new Error(`Unrecognized zome result type: ${result.type}`)
-    }
-  }
-
   appInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
 
-  createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => this.#child.call('createCloneCell', args)
+  callZome = async (args: AppAgentCallZomeRequest): Promise<any> => unwrap(this.#child.call('callZome', args))
 
-  disableCloneCell = (args: AppDisableCloneCellRequest): Promise<DisableCloneCellResponse> => this.#child.call('disableCloneCell', args)
+  createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => unwrap(this.#child.call('createCloneCell', args))
 
-  enableCloneCell = (args: AppEnableCloneCellRequest): Promise<EnableCloneCellResponse> => this.#child.call('enableCloneCell', args)
+  disableCloneCell = (args: AppDisableCloneCellRequest): Promise<DisableCloneCellResponse> => unwrap(this.#child.call('disableCloneCell', args))
+
+  enableCloneCell = (args: AppEnableCloneCellRequest): Promise<EnableCloneCellResponse> => unwrap(this.#child.call('enableCloneCell', args))
   
   stateDump = () => this.#child.call('stateDump')
 
@@ -275,4 +262,25 @@ type AuthFormCustomization = {
   // so exposing this in the documentation is misleading.
   // This is currently useful for some special hApps that can't support an anonymous instance.
   anonymousAllowed?: boolean
+}
+
+type Result<T> = {
+  type: 'ok'
+  data: T
+} | {
+  type: 'error'
+  data: string
+} | {
+  type: 'unexpected'
+}
+
+function unwrap<T> (result: Result<T>): T {
+  switch (result.type) {
+    case 'ok':
+      return result.data
+    case 'error':
+      throw new Error(result.data)
+    default:
+      throw new Error(`Unrecognized result type: ${result.type}`)
+  }
 }
