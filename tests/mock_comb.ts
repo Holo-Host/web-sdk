@@ -16,11 +16,14 @@ let event_listeners = {}
       },
       call() {
         if (next_response === undefined)
-          return `{"Err":"Next response is undefined"}`
+          return Promise.resolve({
+            type: 'error',
+            data: 'Next response is undefined'
+          })
         else {
           const value = next_response;
           next_response = undefined;
-          return value;
+          return Promise.resolve(value)
         }
       },
     });
