@@ -60,6 +60,7 @@ class WebSdkApi implements AppAgentClient {
     authFormCustomization: authOpts = {}
   }: { chaperoneUrl: string, authFormCustomization?: AuthFormCustomization }) => {
     const url = new URL(chaperoneUrl || 'https://chaperone.holo.host')
+
     if (authOpts !== undefined) {
       if (authOpts.logoUrl !== undefined) {
         url.searchParams.set('logo_url', makeUrlAbsolute(authOpts.logoUrl))
@@ -163,13 +164,13 @@ class WebSdkApi implements AppAgentClient {
 
   appInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
 
-  callZome = async (args: AppAgentCallZomeRequest): Promise<any> => unwrap(this.#child.call('callZome', args))
+  callZome = async (args: AppAgentCallZomeRequest): Promise<any> => this.#child.call('callZome', args).then(unwrap)
 
-  createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => unwrap(this.#child.call('createCloneCell', args))
+  createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => this.#child.call('createCloneCell', args).then(unwrap)
 
-  disableCloneCell = (args: AppDisableCloneCellRequest): Promise<DisableCloneCellResponse> => unwrap(this.#child.call('disableCloneCell', args))
+  disableCloneCell = (args: AppDisableCloneCellRequest): Promise<DisableCloneCellResponse> => this.#child.call('disableCloneCell', args).then(unwrap)
 
-  enableCloneCell = (args: AppEnableCloneCellRequest): Promise<EnableCloneCellResponse> => unwrap(this.#child.call('enableCloneCell', args))
+  enableCloneCell = (args: AppEnableCloneCellRequest): Promise<EnableCloneCellResponse> => this.#child.call('enableCloneCell', args).then(unwrap)
   
   stateDump = () => this.#child.call('stateDump')
 
