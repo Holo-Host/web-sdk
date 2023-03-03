@@ -60,6 +60,7 @@ class WebSdkApi implements AppAgentClient {
     authFormCustomization: authOpts = {}
   }: { chaperoneUrl: string, authFormCustomization?: AuthFormCustomization }) => {
     const url = new URL(chaperoneUrl || 'https://chaperone.holo.host')
+
     if (authOpts !== undefined) {
       if (authOpts.logoUrl !== undefined) {
         url.searchParams.set('logo_url', makeUrlAbsolute(authOpts.logoUrl))
@@ -161,28 +162,15 @@ class WebSdkApi implements AppAgentClient {
     }
   }
 
-  // _child.call returns a promise, so all of these functions do as well
-
-  callZome = async (args: AppAgentCallZomeRequest): Promise<any> => {
-    // translate Result type from chaperone into normal 
-    const result = await this.#child.call('callZome', args)
-    switch (result.type) {
-      case 'ok':
-        return result.data
-      case 'error':
-        throw new Error(result.data)
-      default:
-        throw new Error(`Unrecognized zome result type: ${result.type}`)
-    }
-  }
-
   appInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
 
-  createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => this.#child.call('createCloneCell', args)
+  callZome = async (args: AppAgentCallZomeRequest): Promise<any> => this.#child.call('callZome', args).then(unwrap)
 
-  disableCloneCell = (args: AppDisableCloneCellRequest): Promise<DisableCloneCellResponse> => this.#child.call('disableCloneCell', args)
+  createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => this.#child.call('createCloneCell', args).then(unwrap)
 
-  enableCloneCell = (args: AppEnableCloneCellRequest): Promise<EnableCloneCellResponse> => this.#child.call('enableCloneCell', args)
+  disableCloneCell = (args: AppDisableCloneCellRequest): Promise<DisableCloneCellResponse> => this.#child.call('disableCloneCell', args).then(unwrap)
+
+  enableCloneCell = (args: AppEnableCloneCellRequest): Promise<EnableCloneCellResponse> => this.#child.call('enableCloneCell', args).then(unwrap)
   
   stateDump = () => this.#child.call('stateDump')
 
@@ -229,7 +217,8 @@ export default WebSdkApi
 
 export type HoloSignal = {
   data: unknown,
-  cell: InstalledCell
+  cell: InstalledCell,
+  zome_name: string,
 }
 
 export type AgentState = {
@@ -274,4 +263,25 @@ type AuthFormCustomization = {
   // so exposing this in the documentation is misleading.
   // This is currently useful for some special hApps that can't support an anonymous instance.
   anonymousAllowed?: boolean
+}
+
+type Result<T> = {
+  type: 'ok'
+  data: T
+} | {
+  type: 'error'
+  data: string
+} | {
+  type: 'unexpected'
+}
+
+function unwrap<T> (result: Result<T>): T {
+  switch (result.type) {
+    case 'ok':
+      return result.data
+    case 'error':
+      throw new Error(result.data)
+    default:
+      throw new Error(`Unrecognized result type: ${result.type}`)
+  }
 }

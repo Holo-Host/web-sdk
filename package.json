@@ -1,6 +1,6 @@
 {
   "name": "@holo-host/web-sdk",
-  "version": "0.6.9-prerelease",
+  "version": "0.6.10-prerelease",
   "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
   "main": "dist/holo_hosting_web_sdk.js",
   "module": "dist/holo_hosting_web_sdk.js",
