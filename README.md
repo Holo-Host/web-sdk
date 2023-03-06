@@ -7,7 +7,7 @@ This package contains every component required to develop and test your web UI a
 Holochain App Bundle.
 
 ## Ownership Info
-Codeowner: @robbie
+Codeowner: @robbiecarlton
 Consulted: None
 Informed: None
 
