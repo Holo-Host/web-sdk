@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.10-prerelease] - 2023-04-03
+
+
+
 ## [0.6.10-prerelease] - 2023-03-03
 ### Fixed
 - Cloning endpoints now throw when getting an error, and return the result data on a success, rather than returning the whole result.

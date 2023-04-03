@@ -1,5 +1,5 @@
 import Emittery from "emittery"
-import { AppInfoResponse, InstalledCell, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse } from '@holochain/client'
+import { AppInfoResponse, InstalledCell, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal } from '@holochain/client'
 
 const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
@@ -11,7 +11,7 @@ function makeUrlAbsolute (url) {
 }
 
 // We make sure to only expose camelCase properties to the UI
-const presentAgentState = agent_state => ({
+const presentAgentState: (ChaperoneAgentState) => AgentState = agent_state => ({
   id: agent_state.id,
   isAnonymous: agent_state.is_anonymous,
   isAvailable: agent_state.is_available,
@@ -30,7 +30,7 @@ const presentAgentState = agent_state => ({
 class WebSdkApi implements AppAgentClient {
   // Private constructor. Use `connect` instead.
   #child: any;
-  agent: any
+  agent: AgentState;
   #iframe: any;
   happId: string;
   #should_show_form: boolean;
@@ -40,8 +40,8 @@ class WebSdkApi implements AppAgentClient {
 
   constructor (child) {
     this.#child = child
-    child.msg_bus.on('signal', (signal: HoloSignal) => this.#emitter.emit('signal', signal))
-    child.msg_bus.on('agent-state', (agent_state: AgentState) => {
+    child.msg_bus.on('signal', (signal: AppSignal) => this.#emitter.emit('signal', signal))
+    child.msg_bus.on('agent-state', (agent_state: ChaperoneAgentState) => {
       this._setShouldShowForm(agent_state.should_show_form)
       this.agent = presentAgentState(agent_state)
       this.#emitter.emit('agent-state', this.agent)
@@ -211,17 +211,13 @@ class WebSdkApi implements AppAgentClient {
 
 export default WebSdkApi
 
+
+
 // DUPLICATION START
-// This code is duplicated from Chaperone. There isn't a neat way to share the code directly without publishing these types as their own npm module, 
+// This is a duplication of the type AgentState from Chaperone. There isn't a neat way to share the code directly without publishing these types as their own npm module, 
 // so make sure they're up to date
 
-export type HoloSignal = {
-  data: unknown,
-  cell: InstalledCell,
-  zome_name: string,
-}
-
-export type AgentState = {
+export type ChaperoneAgentState = {
   id: string,
   is_anonymous: boolean,
   host_url: string,
@@ -231,6 +227,15 @@ export type AgentState = {
 }
 
 // DUPLICATION END
+
+export type AgentState = {
+  id: string,
+  isAnonymous: boolean,
+  hostUrl: string,
+  isAvailable: boolean,
+  unrecoverableError: any,
+  shouldShowForm?: boolean
+}
 
 type AuthFormCustomization = {
   // The name of the hosted hApp. Currently shows up as "appName Login"
