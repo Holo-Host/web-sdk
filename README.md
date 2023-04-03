@@ -262,17 +262,7 @@ interface WebSdk {
   async stateDump(): Promise<StateDump>
 }
 
-// HoloSignal and AgentState types are exported from this package
-
-type HoloSignal = {
-  // The payload of the signal as provided by the DNA
-  data: unknown
-  // The hash of the DNA that emitted this signal
-  // (Helpful to disambiguate if the hApp has multiple DNAs)
-  cell: InstalledCell
-  //
-  zome_name: String
-}
+// AgentState type is exported from this package
 
 type AgentState = {
   // The base64-encoded public key of the current hosted agent

@@ -5,6 +5,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.11-prerelease] - 2023-04-03
+### Added
+- `dist/index.d.ts` type declaration file [(#93)]
+- `ChaperoneAgentState` type [(#93)]
+
+### Fixed
+- Innacurate `AgentState` type [(#93)]
+
+### Removed
+- `HoloSignal` type [(#93)]
+
+[(#93)]: https://github.com/Holo-Host/web-sdk/pull/93
+
 ## [0.6.10-prerelease] - 2023-03-03
 ### Fixed
 - Cloning endpoints now throw when getting an error, and return the result data on a success, rather than returning the whole result.
