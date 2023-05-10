@@ -8,7 +8,8 @@
   "scripts": {
     "build": "npm run bundle",
     "bundle": "npx webpack --mode production --output-filename holo_hosting_web_sdk.js",
-    "test": "yarn jest"
+    "test": "yarn jest",
+    "prepublish": "npm run build"
   },
   "author": "Holo Ltd.",
   "contributors": [
