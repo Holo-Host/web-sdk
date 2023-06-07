@@ -217,25 +217,27 @@ export default WebSdkApi
 // This is a duplication of the type AgentState from Chaperone. There isn't a neat way to share the code directly without publishing these types as their own npm module, 
 // so make sure they're up to date
 
-export type ChaperoneAgentState = {
-  id: string,
-  is_anonymous: boolean,
-  host_url: string,
-  is_available: boolean,
-  unrecoverable_error: any,
-  should_show_form?: boolean
+export type AgentState = {
+  id: string
+  is_anonymous: boolean
+  host_url: string
+  is_available: boolean
+  unrecoverable_error: any
+}
+
+export type UIState = {
+  is_visible: boolean,
+  ui_type: UIType
+}
+
+export type UIType = 'hidden' | 'auth-form-visible'
+
+export type ChaperoneState = {
+  agentState: AgentState,
+  uiState: UIState
 }
 
 // DUPLICATION END
-
-export type AgentState = {
-  id: string,
-  isAnonymous: boolean,
-  hostUrl: string,
-  isAvailable: boolean,
-  unrecoverableError: any,
-  shouldShowForm?: boolean
-}
 
 type AuthFormCustomization = {
   // The name of the hosted hApp. Currently shows up as "appName Login"
