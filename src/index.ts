@@ -1,5 +1,8 @@
 import Emittery from "emittery"
-import { AppInfoResponse, InstalledCell, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal } from '@holochain/client'
+import semverSatisfies from 'semver/functions/satisfies'
+import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal } from '@holochain/client'
+
+const COMPATIBLE_CHAPERONE_VERSION = '0.1.x'
 
 const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
@@ -8,6 +11,14 @@ if (!TESTING) {
 
 function makeUrlAbsolute (url) {
   return new URL(url, window.location.href).href
+}
+
+function checkChaperoneVersion (chaperoneVersion) {
+  const isSatisfied = semverSatisfies(chaperoneVersion, COMPATIBLE_CHAPERONE_VERSION)
+
+  if (!isSatisfied) {
+    console.error(`!!!!! WARNING: you are connecting to an unsupported version of Chaperone. Expected version matching: ${COMPATIBLE_CHAPERONE_VERSION}. Actual version: ${chaperoneVersion} !!!!!`)
+  }
 }
 
 /**
@@ -126,9 +137,12 @@ class WebSdkApi implements AppAgentClient {
 
     // Chaperone either returns agent_state and happ_id (success case)
     // or error_message
-    const { error_message, chaperone_state, happ_id } = await child.call(
+    const { error_message, chaperone_state, happ_id, chaperone_version } = await child.call(
       'handshake'
     )
+
+    checkChaperoneVersion(chaperone_version)
+
     if (error_message) {
       webSdkApi.#iframe.style.display = 'none'
       throw new Error(error_message)
