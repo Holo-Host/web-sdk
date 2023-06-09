@@ -16,7 +16,7 @@ describe('test API endpoints', () => {
 
   beforeEach(async () => {
     // Expected handshake response when successful is { happ_id, agent_state }
-    mock_comb.nextResponse({ happ_id: '', agent_state: {} })
+    mock_comb.nextResponse({ happ_id: '', chaperone_state: { agent_state: {}, ui_state: {} }, chaperone_version: `0.1.0` })
     holo = await WebSdkApi.connect({
       chaperoneUrl: ''
     })
