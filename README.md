@@ -88,12 +88,12 @@ const main = async () => {
   await client.signIn()
   
   // The credentials overlay is now visible to the user. Wait for them to sign in
-  while (client.agent.isAnonymous || !client.agent.isAvailable) {
+  while (client.agent.isAnonymous || !client.agentState.isAvailable) {
     await sleep(50)
     // Again, this while/sleep pattern is for demo only. See comment above about doing this using an event handler
   }
 
-  console.log(client.agent)
+  console.log(client.agentState)
   /*
   {
     "id": "uhCAkRr1W12kUrY7SlSfwUpH_eJOxQGTZrIQxTQaV5-7kkh15Ewwg",
@@ -240,11 +240,19 @@ interface WebSdk {
   agent: AgentState
   // The unique ID within the Holo Hosting network for the current hApp. 
   happId: string
-  // Emitted whenever any field of `this.agent` changes.
+  // Emitted whenever any field of `this.agentState` changes.
   //
   // The event passes one argument, the current value of `this.agent`.
   // It's possible for duplicate `agent-state` events to be emitted.
-  on(event: 'agent-state', callback: (agent: AgentState) => void): void
+  on(event: 'agent-state', callback: (agentState: AgentState) => void): void
+  // Emitted whenever the Chaperone UI becomes visible or hidden, and whenever the particular UI page shown changes.
+  //
+  // It's possible for duplicate `ui-state` events to be emitted.
+  on(event: 'ui-state', callback: (uiState: UIState) => void): void
+  // Emitted whenever either of the above events is emitted. This event is passed a combination of the above two values.
+  //
+  // It's possible for duplicate `chaperone-state` events to be emitted.
+  on(event: 'chaperone-state', callback: (chaperoneState: ChaperoneState) => void): void
   // Emitted whenever the DNA emits a signal.
   //
   // `callback` takes an object containing the payload and the hash of the DNA which emitted it.
@@ -276,6 +284,20 @@ type AgentState = {
   unrecoverableError: UnrecoverableError | undefined
   // The URL of the HoloPort that is hosting the current agent. Useful for debugging.
   hostUrl: string
+}
+
+export type UIState = {
+  // true when the Chaperone UI overlay is visible
+  isVisible: boolean,
+  // the particular Chaperone UI page that's displayed, or 'hidden'
+  uiMode: UIMode
+}
+
+export type UIMode = 'login' | 'signup' | 'hidden'
+
+export type ChaperoneState = {
+  agentState: AgentState,
+  uiState: UIState
 }
 
 type UnrecoverableError = {
