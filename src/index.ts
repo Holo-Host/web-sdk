@@ -1,5 +1,8 @@
 import Emittery from "emittery"
-import { AppInfoResponse, InstalledCell, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal } from '@holochain/client'
+import semverSatisfies from 'semver/functions/satisfies'
+import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal } from '@holochain/client'
+
+const COMPATIBLE_CHAPERONE_VERSION = '0.1.x'
 
 const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
@@ -10,18 +13,13 @@ function makeUrlAbsolute (url) {
   return new URL(url, window.location.href).href
 }
 
-// We make sure to only expose camelCase properties to the UI
-const presentAgentState: (ChaperoneAgentState) => AgentState = agent_state => ({
-  id: agent_state.id,
-  isAnonymous: agent_state.is_anonymous,
-  isAvailable: agent_state.is_available,
-  unrecoverableError: agent_state.unrecoverable_error,
-  hostUrl: agent_state.host_url
-  // We're keeping shouldShowForm as an implementation detail
-  // until there's a use-case for reacting to it in a UI.
-  //
-  // shouldShowForm: agent_state.should_show_form
-})
+function checkChaperoneVersion (chaperoneVersion) {
+  const isSatisfied = semverSatisfies(chaperoneVersion, COMPATIBLE_CHAPERONE_VERSION)
+
+  if (!isSatisfied) {
+    console.error(`!!!!! WARNING: you are connecting to an unsupported version of Chaperone. Expected version matching: ${COMPATIBLE_CHAPERONE_VERSION}. Actual version: ${chaperoneVersion} !!!!!`)
+  }
+}
 
 /**
  * A `WebSdkApi` is a connection to a Chaperone iframe containing Holo's client logic.
@@ -30,10 +28,12 @@ const presentAgentState: (ChaperoneAgentState) => AgentState = agent_state => ({
 class WebSdkApi implements AppAgentClient {
   // Private constructor. Use `connect` instead.
   #child: any;
-  agent: AgentState;
+  agentState: AgentState;
+  uiState: UIState;
+  chaperoneState: ChaperoneState;
   #iframe: any;
   happId: string;
-  #should_show_form: boolean;
+  #should_show_ui: boolean;
   #cancellable: boolean;
   #emitter = new Emittery();
   myPubKey: AgentPubKey;
@@ -41,10 +41,21 @@ class WebSdkApi implements AppAgentClient {
   constructor (child) {
     this.#child = child
     child.msg_bus.on('signal', (signal: AppSignal) => this.#emitter.emit('signal', signal))
-    child.msg_bus.on('agent-state', (agent_state: ChaperoneAgentState) => {
-      this._setShouldShowForm(agent_state.should_show_form)
-      this.agent = presentAgentState(agent_state)
-      this.#emitter.emit('agent-state', this.agent)
+
+    child.msg_bus.on('agent-state', (agent_state: AgentState) => {      
+      this.agentState = agent_state
+      this.#emitter.emit('agent-state', this.agentState)
+    })
+
+    child.msg_bus.on('ui-state', (ui_state: UIState) => {      
+      this.uiState = ui_state
+      this._setShouldShowUI(ui_state.isVisible)
+      this.#emitter.emit('ui-state', this.uiState)
+    })
+
+    child.msg_bus.on('chaperone-state', (chaperone_state: ChaperoneState) => {      
+      this.chaperoneState = chaperone_state
+      this.#emitter.emit('chaperone-state', this.chaperoneState)
     })
   }
 
@@ -126,28 +137,35 @@ class WebSdkApi implements AppAgentClient {
 
     // Chaperone either returns agent_state and happ_id (success case)
     // or error_message
-    const { error_message, agent_state, happ_id } = await child.call(
+    const { error_message, chaperone_state, happ_id, chaperone_version } = await child.call(
       'handshake'
     )
+
+    checkChaperoneVersion(chaperone_version)
+
     if (error_message) {
       webSdkApi.#iframe.style.display = 'none'
       throw new Error(error_message)
     }
 
-    webSdkApi.agent = presentAgentState(agent_state)
+    const { agentState, uiState } = chaperone_state
+
+    webSdkApi.agentState = agentState
+    webSdkApi.uiState = uiState
+    webSdkApi.chaperoneState = chaperone_state
     webSdkApi.happId = happ_id
 
     return webSdkApi
   }
 
-  _setShouldShowForm = should_show_form => {
+  _setShouldShowUI = should_show_ui => {
     // Without this check, we call history.back() too many times and end up exiting the UI
-    if (this.#should_show_form === should_show_form) {
+    if (this.#should_show_ui === should_show_ui) {
       return
     }
 
-    this.#should_show_form = should_show_form
-    if (should_show_form) {
+    this.#should_show_ui = should_show_ui
+    if (should_show_ui) {
       if (this.#cancellable) {
         history.pushState('_web_sdk_shown', '')
       }
@@ -211,31 +229,31 @@ class WebSdkApi implements AppAgentClient {
 
 export default WebSdkApi
 
-
-
 // DUPLICATION START
 // This is a duplication of the type AgentState from Chaperone. There isn't a neat way to share the code directly without publishing these types as their own npm module, 
 // so make sure they're up to date
 
-export type ChaperoneAgentState = {
-  id: string,
-  is_anonymous: boolean,
-  host_url: string,
-  is_available: boolean,
-  unrecoverable_error: any,
-  should_show_form?: boolean
+export type AgentState = {
+  id: string
+  isAnonymous: boolean
+  hostUrl: string
+  isAvailable: boolean
+  unrecoverableError: any
+}
+
+export type UIState = {
+  isVisible: boolean,
+  uiMode: UIMode
+}
+
+export type UIMode = 'login' | 'signup' | 'hidden'
+
+export type ChaperoneState = {
+  agentState: AgentState,
+  uiState: UIState
 }
 
 // DUPLICATION END
-
-export type AgentState = {
-  id: string,
-  isAnonymous: boolean,
-  hostUrl: string,
-  isAvailable: boolean,
-  unrecoverableError: any,
-  shouldShowForm?: boolean
-}
 
 type AuthFormCustomization = {
   // The name of the hosted hApp. Currently shows up as "appName Login"

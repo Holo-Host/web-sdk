@@ -1,6 +1,6 @@
 {
   "name": "@holo-host/web-sdk",
-  "version": "0.6.11-prerelease",
+  "version": "0.6.12-prerelease",
   "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
   "main": "dist/holo_hosting_web_sdk",
   "module": "dist/holo_hosting_web_sdk.js",
@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@holo-host/comb": "^0.3.0",
-    "@holochain/client": "0.12.0"
+    "@holochain/client": "0.12.0",
+    "semver": "^7.5.1"
   }
 }
