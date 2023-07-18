@@ -2,7 +2,7 @@ import Emittery from "emittery"
 import semverSatisfies from 'semver/functions/satisfies'
 import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal } from '@holochain/client'
 
-const COMPATIBLE_CHAPERONE_VERSION = '0.1.x'
+const COMPATIBLE_CHAPERONE_VERSION = '>=0.1.1 <0.2.0'
 
 const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
