@@ -99,6 +99,10 @@ class WebSdkApi implements AppAgentClient {
       if (authOpts.anonymousAllowed !== undefined) {
         url.searchParams.set('anonymous_allowed', String(authOpts.anonymousAllowed))
       }
+
+      if (authOpts.integrationTestMode !== undefined) {
+        url.searchParams.set('integration_test_mode', String(authOpts.integrationTestMode))
+      }
     }
 
     let child
@@ -286,6 +290,7 @@ type AuthFormCustomization = {
   // so exposing this in the documentation is misleading.
   // This is currently useful for some special hApps that can't support an anonymous instance.
   anonymousAllowed?: boolean
+  integrationTestMode?: boolean
 }
 
 type Result<T> = {
