@@ -2,7 +2,7 @@ import Emittery from "emittery"
 import semverSatisfies from 'semver/functions/satisfies'
 import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal } from '@holochain/client'
 
-const COMPATIBLE_CHAPERONE_VERSION = '0.1.x'
+const COMPATIBLE_CHAPERONE_VERSION = '>=0.1.1 <0.2.0'
 
 const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
@@ -98,6 +98,10 @@ class WebSdkApi implements AppAgentClient {
       // This is currently useful for some special hApps that can't support an anonymous instance.
       if (authOpts.anonymousAllowed !== undefined) {
         url.searchParams.set('anonymous_allowed', String(authOpts.anonymousAllowed))
+      }
+
+      if (authOpts.integrationTestMode !== undefined) {
+        url.searchParams.set('integration_test_mode', String(authOpts.integrationTestMode))
       }
     }
 
@@ -286,6 +290,7 @@ type AuthFormCustomization = {
   // so exposing this in the documentation is misleading.
   // This is currently useful for some special hApps that can't support an anonymous instance.
   anonymousAllowed?: boolean
+  integrationTestMode?: boolean
 }
 
 type Result<T> = {
