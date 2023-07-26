@@ -1,6 +1,6 @@
 {
   "name": "@holo-host/web-sdk",
-  "version": "0.6.11-prerelease",
+  "version": "0.6.12-prerelease",
   "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
   "main": "dist/holo_hosting_web_sdk",
   "module": "dist/holo_hosting_web_sdk.js",
@@ -8,13 +8,15 @@
   "scripts": {
     "build": "npm run bundle",
     "bundle": "npx webpack --mode production --output-filename holo_hosting_web_sdk.js",
-    "test": "yarn jest"
+    "test": "yarn jest",
+    "prepublish": "npm run build"
   },
   "author": "Holo Ltd.",
   "contributors": [
     "Matthew Brisebois <matthew.brisebois@holo.host>",
     "Robbie Carlton <robbie.carlton@gmail.com>",
     "Lisa Jetton <lisa.jetton@holo.host>",
+    
     "timotree3 <timorcb@gmail.com>",
     "zo-el <joel.ulahanna@holo.host>"
   ],
@@ -51,5 +53,6 @@
   "dependencies": {
     "@holo-host/comb": "^0.3.0",
     "@holochain/client": "0.14.1"
+    "semver": "^7.5.1"
   }
 }

@@ -9,3 +9,4 @@ AGENTID
 conductor.toml
 conductor-storage
 .cache
+holo-host-web-sdk-*.tgz

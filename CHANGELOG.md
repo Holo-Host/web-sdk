@@ -4,6 +4,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- integration_test_mode flag [(#98)]
+
+([#98]): https://github.com/Holo-Host/web-sdk/pull/98
+
+## [0.6.12-prerelease] - 2023-06-12
+### Added
+- chaperone api version check, with error message for incompatible api version [(#97)]
+- event handlers and local state for `chaperone-state` and `ui-state` events [(#97)]
+
+### Changed
+- `client.agent` to `client.agentState` [(#97)]
+
+[(#97)]: https://github.com/Holo-Host/web-sdk/pull/97
 
 ## [0.6.11-prerelease] - 2023-04-03
 ### Added
