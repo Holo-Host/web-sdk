@@ -1,6 +1,6 @@
 import Emittery from "emittery"
 import semverSatisfies from 'semver/functions/satisfies'
-import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal } from '@holochain/client'
+import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal, decodeHashFromBase64 } from '@holochain/client'
 
 const COMPATIBLE_CHAPERONE_VERSION = '>=0.1.1 <0.2.0'
 
@@ -44,6 +44,7 @@ class WebSdkApi implements AppAgentClient {
 
     child.msg_bus.on('agent-state', (agent_state: AgentState) => {      
       this.agentState = agent_state
+      this.myPubKey = decodeHashFromBase64(agent_state.id)
       this.#emitter.emit('agent-state', this.agentState)
     })
 
@@ -155,6 +156,7 @@ class WebSdkApi implements AppAgentClient {
     const { agentState, uiState } = chaperone_state
 
     webSdkApi.agentState = agentState
+    webSdkApi.myPubKey = decodeHashFromBase64(agentState.id)
     webSdkApi.uiState = uiState
     webSdkApi.chaperoneState = chaperone_state
     webSdkApi.happId = happ_id
