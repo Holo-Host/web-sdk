@@ -37,4 +37,12 @@ module.exports = {
 
   plugins: [
   ],
+
+  externals: {
+    "node:crypto": {
+      commonjs: 'node:crypto',
+      commonjs2: 'node:crypto',
+      amd: 'node:crypto',
+    }
+  },
 };
