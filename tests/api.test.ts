@@ -72,6 +72,18 @@ describe('test API endpoints', () => {
 
     expect(response).toBeDefined()
     expect(response).toMatchObject(expectedResponse)
+  })
+
+  it("should sign payloads", async () => {
+    const payload = { mockPayload: 'value' }
+    const expectedResponse = "rCyqc+Xat5neb5Vvfj6aweESd8K+VoxukkvYBbpHr3z706UCYe4iJ3wZRSadheLBqMWDCwl4EbwTH1UmlxPiDg=="
+
+    mock_comb.nextResponse(expectedResponse)
+
+    const response = await holo.signPayload(payload)
+
+    expect(response).toBeDefined()
+    expect(response).toMatch(expectedResponse)
   })  
 })
 

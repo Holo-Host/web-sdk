@@ -229,6 +229,11 @@ class WebSdkApi implements AppAgentClient {
   }
 
   signOut = () => this.#child.run('signOut')
+
+  signPayload = async (payload: any): Promise<any> => {
+    const signedPayload = this.#child.call('signPayload', payload)
+    return Promise.resolve(signedPayload)
+  }
 }
 
 export default WebSdkApi
