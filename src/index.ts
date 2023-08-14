@@ -186,6 +186,8 @@ class WebSdkApi implements AppAgentClient {
 
   appInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
 
+  snapInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
+
   callZome = async (args: AppAgentCallZomeRequest): Promise<any> => this.#child.call('callZome', args).then(unwrap)
 
   createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => this.#child.call('createCloneCell', args).then(unwrap)
@@ -193,6 +195,8 @@ class WebSdkApi implements AppAgentClient {
   disableCloneCell = (args: AppDisableCloneCellRequest): Promise<DisableCloneCellResponse> => this.#child.call('disableCloneCell', args).then(unwrap)
 
   enableCloneCell = (args: AppEnableCloneCellRequest): Promise<EnableCloneCellResponse> => this.#child.call('enableCloneCell', args).then(unwrap)
+
+  signPayload = (args: any): Promise<any> => this.#child.call('signPayload', args).then(unwrap)
   
   stateDump = () => this.#child.call('stateDump')
 
@@ -230,10 +234,6 @@ class WebSdkApi implements AppAgentClient {
 
   signOut = () => this.#child.run('signOut')
 
-  signPayload = async (payload: any): Promise<any> => {
-    const signedPayload = this.#child.call('signPayload', payload)
-    return Promise.resolve(signedPayload)
-  }
 }
 
 export default WebSdkApi
