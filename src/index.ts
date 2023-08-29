@@ -193,6 +193,8 @@ class WebSdkApi implements AppAgentClient {
   disableCloneCell = (args: AppDisableCloneCellRequest): Promise<DisableCloneCellResponse> => this.#child.call('disableCloneCell', args).then(unwrap)
 
   enableCloneCell = (args: AppEnableCloneCellRequest): Promise<EnableCloneCellResponse> => this.#child.call('enableCloneCell', args).then(unwrap)
+
+  signPayload = (args: any): Promise<any> => this.#child.call('signPayload', args).then(unwrap)
   
   stateDump = () => this.#child.call('stateDump')
 
