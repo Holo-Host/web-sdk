@@ -231,7 +231,6 @@ class WebSdkApi implements AppAgentClient {
   }
 
   signOut = () => this.#child.run('signOut')
-
 }
 
 export default WebSdkApi
