@@ -186,8 +186,6 @@ class WebSdkApi implements AppAgentClient {
 
   appInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
 
-  snapInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
-
   callZome = async (args: AppAgentCallZomeRequest): Promise<any> => this.#child.call('callZome', args).then(unwrap)
 
   createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => this.#child.call('createCloneCell', args).then(unwrap)
