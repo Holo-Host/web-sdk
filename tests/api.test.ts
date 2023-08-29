@@ -16,7 +16,7 @@ describe('test API endpoints', () => {
 
   beforeEach(async () => {
     // Expected handshake response when successful is { happ_id, agent_state }
-    mock_comb.nextResponse({ happ_id: '', chaperone_state: { agent_state: {}, ui_state: {} }, chaperone_version: `0.1.0` })
+    mock_comb.nextResponse({ happ_id: '', chaperone_state: { agent_state: {}, ui_state: {} }, chaperone_version: `0.1.2` })
     holo = await WebSdkApi.connect({
       chaperoneUrl: ''
     })
@@ -76,14 +76,19 @@ describe('test API endpoints', () => {
 
   it("should sign payloads", async () => {
     const payload = { mockPayload: 'value' }
-    const expectedResponse = "rCyqc+Xat5neb5Vvfj6aweESd8K+VoxukkvYBbpHr3z706UCYe4iJ3wZRSadheLBqMWDCwl4EbwTH1UmlxPiDg=="
+    const expectedResponse = {
+      type: 'ok',
+      data: { signature: `signature`, signedPayload: `signedPayload`}
+    }
 
+    debugger
     mock_comb.nextResponse(expectedResponse)
-
+   
     const response = await holo.signPayload(payload)
 
     expect(response).toBeDefined()
-    expect(response).toMatch(expectedResponse)
+    expect(response).toHaveProperty('signature');
+    expect(response).toHaveProperty('signedPayload');
   })  
 })
 
