@@ -156,6 +156,7 @@ class WebSdkApi implements AppAgentClient {
     const { agentState, uiState } = chaperone_state
 
     webSdkApi.agentState = agentState
+    webSdkApi.myPubKey = decodeHashFromBase64(agentState.id)
     webSdkApi.uiState = uiState
     webSdkApi.chaperoneState = chaperone_state
     webSdkApi.happId = happ_id
