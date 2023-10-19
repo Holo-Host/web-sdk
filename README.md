@@ -14,7 +14,7 @@ Web SDK is not just a library for connecting to a HoloPort. It also inserts an i
 [![login form][login-form]][login-form]
 
 
-We guard Login inside of an iframe so that the happ UI cannot directly access the agent's private keys or passwords. The web page contained in this iframe is called "Chaperone". The URL for the official production Chaperone is <https://chaperone.holo.host>. ([Chaperone source repository][envoy-chaperone])
+We guard Login inside of an iframe so that the happ UI cannot directly access the agent's private keys or passwords. The web page contained in this iframe is called "Chaperone". The URL for the official production Chaperone is <https://chaperone.holo.hosting>. ([Chaperone source repository][envoy-chaperone])
 
 [signup-form]: docs_images/create-credentials.png
 [login-form]: docs_images/login.png
@@ -23,7 +23,7 @@ We guard Login inside of an iframe so that the happ UI cannot directly access th
 
 ## Local dev environment (holo-dev-server)
 
-The production Chaperone at <https://chaperone.holo.host> is configured to connect to real HoloPorts, so it only works if you've already published your hApp to the Holo Hosting network. If you're still developing your happ, you can create a local Chaperone which directs all agents to a locally simulated HoloPort using a program called [`holo-dev-server`](https://holo-host.github.io/envoy-chaperone/).
+The production Chaperone at <https://chaperone.holo.hosting> is configured to connect to real HoloPorts, so it only works if you've already published your hApp to the Holo Hosting network. If you're still developing your happ, you can create a local Chaperone which directs all agents to a locally simulated HoloPort using a program called [`holo-dev-server`](https://holo-host.github.io/envoy-chaperone/).
 
 
 ## Examples
@@ -42,7 +42,7 @@ const main = async () => {
     
     // Alternatively, connect to a production holoport:
     //
-    // chaperoneUrl: 'https://chaperone.holo.host'
+    // chaperoneUrl: 'https://chaperone.holo.hosting'
 
     // Customize the Credentials Overlay
     authFormCustomization: {
@@ -145,7 +145,7 @@ TypeScript-style API reference
 export async function connect (opts?: {
   // The URL for the Chaperone iframe
   //
-  // Defaults to `"https://chaperone.holo.host"`
+  // Defaults to `"https://chaperone.holo.hosting"`
   // If using holo-dev-server, then you want `"http://localhost:24274"`
   //
   // It is good practice make this a build-time parameter of your UI,

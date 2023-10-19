@@ -70,7 +70,7 @@ class WebSdkApi implements AppAgentClient {
     chaperoneUrl,
     authFormCustomization: authOpts = {}
   }: { chaperoneUrl: string, authFormCustomization?: AuthFormCustomization }) => {
-    const url = new URL(chaperoneUrl || 'https://chaperone.holo.host')
+    const url = new URL(chaperoneUrl || 'https://chaperone.holo.hosting')
 
     if (authOpts !== undefined) {
       if (authOpts.logoUrl !== undefined) {
