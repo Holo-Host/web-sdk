@@ -77,6 +77,9 @@ class WebSdkApi implements AppAgentClient {
       if (authOpts.logoUrl !== undefined) {
         url.searchParams.set('logo_url', makeUrlAbsolute(authOpts.logoUrl))
       }
+      if (authOpts.cssUrl !== undefined) {
+        url.searchParams.set('css_url', makeUrlAbsolute(authOpts.cssUrl))
+      }
       if (authOpts.appName !== undefined) {
         url.searchParams.set('app_name', authOpts.appName)
       }
@@ -268,6 +271,8 @@ type AuthFormCustomization = {
   appName?: string
   // The URL of the hApp logo. Currently displayed on a white background with no `width` or `height` constraints.
   logoUrl?: string
+  // The URL of a CSS file to apply to the Holo Login iframe
+  cssUrl?: string
   // Determines whether the "REGISTRATION CODE" field is shown.
   // 
   // Set this to `true` if you want to prompt the user for a registration code that will be passed directly to your happ as a mem_proof (ie, not using a memproof server). This field does nothing if the membraneProofServer option (see below) is set.
@@ -289,6 +294,8 @@ type AuthFormCustomization = {
     // An arbitrary value that will be passed to the Membrane Proof Server as additional information
     payload: unknown
   },
+  // The parent HTMLElement to insert the login iframe into. Defaults to `document.body`
+  container?: HTMLElement,
   // INTERNAL OPTION
   // anonymous_allowed is barely implemented in Chaperone, and is subject to change,
   // so exposing this in the documentation is misleading.
