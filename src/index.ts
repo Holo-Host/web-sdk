@@ -108,7 +108,7 @@ class WebSdkApi implements AppAgentClient {
 
     let child
     try {
-      child = await ((<any>window).COMB || (<any>global).COMB).connect(url.href, 60000)
+      child = await ((<any>window).COMB || (<any>global).COMB).connect(url.href, authOpts.container || document.body, 60000)
     } catch (err) {
       if (err.name === 'TimeoutError')
         console.log('Chaperone did not load properly. Is it running?')
@@ -289,6 +289,8 @@ type AuthFormCustomization = {
     // An arbitrary value that will be passed to the Membrane Proof Server as additional information
     payload: unknown
   },
+  // The parent HTMLElement to insert the login iframe into. Defaults to `document.body`
+  container?: HTMLElement,
   // INTERNAL OPTION
   // anonymous_allowed is barely implemented in Chaperone, and is subject to change,
   // so exposing this in the documentation is misleading.
