@@ -5,7 +5,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- New auth option `cssUrl` which is then loaded as a stylesheet in the chaperone html
+- New auth option `cssUrl` which is then loaded as a stylesheet in the chaperone html. This only works with a custom chaperone build.
 
 
 ## [0.6.15-prerelease] - 2023-09-06 
