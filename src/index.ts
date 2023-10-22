@@ -133,6 +133,7 @@ class WebSdkApi implements AppAgentClient {
       style.top = '0'
       style.left = '0'
       style.display = 'none'
+      style.border = 'none'
 
       window.addEventListener('popstate', event => {
         if (event.state === '_web_sdk_shown') {
