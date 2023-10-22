@@ -1007,19 +1007,19 @@
     rpc-websockets "^4.6.1"
     sprintf-js "^1.1.2"
 
+"@holo-host/comb@0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@holo-host/comb/-/comb-0.3.1.tgz#e158dde0d742f638261fbeaa67bc1259e02cb2f5"
+  integrity sha512-07oLz9SYmfUIp8FVOnS7PE4/3leb7r9GLKA3QjW2O+NH7fLwYc/GRnp/0+nasRrBcF6ftbPtHoctuzTW6ed/xg==
+  dependencies:
+    "@msgpack/msgpack" "^2.7.1"
+    postmate "^1.5.1"
+
 "@holo-host/comb@^0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@holo-host/comb/-/comb-0.2.0.tgz#5b6ae502a20fe37ec3e2b05dd2ac3913fd2dce84"
   integrity sha512-b0JhOvAh/4KEDRDA2BmlJc8zaykRvbu/UM56fHVHdpaXNbVMAk4SY5ER9+xTVDMSu2NpSj27P/70SrtFryAHEQ==
   dependencies:
-    postmate "^1.5.1"
-
-"@holo-host/comb@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@holo-host/comb/-/comb-0.3.0.tgz#d87c2043eafbc5e2dd80d48f231f9a4df77f3164"
-  integrity sha512-Ksqh3Gukf/NFI7hzs7tZwnCG4IADisahdWktLpgXdt5y283Ha4uncEIvkjVcP1YSP07Rhq5Ht+JPgDIlwvvT5w==
-  dependencies:
-    "@msgpack/msgpack" "^2.7.1"
     postmate "^1.5.1"
 
 "@holo-host/cryptolib@^0.3.0":

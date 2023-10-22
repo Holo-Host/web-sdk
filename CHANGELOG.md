@@ -5,6 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.17-prerelease] - 2023-10-22 
+### Removed
+- border style
+### Changed
+- bumped comb version to 0.3.1
+
+
 ## [0.6.16-prerelease] - 2023-10-21 
 
 ### Added
