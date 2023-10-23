@@ -106,7 +106,7 @@ class WebSdkApi implements AppAgentClient {
 
     let child
     try {
-      child = await (<any>global || <any>window).COMB.connect(url.href, authOpts.container || document.body, 60000)
+      child = await (<any>window).COMB.connect(url.href, authOpts.container || document.body, 60000)
     } catch (err) {
       if (err.name === 'TimeoutError')
         console.log('Chaperone did not load properly. Is it running?')

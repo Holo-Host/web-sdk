@@ -1,10 +1,22 @@
-const { inspect } = require("util");
+import { inspect } from "util";
 
 let next_response;
 let event_listeners = {}
 
-
-;(<any>global).COMB = {
+export default {
+  nextResponse(value) {
+    next_response = value;
+  },
+  triggerEvent(event_name) {
+    const event_callback = event_listeners[event_name]
+    if (!event_callback) {
+      throw new Error(`Expected to find event listener ${event_name}, but none found.  Current event listeners: ${inspect(event_listeners)}`)
+    }
+    setTimeout(() => {
+      event_callback()
+    }, 0)
+    return
+  },
   async connect() {
     return Promise.resolve({
       // Test event listener set with callback
@@ -26,22 +38,6 @@ let event_listeners = {}
           return Promise.resolve(value)
         }
       },
-    });
+    })
   }
-}
-
-export default {
-  nextResponse(value) {
-    next_response = value;
-  },
-  triggerEvent(event_name) {
-    const event_callback = event_listeners[event_name]
-    if (!event_callback) {
-      throw new Error(`Expected to find event listener ${event_name}, but none found.  Current event listeners: ${inspect(event_listeners)}`)
-    }
-    setTimeout(() => {
-      event_callback()
-    }, 0)
-    return
-  }
-}
+};

@@ -99,11 +99,11 @@ describe("test comb error", () => {
   const expectedError = 'timeout error'
 
   beforeEach(() => {
-    if( (<any>global).COMB ) {
-      globalComb = (<any>global).COMB
+    if( (<any>window).COMB ) {
+      globalComb = (<any>window).COMB
     }
 
-    (<any>global).COMB = {
+    (<any>window).COMB = {
       connect() {
         throw new Error(expectedError)
       }
@@ -112,7 +112,7 @@ describe("test comb error", () => {
 
   afterEach(() => {
     if( globalComb ) {
-      (<any>global).COMB = globalComb
+      (<any>window).COMB = globalComb
     }
   })
 
