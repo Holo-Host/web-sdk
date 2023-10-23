@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+
 import {beforeEach, afterEach, expect, describe, it } from 'vitest'
 
 const path = require('path')
@@ -9,10 +11,7 @@ import "./mock_browser"
 import mock_comb from "./mock_comb"
 import WebSdkApi from "../src/index"
 
-import { JSDOM } from "jsdom"
-const dom = new JSDOM()
-global.document = dom.window.document
-global.window = dom.window
+(global.window as any).COMB = mock_comb
 
 describe('test API endpoints', () => {
   let holo

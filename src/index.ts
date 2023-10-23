@@ -4,11 +4,6 @@ import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateClon
 
 const COMPATIBLE_CHAPERONE_VERSION = '>=0.1.1 <0.2.0'
 
-const TESTING = (<any>global).COMB !== undefined
-if (!TESTING) {
-  if (typeof window !== "undefined") (<any>window).COMB = require('@holo-host/comb').COMB
-}
-
 function makeUrlAbsolute (url) {
   return new URL(url, window.location.href).href
 }
@@ -111,7 +106,7 @@ class WebSdkApi implements AppAgentClient {
 
     let child
     try {
-      child = await ((<any>window).COMB || (<any>global).COMB).connect(url.href, authOpts.container || document.body, 60000)
+      child = await (<any>global || <any>window).COMB.connect(url.href, authOpts.container || document.body, 60000)
     } catch (err) {
       if (err.name === 'TimeoutError')
         console.log('Chaperone did not load properly. Is it running?')
@@ -122,7 +117,7 @@ class WebSdkApi implements AppAgentClient {
 
     // Set styles and history props when in production mode
     // Note: Set styles and history props only when in production mode
-    if (!TESTING) {
+    if (process.env.NODE_ENV === "production") {
       webSdkApi.#iframe = document.getElementsByClassName('comb-frame-0')[0]
       webSdkApi.#iframe.setAttribute('allowtransparency', 'true')
       const style = webSdkApi.#iframe.style
@@ -269,7 +264,7 @@ export type ChaperoneState = {
 
 // DUPLICATION END
 
-type AuthFormCustomization = {
+export type AuthFormCustomization = {
   // The name of the hosted hApp. Currently shows up as "appName Login"
   appName?: string
   // The URL of the hApp logo. Currently displayed on a white background with no `width` or `height` constraints.
