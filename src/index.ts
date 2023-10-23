@@ -1,6 +1,9 @@
 import Emittery from "emittery"
 import semverSatisfies from 'semver/functions/satisfies'
 import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal, decodeHashFromBase64, NetworkInfoRequest, NetworkInfoResponse } from '@holochain/client'
+import { COMB } from "@holo-host/comb";
+
+(<any>window).COMB = COMB;
 
 const COMPATIBLE_CHAPERONE_VERSION = '>=0.1.1 <0.2.0'
 
