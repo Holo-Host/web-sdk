@@ -1,15 +1,18 @@
-import {describe, expect, test} from '@jest/globals';
+import {beforeEach, afterEach, expect, describe, it } from 'vitest'
 
 const path = require('path')
 const log = require('@whi/stdlog')(path.basename(__filename), {
   level: process.env.LOG_LEVEL || 'fatal'
 })
 
-require("./mock_browser")
-const mock_comb = require("./mock_comb")
+import "./mock_browser"
+import mock_comb from "./mock_comb"
+import WebSdkApi from "../src/index"
 
-let WebSdkApi
-WebSdkApi = require("../src/index").default
+import { JSDOM } from "jsdom"
+const dom = new JSDOM()
+global.document = dom.window.document
+global.window = dom.window
 
 describe('test API endpoints', () => {
   let holo
@@ -106,8 +109,6 @@ describe("test comb error", () => {
         throw new Error(expectedError)
       }
     }
-
-    WebSdkApi = require("../src/index").default
   })
 
   afterEach(() => {
