@@ -1,12 +1,13 @@
 import Emittery from "emittery"
 import semverSatisfies from 'semver/functions/satisfies'
 import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal, decodeHashFromBase64 } from '@holochain/client'
+import { COMB } from '@holo-host/comb'
 
 const COMPATIBLE_CHAPERONE_VERSION = '>=0.1.1 <0.2.0'
 
-const TESTING = (<any>global).COMB !== undefined
+const TESTING = (<any>window).COMB !== undefined
 if (!TESTING) {
-  if (typeof window !== "undefined") (<any>window).COMB = require('@holo-host/comb').COMB
+  (<any>window).COMB = COMB
 }
 
 function makeUrlAbsolute (url) {
@@ -111,7 +112,7 @@ class WebSdkApi implements AppAgentClient {
 
     let child
     try {
-      child = await ((<any>window).COMB || (<any>global).COMB).connect(url.href, authOpts.container || document.body, 60000)
+      child = await (<any>window).COMB.connect(url.href, authOpts.container || document.body, 60000)
     } catch (err) {
       if (err.name === 'TimeoutError')
         console.log('Chaperone did not load properly. Is it running?')
@@ -267,7 +268,7 @@ export type ChaperoneState = {
 
 // DUPLICATION END
 
-type AuthFormCustomization = {
+export type AuthFormCustomization = {
   // The name of the hosted hApp. Currently shows up as "appName Login"
   appName?: string
   // The URL of the hApp logo. Currently displayed on a white background with no `width` or `height` constraints.

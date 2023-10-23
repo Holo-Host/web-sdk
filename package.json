@@ -2,9 +2,15 @@
   "name": "@holo-host/web-sdk",
   "version": "0.6.17-prerelease",
   "description": "Standard development kit for creating Web UIs that work with Holo Hosting.",
-  "main": "dist/holo_hosting_web_sdk",
-  "module": "dist/holo_hosting_web_sdk.umd.js",
+  "main": "./dist/holo_hosting_web_sdk.umd.js",
+  "module": "./dist/holo_hosting_web_sdk.mjs",
   "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/holo_hosting_web_sdk.mjs",
+      "require": "./dist/holo_hosting_web_sdk.umd.js"
+    }
+  },
   "scripts": {
     "build": "npm run bundle",
     "bundle": "vite build",
