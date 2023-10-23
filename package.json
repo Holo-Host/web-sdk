@@ -7,7 +7,7 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "build": "npm run bundle",
-    "bundle": "npx webpack --mode production --output-filename holo_hosting_web_sdk.js",
+    "bundle": "vite build",
     "test": "npx vitest",
     "prepublish": "npm run build"
   },
@@ -30,28 +30,19 @@
     "src/*"
   ],
   "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.9.5",
-    "@babel/preset-typescript": "^7.21.0",
     "@holo-host/chaperone": "^8.0.1",
     "@types/node": "^12.20.55",
     "@whi/stdlog": "^0.3.0",
-    "babel-loader": "^8.1.0",
-    "babel-polyfill": "^6.26.0",
     "jsdom": "^22.1.0",
     "puppeteer": "^2.1.1",
-    "ts-loader": "^9.4.1",
     "typescript": "^4.9.3",
-    "vitest": "^0.34.6",
-    "webpack": "^5.74.0",
-    "webpack-cli": "^4.10.0"
+    "vite": "^4.5.0",
+    "vite-plugin-dts": "^3.6.0",
+    "vitest": "^0.34.6"
   },
   "dependencies": {
     "@holo-host/comb": "0.3.1",
     "@holochain/client": "0.16.3",
-    "buffer": "^6.0.3",
-    "crypto-browserify": "^3.12.0",
-    "semver": "^7.5.1",
-    "stream-browserify": "^3.0.0"
+    "semver": "^7.5.1"
   }
 }
