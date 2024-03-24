@@ -970,6 +970,21 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bitgo/blake2b-wasm@^3.2.3":
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/@bitgo/blake2b-wasm/-/blake2b-wasm-3.2.3.tgz#6ae5e942f2a5fd5b3ed27103af5df0ed50adfbc9"
+  integrity sha512-NaurBrMaEpjfg7EdUJgW/c6byt27O6q1ZaxB5Ita10MjjYjUu0SyYF4q7JPNxpHF/lMxb0YZakOxigbDBu9Jjw==
+  dependencies:
+    nanoassert "^1.0.0"
+
+"@bitgo/blake2b@^3.2.4":
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/@bitgo/blake2b/-/blake2b-3.2.4.tgz#6440992affdeabc22b2de8b8f381f51b551dd513"
+  integrity sha512-46PEgEVPxecNJ/xczggIllSxIkFIvvbVM0OfIDdNJ5qpFHUeBCkNIiGdzC3fYZlsv7bVTdUZOj79GcFBLMYBqA==
+  dependencies:
+    "@bitgo/blake2b-wasm" "^3.2.3"
+    nanoassert "^2.0.0"
+
 "@colors/colors@1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
@@ -1052,11 +1067,12 @@
   resolved "https://registry.yarnpkg.com/@holo-host/wasm-key-manager/-/wasm-key-manager-1.0.0.tgz#32e5365ddc4518a01c17d2aba09d11bf3a042429"
   integrity sha512-GTfeQ2iYvYYrIkuaF0QupWP/y8sdItwL6Tr1osyaU7eUsWtGfpZqDcTZny8KNDdnQAEEP2nDWZORA/Z3EMJa3w==
 
-"@holochain/client@0.16.3":
-  version "0.16.3"
-  resolved "https://registry.yarnpkg.com/@holochain/client/-/client-0.16.3.tgz#707dd63ba3b1e8e989a55b9958664f1c1f3d4da1"
-  integrity sha512-bj/yWg3HJCQ1YcVX2yeZX5EiF2X8xv6jIC3q0g7GvdCAlwUqk4fieRQBf8ieYmd9WXmmfs55PVllYw2ofeR9ug==
+"@holochain/client@0.16.10":
+  version "0.16.10"
+  resolved "https://registry.yarnpkg.com/@holochain/client/-/client-0.16.10.tgz#7ef9019922edfea4ceda7bb8d3eaae7beddc98e3"
+  integrity sha512-Urgx6vXNux2XD/4+eOxou2FKwlUBu/g/BxUSZLX6wEaYWH9wDYXR5f3VToUrAhXGF5ssc08jb8jLiQZ23k62EQ==
   dependencies:
+    "@bitgo/blake2b" "^3.2.4"
     "@holochain/serialization" "^0.1.0-beta-rc.3"
     "@msgpack/msgpack" "^2.8.0"
     "@tauri-apps/api" "^1.4.0"
@@ -4062,6 +4078,16 @@ multihashes@0.4.15:
   dependencies:
     bs58 "^4.0.1"
     varint "^5.0.0"
+
+nanoassert@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/nanoassert/-/nanoassert-1.1.0.tgz#4f3152e09540fde28c76f44b19bbcd1d5a42478d"
+  integrity sha512-C40jQ3NzfkP53NsO8kEOFd79p4b9kDXQMwgiY1z8ZwrDZgUyom0AHwGegF4Dm99L+YoYhuaB0ceerUcXmqr1rQ==
+
+nanoassert@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/nanoassert/-/nanoassert-2.0.0.tgz#a05f86de6c7a51618038a620f88878ed1e490c09"
+  integrity sha512-7vO7n28+aYO4J+8w96AzhmU8G+Y/xpPDJz/se19ICsqj/momRbb9mh9ZUtkoJ5X3nTnPdhEJyc0qnM6yAsHBaA==
 
 natural-compare@^1.4.0:
   version "1.4.0"
