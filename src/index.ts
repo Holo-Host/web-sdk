@@ -1,6 +1,6 @@
 import Emittery from "emittery"
 import semverSatisfies from 'semver/functions/satisfies'
-import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal, decodeHashFromBase64, NetworkInfoRequest, NetworkInfoResponse } from '@holochain/client'
+import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal, decodeHashFromBase64, NetworkInfoResponse, AppAgentNetworkInfoRequest } from '@holochain/client'
 
 const COMPATIBLE_CHAPERONE_VERSION = '>=0.1.1 <0.2.0'
 
@@ -192,6 +192,8 @@ class WebSdkApi implements AppAgentClient {
 
   appInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
 
+  networkInfo = (args: AppAgentNetworkInfoRequest): Promise<NetworkInfoResponse> => this.#child.call('networkInfo', args)
+
   callZome = async (args: AppAgentCallZomeRequest): Promise<any> => this.#child.call('callZome', args).then(unwrap)
 
   createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => this.#child.call('createCloneCell', args).then(unwrap)
@@ -199,8 +201,6 @@ class WebSdkApi implements AppAgentClient {
   disableCloneCell = (args: AppDisableCloneCellRequest): Promise<DisableCloneCellResponse> => this.#child.call('disableCloneCell', args).then(unwrap)
 
   enableCloneCell = (args: AppEnableCloneCellRequest): Promise<EnableCloneCellResponse> => this.#child.call('enableCloneCell', args).then(unwrap)
-
-  networkInfo = (args: NetworkInfoRequest): Promise<NetworkInfoResponse> => this.#child.call('networkInfo', args).then(unwrap)
 
   signPayload = (args: any): Promise<any> => this.#child.call('signPayload', args).then(unwrap)
   
