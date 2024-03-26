@@ -30,7 +30,7 @@ let event_listeners = {}
   }
 }
 
-module.exports = {
+export default {
   nextResponse(value) {
     next_response = value;
   },
