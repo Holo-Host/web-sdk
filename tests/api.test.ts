@@ -77,6 +77,32 @@ describe('test API endpoints', () => {
     expect(response).toMatchObject(expectedResponse)
   })
 
+  it("should call network_info", async () => {    
+    const expectedResponse = [
+      {
+        fetch_pool_info: {
+            op_bytes_to_fetch: 1,
+            num_ops_to_fetch: 1,
+        },
+        current_number_of_peers: 1,
+        arc_size: 1,
+        total_network_peers: 1,
+        bytes_since_last_time_queried: 1,
+        completed_rounds_since_last_time_queried: 1,
+      }
+    ]
+
+    mock_comb.nextResponse(expectedResponse)
+
+    const response = await holo.networkInfo({
+      dnas: ['dna_hash'],
+    });
+
+    log.debug("Response: %s", response)
+
+    expect(response).toBeDefined()
+  })
+
   it("should sign payloads", async () => {
     const payload = { mockPayload: 'value' }
     const expectedResponse = {
