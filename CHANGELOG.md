@@ -3,12 +3,15 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.6.19-prerelease] - 2024-03-26
 
-## Changed
+### Updated
+- Now compatible with @holochain/client 0.16.*
+
+### Changed
 - Replace jest with vitest
 
-## Fixed
+### Fixed
 - Test suite now runs properly
 - Mocking browser globals in tests
 - Failing tests
