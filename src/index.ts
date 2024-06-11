@@ -1,8 +1,11 @@
 import Emittery from "emittery"
 import semverSatisfies from 'semver/functions/satisfies'
-import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal, decodeHashFromBase64, NetworkInfoResponse, AppAgentNetworkInfoRequest } from '@holochain/client'
+import { 
+  AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, 
+  AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal, decodeHashFromBase64, NetworkInfoResponse, NetworkInfoRequest
+} from '@holochain/client'
 
-const COMPATIBLE_CHAPERONE_VERSION = '>=0.1.1 <0.3.0'
+const COMPATIBLE_CHAPERONE_VERSION = '>=0.1.1 <0.3.0' // TODO: update
 
 const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
@@ -96,16 +99,21 @@ class WebSdkApi implements AppAgentClient {
       if (authOpts.requireRegistrationCode !== undefined) {
         url.searchParams.set('require_registration_code', String(authOpts.requireRegistrationCode))
       }
+
+      if (authOpts.integrationTestMode !== undefined) {
+        url.searchParams.set('integration_test_mode', String(authOpts.integrationTestMode))
+      }
+
+      if (authOpts.allowEmailPasswordAuth !== undefined) {
+        url.searchParams.set('allow_email_password_auth', String(authOpts.allowEmailPasswordAuth))
+      }
+
       // INTERNAL OPTION
       // anonymous_allowed is barely implemented in Chaperone, and is subject to change,
       // so exposing this in the documentation is misleading.
       // This is currently useful for some special hApps that can't support an anonymous instance.
       if (authOpts.anonymousAllowed !== undefined) {
         url.searchParams.set('anonymous_allowed', String(authOpts.anonymousAllowed))
-      }
-
-      if (authOpts.integrationTestMode !== undefined) {
-        url.searchParams.set('integration_test_mode', String(authOpts.integrationTestMode))
       }
     }
 
@@ -192,7 +200,7 @@ class WebSdkApi implements AppAgentClient {
 
   appInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
 
-  networkInfo = (args: AppAgentNetworkInfoRequest): Promise<NetworkInfoResponse> => this.#child.call('networkInfo', args)
+  networkInfo = (args: NetworkInfoRequest): Promise<NetworkInfoResponse> => this.#child.call('networkInfo', args)
 
   callZome = async (args: AppAgentCallZomeRequest): Promise<any> => this.#child.call('callZome', args).then(unwrap)
 
@@ -201,6 +209,8 @@ class WebSdkApi implements AppAgentClient {
   disableCloneCell = (args: AppDisableCloneCellRequest): Promise<DisableCloneCellResponse> => this.#child.call('disableCloneCell', args).then(unwrap)
 
   enableCloneCell = (args: AppEnableCloneCellRequest): Promise<EnableCloneCellResponse> => this.#child.call('enableCloneCell', args).then(unwrap)
+
+  provideMemproofs = (args: ProvideMemproofsRequest): Promise<ProvideMemproofsResponse> => this.#child.call('provideMemproofs', args).then(unwrap)
 
   signPayload = (args: any): Promise<any> => this.#child.call('signPayload', args).then(unwrap)
   
@@ -269,7 +279,15 @@ export type ChaperoneState = {
 
 // DUPLICATION END
 
+// TODO: once holochain js client is up to date with the latest holochain, we should use the types from there instead of these two ProvideMemproofs types
+type ProvideMemproofsRequest = {
+  memproof_maps: { [key: string]: string; }  
+}
+
+type ProvideMemproofsResponse = void
+
 type AuthFormCustomization = {
+  allowEmailPasswordAuth?: boolean
   // The name of the hosted hApp. Currently shows up as "appName Login"
   appName?: string
   // The URL of the hApp logo. Currently displayed on a white background with no `width` or `height` constraints.
