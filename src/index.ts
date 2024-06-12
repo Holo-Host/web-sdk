@@ -1,8 +1,10 @@
 import Emittery from "emittery"
 import semverSatisfies from 'semver/functions/satisfies'
 import { 
-  AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, 
-  AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal, decodeHashFromBase64, NetworkInfoResponse, NetworkInfoRequest
+  AppInfoResponse, AppClient, AppCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, 
+  AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal, decodeHashFromBase64, NetworkInfoResponse, NetworkInfoRequest,
+  ProvideMemproofsRequest,
+  ProvideMemproofsResponse
 } from '@holochain/client'
 
 const COMPATIBLE_CHAPERONE_VERSION = '>=0.1.1 <0.3.0' // TODO: update
@@ -28,7 +30,7 @@ function checkChaperoneVersion (chaperoneVersion) {
  * A `WebSdkApi` is a connection to a Chaperone iframe containing Holo's client logic.
  * @param child - The child process connecting to Chaperone that is being monitored.
  */
-class WebSdkApi implements AppAgentClient {
+class WebSdkApi implements AppClient {
   // Private constructor. Use `connect` instead.
   #child: any;
   agentState: AgentState;
@@ -40,6 +42,7 @@ class WebSdkApi implements AppAgentClient {
   #cancellable: boolean;
   #emitter = new Emittery();
   myPubKey: AgentPubKey;
+  installedAppId: string; // this is to conform with the `AppClient` interface and as never used in web-sdk
 
   constructor (child) {
     this.#child = child
@@ -202,7 +205,7 @@ class WebSdkApi implements AppAgentClient {
 
   networkInfo = (args: NetworkInfoRequest): Promise<NetworkInfoResponse> => this.#child.call('networkInfo', args)
 
-  callZome = async (args: AppAgentCallZomeRequest): Promise<any> => this.#child.call('callZome', args).then(unwrap)
+  callZome = async (args: AppCallZomeRequest): Promise<any> => this.#child.call('callZome', args).then(unwrap)
 
   createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => this.#child.call('createCloneCell', args).then(unwrap)
 
@@ -278,13 +281,6 @@ export type ChaperoneState = {
 }
 
 // DUPLICATION END
-
-// TODO: once holochain js client is up to date with the latest holochain, we should use the types from there instead of these two ProvideMemproofs types
-type ProvideMemproofsRequest = {
-  memproof_maps: { [key: string]: string; }  
-}
-
-type ProvideMemproofsResponse = void
 
 type AuthFormCustomization = {
   allowEmailPasswordAuth?: boolean
