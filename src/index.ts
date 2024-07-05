@@ -265,6 +265,7 @@ export type AgentState = {
   isAnonymous: boolean
   hostUrl: string
   isAvailable: boolean
+  hasMemproofs: boolean
   unrecoverableError: any
 }
 
