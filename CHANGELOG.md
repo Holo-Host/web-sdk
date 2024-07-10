@@ -3,6 +3,17 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+
+### Added
+- `provideMemproofs` endpoint
+- `allowEmailPasswordAuth` authOpts fields
+- `hasMemproofs` field in `AgentState`
+- `websdk_version` is now passed with authOpts to chaperone
+
+### Removed
+- chaperone version check
+
 ## [0.6.19-prerelease] - 2024-03-26
 
 ### Updated

@@ -1,3 +1,6 @@
+const PACKAGE = require('./package.json')
+const webpack = require('webpack')
+
 module.exports = {
   target: "web",
   mode: 'development', // production | development
@@ -41,5 +44,10 @@ module.exports = {
   },
 
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env':{
+        'VERSION': `'${PACKAGE.version}'`,
+      },
+    }),
   ],
 };

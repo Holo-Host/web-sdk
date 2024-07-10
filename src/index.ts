@@ -1,8 +1,10 @@
 import Emittery from "emittery"
-import semverSatisfies from 'semver/functions/satisfies'
-import { AppInfoResponse, AppAgentClient, AppAgentCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal, decodeHashFromBase64, NetworkInfoResponse, AppAgentNetworkInfoRequest } from '@holochain/client'
-
-const COMPATIBLE_CHAPERONE_VERSION = '>=0.1.1 <0.3.0'
+import { 
+  AppInfoResponse, AppClient, AppCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, 
+  AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal, decodeHashFromBase64, NetworkInfoResponse, NetworkInfoRequest,
+  ProvideMemproofsRequest,
+  ProvideMemproofsResponse
+} from '@holochain/client'
 
 const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
@@ -13,19 +15,11 @@ function makeUrlAbsolute (url) {
   return new URL(url, window.location.href).href
 }
 
-function checkChaperoneVersion (chaperoneVersion) {
-  const isSatisfied = semverSatisfies(chaperoneVersion, COMPATIBLE_CHAPERONE_VERSION)
-
-  if (!isSatisfied) {
-    console.error(`!!!!! WARNING: you are connecting to an unsupported version of Chaperone. Expected version matching: ${COMPATIBLE_CHAPERONE_VERSION}. Actual version: ${chaperoneVersion} !!!!!`)
-  }
-}
-
 /**
  * A `WebSdkApi` is a connection to a Chaperone iframe containing Holo's client logic.
  * @param child - The child process connecting to Chaperone that is being monitored.
  */
-class WebSdkApi implements AppAgentClient {
+class WebSdkApi implements AppClient {
   // Private constructor. Use `connect` instead.
   #child: any;
   agentState: AgentState;
@@ -37,6 +31,7 @@ class WebSdkApi implements AppAgentClient {
   #cancellable: boolean;
   #emitter = new Emittery();
   myPubKey: AgentPubKey;
+  installedAppId: string; // this is to conform with the `AppClient` interface and as never used in web-sdk
 
   constructor (child) {
     this.#child = child
@@ -73,6 +68,8 @@ class WebSdkApi implements AppAgentClient {
   }: { chaperoneUrl: string, authFormCustomization?: AuthFormCustomization }) => {
     const url = new URL(chaperoneUrl || 'https://chaperone.holo.hosting')
 
+    url.searchParams.set('websdk_version', process.env.VERSION)
+
     if (authOpts !== undefined) {
       if (authOpts.logoUrl !== undefined) {
         url.searchParams.set('logo_url', makeUrlAbsolute(authOpts.logoUrl))
@@ -96,16 +93,21 @@ class WebSdkApi implements AppAgentClient {
       if (authOpts.requireRegistrationCode !== undefined) {
         url.searchParams.set('require_registration_code', String(authOpts.requireRegistrationCode))
       }
+
+      if (authOpts.integrationTestMode !== undefined) {
+        url.searchParams.set('integration_test_mode', String(authOpts.integrationTestMode))
+      }
+
+      if (authOpts.allowEmailPasswordAuth !== undefined) {
+        url.searchParams.set('allow_email_password_auth', String(authOpts.allowEmailPasswordAuth))
+      }
+
       // INTERNAL OPTION
       // anonymous_allowed is barely implemented in Chaperone, and is subject to change,
       // so exposing this in the documentation is misleading.
       // This is currently useful for some special hApps that can't support an anonymous instance.
       if (authOpts.anonymousAllowed !== undefined) {
         url.searchParams.set('anonymous_allowed', String(authOpts.anonymousAllowed))
-      }
-
-      if (authOpts.integrationTestMode !== undefined) {
-        url.searchParams.set('integration_test_mode', String(authOpts.integrationTestMode))
       }
     }
 
@@ -146,11 +148,9 @@ class WebSdkApi implements AppAgentClient {
 
     // Chaperone either returns agent_state and happ_id (success case)
     // or error_message
-    const { error_message, chaperone_state, happ_id, chaperone_version } = await child.call(
+    const { error_message, chaperone_state, happ_id } = await child.call(
       'handshake'
     )
-
-    checkChaperoneVersion(chaperone_version)
 
     if (error_message) {
       webSdkApi.#iframe.style.display = 'none'
@@ -192,15 +192,17 @@ class WebSdkApi implements AppAgentClient {
 
   appInfo = (): Promise<AppInfoResponse> => this.#child.call('appInfo')
 
-  networkInfo = (args: AppAgentNetworkInfoRequest): Promise<NetworkInfoResponse> => this.#child.call('networkInfo', args)
+  networkInfo = (args: NetworkInfoRequest): Promise<NetworkInfoResponse> => this.#child.call('networkInfo', args)
 
-  callZome = async (args: AppAgentCallZomeRequest): Promise<any> => this.#child.call('callZome', args).then(unwrap)
+  callZome = async (args: AppCallZomeRequest): Promise<any> => this.#child.call('callZome', args).then(unwrap)
 
   createCloneCell = (args: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> => this.#child.call('createCloneCell', args).then(unwrap)
 
   disableCloneCell = (args: AppDisableCloneCellRequest): Promise<DisableCloneCellResponse> => this.#child.call('disableCloneCell', args).then(unwrap)
 
   enableCloneCell = (args: AppEnableCloneCellRequest): Promise<EnableCloneCellResponse> => this.#child.call('enableCloneCell', args).then(unwrap)
+
+  provideMemproofs = (args: ProvideMemproofsRequest): Promise<ProvideMemproofsResponse> => this.#child.call('provideMemproofs', args).then(unwrap)
 
   signPayload = (args: any): Promise<any> => this.#child.call('signPayload', args).then(unwrap)
   
@@ -252,6 +254,7 @@ export type AgentState = {
   isAnonymous: boolean
   hostUrl: string
   isAvailable: boolean
+  hasMemproofs: boolean
   unrecoverableError: any
 }
 
@@ -270,6 +273,7 @@ export type ChaperoneState = {
 // DUPLICATION END
 
 type AuthFormCustomization = {
+  allowEmailPasswordAuth?: boolean
   // The name of the hosted hApp. Currently shows up as "appName Login"
   appName?: string
   // The URL of the hApp logo. Currently displayed on a white background with no `width` or `height` constraints.
