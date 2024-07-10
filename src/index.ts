@@ -1,13 +1,10 @@
 import Emittery from "emittery"
-import semverSatisfies from 'semver/functions/satisfies'
 import { 
   AppInfoResponse, AppClient, AppCallZomeRequest, AppCreateCloneCellRequest, CreateCloneCellResponse, AgentPubKey, AppEnableCloneCellRequest, 
   AppDisableCloneCellRequest, EnableCloneCellResponse, DisableCloneCellResponse, AppSignal, decodeHashFromBase64, NetworkInfoResponse, NetworkInfoRequest,
   ProvideMemproofsRequest,
   ProvideMemproofsResponse
 } from '@holochain/client'
-
-const COMPATIBLE_CHAPERONE_VERSION = '>=0.1.1 <0.3.0' // TODO: update
 
 const TESTING = (<any>global).COMB !== undefined
 if (!TESTING) {
@@ -16,14 +13,6 @@ if (!TESTING) {
 
 function makeUrlAbsolute (url) {
   return new URL(url, window.location.href).href
-}
-
-function checkChaperoneVersion (chaperoneVersion) {
-  const isSatisfied = semverSatisfies(chaperoneVersion, COMPATIBLE_CHAPERONE_VERSION)
-
-  if (!isSatisfied) {
-    console.error(`!!!!! WARNING: you are connecting to an unsupported version of Chaperone. Expected version matching: ${COMPATIBLE_CHAPERONE_VERSION}. Actual version: ${chaperoneVersion} !!!!!`)
-  }
 }
 
 /**
@@ -78,6 +67,8 @@ class WebSdkApi implements AppClient {
     authFormCustomization: authOpts = {}
   }: { chaperoneUrl: string, authFormCustomization?: AuthFormCustomization }) => {
     const url = new URL(chaperoneUrl || 'https://chaperone.holo.hosting')
+
+    url.searchParams.set('websdk_version', process.env.VERSION)
 
     if (authOpts !== undefined) {
       if (authOpts.logoUrl !== undefined) {
@@ -157,11 +148,9 @@ class WebSdkApi implements AppClient {
 
     // Chaperone either returns agent_state and happ_id (success case)
     // or error_message
-    const { error_message, chaperone_state, happ_id, chaperone_version } = await child.call(
+    const { error_message, chaperone_state, happ_id } = await child.call(
       'handshake'
     )
-
-    checkChaperoneVersion(chaperone_version)
 
     if (error_message) {
       webSdkApi.#iframe.style.display = 'none'
