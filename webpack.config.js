@@ -1,4 +1,5 @@
 const PACKAGE = require('./package.json')
+const webpack = require('webpack')
 
 module.exports = {
   target: "web",
