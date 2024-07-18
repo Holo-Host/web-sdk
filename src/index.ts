@@ -251,6 +251,7 @@ export default WebSdkApi
 
 export type AgentState = {
   id: string
+  pubkey: Uint8Array
   isAnonymous: boolean
   hostUrl: string
   isAvailable: boolean
