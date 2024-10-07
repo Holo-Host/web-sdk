@@ -1,6 +1,6 @@
 # Holo Hosting Web SDK
 
-Web SDK is the core interface for accessing Holo-Hosted Holochain apps from a web UI. Web SDK provides the same methods for manipulating a Holochain agent as `AppWebsocket` from [holochain-client-js][] (`callZome` and `appInfo`), but additionally provides methods for determining *which hosted agent* to access (`signIn`, `signUp`, and `signOut`).
+Web SDK is the core interface for accessing Holo-Hosted Holochain apps from a web UI. Web SDK provides the same methods for communicating with a Holochain agent as `AppWebsocket` from [holochain-client-js][] (including `callZome` and `appInfo`), but additionally provides methods for determining *which hosted agent* to access (`signIn`, `signUp`, and `signOut`).
 
 [holochain-client-js]: https://github.com/holochain/holochain-client-js
 
@@ -23,7 +23,7 @@ We guard Login inside of an iframe so that the happ UI cannot directly access th
 
 ## Local dev environment (holo-dev-server)
 
-The production Chaperone at <https://chaperone.holo.hosting> is configured to connect to real HoloPorts, so it only works if you've already published your hApp to the Holo Hosting network. If you're still developing your happ, you can create a local Chaperone which directs all agents to a locally simulated HoloPort using a program called [`holo-dev-server`](https://holo-host.github.io/envoy-chaperone/).
+The production Chaperone at <https://chaperone.holo.hosting> is configured to connect to real HoloPorts, so it only works if you've already published your hApp to the Holo Hosting network. If you're still developing your happ, you can create a local Chaperone which directs all agents to a locally simulated HoloPort using a program called [`holo-dev-server`](https://github.com/Holo-Host/envoy-chaperone).
 
 
 ## Examples
@@ -57,10 +57,12 @@ const main = async () => {
   /*
   {
     "id": "uhCAkFUJ7PAIodGIzUjeHOAu5K8vUizQqZYgmig5PL05G8QPTpyce",
+    "pubkey": Uint8Array [10, 20, 30, ...]
     "isAnonymous": true,
     "isAvailable": false,
     "hostUrl": "localhost:9999",
-    "unrecoverableError": null
+    "unrecoverableError": null,
+    "hasMemproofs": false,
   }
   */
 
@@ -77,10 +79,12 @@ const main = async () => {
   /*
   {
     "id": "uhCAkFUJ7PAIodGIzUjeHOAu5K8vUizQqZYgmig5PL05G8QPTpyce",
+    "pubkey": Uint8Array [10, 20, 30, ...]
     "isAnonymous": true,
     "isAvailable": true,
     "hostUrl": "localhost:9999",
-    "unrecoverableError": null
+    "unrecoverableError": null,
+    "hasMemproofs": false,
   }
   */
 
@@ -97,10 +101,12 @@ const main = async () => {
   /*
   {
     "id": "uhCAkRr1W12kUrY7SlSfwUpH_eJOxQGTZrIQxTQaV5-7kkh15Ewwg",
+    "pubkey": Uint8Array [10, 20, 30, ...]
     "isAnonymous": false,
     "isAvailable": true,
     "hostUrl": "localhost:9999",
-    "unrecoverableError": null
+    "unrecoverableError": null,
+    "hasMemproofs": false,
   }
   */
 
@@ -165,6 +171,8 @@ export async function connect (opts?: {
     appName?: string
     // The URL of the hApp logo. Currently displayed on a white background with no `width` or `height` constraints.
     logoUrl?: string
+    // The URL of a CSS file to apply to the Holo Login iframe
+    cssUrl?: string
     // Determines whether the "REGISTRATION CODE" field is shown.
     // 
     // Set this to `true` if you want to prompt the user for a registration code that will be passed directly to your happ as a mem_proof (ie, not using a memproof server). This field does nothing if the membraneProofServer option (see below) is set.
@@ -185,7 +193,11 @@ export async function connect (opts?: {
       url: string
       // An arbitrary value that will be passed to the Membrane Proof Server as additional information
       payload: unknown
-    }
+    },
+    // The parent HTMLElement to insert the login iframe into. Defaults to `document.body`
+    container?: HTMLElement,
+    // If false, disables email password auth so that only keymanager login can be used
+  allowEmailPasswordAuth?: boolean
   }
 }): Promise<WebSdk>
 
@@ -258,14 +270,14 @@ interface WebSdk {
   // `callback` takes an object containing the payload and the hash of the DNA which emitted it.
   on(event: 'signal', callback: (signal: Signal) => void): void
 
-  // Returns the InstalledAppInfo for the initial agent.
+  // Returns AppInfo for the initial agent.
   //
   // (May 2022: Due to a bug in the current implementation, this does not update if you switch agents, so this can only return the app info for the first agent that Chaperone tries to create after `connect` is called)
   //
   // Known issue: This promise will currently never resolve if the initial agent fails to load.
   //
   // The main use case for appInfo is determining what roleId to use for Zome calls, but now that it's recommeneded to hardcode the roleId in the UI, there is not much reason to use this method.
-  async appInfo(): Promise<InstalledAppInfo>
+  async appInfo(): Promise<HoloAppInfo>
   // (NOT IMPLEMENTED) Calls StateDump using the Holochain admin websocket on the hosted agent's sourcechain, and returns the result.
   async stateDump(): Promise<StateDump>
 }
@@ -275,6 +287,8 @@ interface WebSdk {
 type AgentState = {
   // The base64-encoded public key of the current hosted agent
   id: string
+  // The same key as a raw byte array
+  pubkey: Uint8Array
   // If true, then the agent is anonymous.
   // This means that the user did not have to log in, and will have limited access to mutating the source chain.
   isAnonymous: boolean
@@ -284,6 +298,9 @@ type AgentState = {
   unrecoverableError: UnrecoverableError | undefined
   // The URL of the HoloPort that is hosting the current agent. Useful for debugging.
   hostUrl: string
+  // True if the agent has completed the install, including providing memproofs.
+  // False if they still need to provide memproofs
+  hasMemproofs: boolean
 }
 
 export type UIState = {
@@ -320,36 +337,28 @@ type UnrecoverableError = {
 type StateDump = void
 
 // BELOW THIS LINE COPIED FROM
-// https://github.com/holochain/holochain-client-js/blob/develop/src/api/types.ts
-type InstalledCell = {
-  cell_id: [Uint8Array, Uint8Array]
-  role_id: string
+// https://github.com/Holo-Host/envoy-chaperone/blob/develop/chaperone/src/Agent.ts
+export type HoloAppInfo = {
+  cell_info: {[role_name: string]: Array<CellInfo>},
+  status: HcAppStatus,
+  enable_errors: Array<any>,
+  agent_pub_key: string,
+  manifest: any
 }
 
-type InstalledAppInfo = {
-  installed_app_id: string
-  cell_data: Array<>
-  status: InstalledAppInfoStatus
+export type CellInfo = {
+  data: {
+    cell_id: CellId
+  }
 }
 
-type InstalledAppInfoStatus =
-  | {
-      paused: { reason: { error: string } }
-    }
-  | {
-      disabled: {
-        reason: DisabledAppReason
-      }
-    }
-  | {
-      running: null
-    }
-
-type DisabledAppReason =
-  | {
-      never_started: null
-    }
-  | { user: null }
-  | { error: string }
-
-```
+export type HcAppStatus = {
+  type: 'running'
+} | {
+  type: 'paused' | 'running',
+  data: {
+    reason: any
+  }
+} | {
+  type: 'awaiting_memproofs'
+}

@@ -274,7 +274,6 @@ export type ChaperoneState = {
 // DUPLICATION END
 
 type AuthFormCustomization = {
-  allowEmailPasswordAuth?: boolean
   // The name of the hosted hApp. Currently shows up as "appName Login"
   appName?: string
   // The URL of the hApp logo. Currently displayed on a white background with no `width` or `height` constraints.
@@ -304,11 +303,16 @@ type AuthFormCustomization = {
   },
   // The parent HTMLElement to insert the login iframe into. Defaults to `document.body`
   container?: HTMLElement,
+  // If false, disables email password auth so that only keymanager login can be used
+  allowEmailPasswordAuth?: boolean
   // INTERNAL OPTION
   // anonymous_allowed is barely implemented in Chaperone, and is subject to change,
   // so exposing this in the documentation is misleading.
   // This is currently useful for some special hApps that can't support an anonymous instance.
   anonymousAllowed?: boolean
+  // INTERNAL OPTION
+  // Drastically increases the rate of an interval that checks agent host, so that we can test this
+  // in a reasonable time
   integrationTestMode?: boolean
 }
 
