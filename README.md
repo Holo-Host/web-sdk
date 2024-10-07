@@ -46,7 +46,7 @@ const main = async () => {
 
     // Customize the Credentials Overlay
     authFormCustomization: {
-      logoUrl: "my-logo.png", v
+      logoUrl: "my-logo.png",
       appName: "My App",
       requireRegistrationCode: false
     }
